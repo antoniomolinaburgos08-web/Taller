@@ -1,5 +1,0 @@
-.vercel
-node_modules/
-android/
-www/
-.env*

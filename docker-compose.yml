@@ -1,147 +1,149 @@
-version: "3.8"
+## ============================================================
+## docker-compose de DESARROLLO local
+## ------------------------------------------------------------
+## Para producción usa `deploy/docker-compose.yml` (con HTTPS
+## automático, secretos en .env y reverse proxy Caddy).
+##
+## Uso local:
+##   docker compose up -d
+##   Frontend  → http://localhost:8085
+##   Strapi    → http://localhost:1337/admin
+##   Chatwoot  → http://localhost:3000
+## ============================================================
+
+name: taller-dev
 
 services:
-  # ------------------------------------
-  # 1. FRONTEND (La Web Pública)
-  # ------------------------------------
-  frontend:
-    image: nginx:alpine
-    container_name: taller-frontend
-    restart: always
-    ports:
-      - "8085:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
 
-  # ------------------------------------
-  # 2. CRM BACKEND (Strapi)
-  # ------------------------------------
-  postgres-strapi:
-    image: postgres:15
-    container_name: taller-strapi-db
-    restart: always
+  web-publica:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: ["8085:80"]
+    volumes:
+      - ./web-publica:/usr/share/nginx/html:ro
+
+  crm:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: ["8086:80"]
+    volumes:
+      - ./crm:/usr/share/nginx/html:ro
+
+  strapi-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_dev
       POSTGRES_DB: strapi
     volumes:
-      - strapi-db-data:/var/lib/postgresql/data
+      - strapi_db_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U strapi"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  strapi-cms:
+  strapi:
     build: ./backend/strapi-cms
-    container_name: taller-strapi-cms
-    restart: always
-    ports:
-      - "1337:1337"
+    restart: unless-stopped
+    ports: ["1337:1337"]
     environment:
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: postgres-strapi
-      DATABASE_PORT: 5432
-      DATABASE_NAME: strapi
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: password
-      DATABASE_SSL: "false"
+      NODE_ENV: development
       HOST: 0.0.0.0
       PORT: 1337
-      APP_KEYS: "toBeModified1,toBeModified2"
-      API_TOKEN_SALT: "tobemodified"
-      ADMIN_JWT_SECRET: "tobemodified"
-      TRANSFER_TOKEN_SALT: "tobemodified"
-      JWT_SECRET: "tobemodified"
-    depends_on:
-      postgres-strapi:
-        condition: service_healthy
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: strapi-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_dev
+      DATABASE_SSL: "false"
+      APP_KEYS: "dev1,dev2,dev3,dev4"
+      API_TOKEN_SALT: "dev_salt"
+      ADMIN_JWT_SECRET: "dev_admin_jwt"
+      TRANSFER_TOKEN_SALT: "dev_transfer_salt"
+      JWT_SECRET: "dev_jwt"
+      ENCRYPTION_KEY: "dev_encryption_key"
+      FRONTEND_URL: http://localhost:8085
     volumes:
-      - strapi-uploads:/app/public/uploads
+      - strapi_uploads_dev:/app/public/uploads
+    depends_on:
+      strapi-db:
+        condition: service_healthy
 
-  # ------------------------------------
-  # 3. CHATWOOT (Atención al Cliente)
-  # ------------------------------------
-  postgres-chatwoot:
+  chatwoot-db:
     image: pgvector/pgvector:pg15
-    container_name: taller-chatwoot-db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: chatwoot
-      POSTGRES_PASSWORD: chatwoot_password
+      POSTGRES_PASSWORD: chatwoot_dev
       POSTGRES_DB: chatwoot
     volumes:
-      - chatwoot-db-data:/var/lib/postgresql/data
+      - chatwoot_db_dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U chatwoot"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  redis-chatwoot:
+  chatwoot-redis:
     image: redis:7-alpine
-    container_name: taller-chatwoot-redis
-    restart: always
-    command: ["sh", "-c", "redis-server --requirepass \"chatwoot_redis\""]
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "chatwoot_dev_redis"]
     volumes:
-      - chatwoot-redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "chatwoot_redis", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - chatwoot_redis_dev:/data
 
   chatwoot-web:
     image: chatwoot/chatwoot:latest
-    container_name: taller-chatwoot-web
-    restart: always
-    ports:
-      - "3000:3000"
+    restart: unless-stopped
+    ports: ["3000:3000"]
     environment:
-      SECRET_KEY_BASE: "chatwoot_super_secret_local"
-      FRONTEND_URL: "http://localhost:3000"
-      POSTGRES_DATABASE: "chatwoot"
-      POSTGRES_HOST: "postgres-chatwoot"
-      POSTGRES_USERNAME: "chatwoot"
-      POSTGRES_PASSWORD: "chatwoot_password"
-      REDIS_URL: "redis://:chatwoot_redis@redis-chatwoot:6379"
-      REDIS_PASSWORD: "chatwoot_redis"
-      RAILS_ENV: "production"
-    depends_on:
-      postgres-chatwoot:
-        condition: service_healthy
-      redis-chatwoot:
-        condition: service_healthy
-    command: ['bundle', 'exec', 'rails', 'server', '-b', '0.0.0.0', '-p', '3000']
+      SECRET_KEY_BASE: "dev_secret_key_base_change_in_production_change_this_now"
+      FRONTEND_URL: http://localhost:3000
+      POSTGRES_HOST: chatwoot-db
+      POSTGRES_USERNAME: chatwoot
+      POSTGRES_PASSWORD: chatwoot_dev
+      POSTGRES_DATABASE: chatwoot
+      REDIS_URL: redis://:chatwoot_dev_redis@chatwoot-redis:6379
+      REDIS_PASSWORD: chatwoot_dev_redis
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      INSTALLATION_ENV: docker
+    command: ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
     volumes:
-      - chatwoot-storage:/app/storage
+      - chatwoot_storage_dev:/app/storage
+    depends_on:
+      chatwoot-db:
+        condition: service_healthy
+      chatwoot-redis:
+        condition: service_started
 
-  chatwoot-sidekiq:
+  chatwoot-worker:
     image: chatwoot/chatwoot:latest
-    container_name: taller-chatwoot-worker
-    restart: always
+    restart: unless-stopped
     environment:
-      SECRET_KEY_BASE: "chatwoot_super_secret_local"
-      FRONTEND_URL: "http://localhost:3000"
-      POSTGRES_DATABASE: "chatwoot"
-      POSTGRES_HOST: "postgres-chatwoot"
-      POSTGRES_USERNAME: "chatwoot"
-      POSTGRES_PASSWORD: "chatwoot_password"
-      REDIS_URL: "redis://:chatwoot_redis@redis-chatwoot:6379"
-      REDIS_PASSWORD: "chatwoot_redis"
-      RAILS_ENV: "production"
-    depends_on:
-      postgres-chatwoot:
-        condition: service_healthy
-      redis-chatwoot:
-        condition: service_healthy
-    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+      SECRET_KEY_BASE: "dev_secret_key_base_change_in_production_change_this_now"
+      FRONTEND_URL: http://localhost:3000
+      POSTGRES_HOST: chatwoot-db
+      POSTGRES_USERNAME: chatwoot
+      POSTGRES_PASSWORD: chatwoot_dev
+      POSTGRES_DATABASE: chatwoot
+      REDIS_URL: redis://:chatwoot_dev_redis@chatwoot-redis:6379
+      REDIS_PASSWORD: chatwoot_dev_redis
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      INSTALLATION_ENV: docker
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     volumes:
-      - chatwoot-storage:/app/storage
+      - chatwoot_storage_dev:/app/storage
+    depends_on:
+      chatwoot-web:
+        condition: service_started
 
 volumes:
-  strapi-db-data:
-  strapi-uploads:
-  chatwoot-db-data:
-  chatwoot-redis-data:
-  chatwoot-storage:
+  strapi_db_dev:
+  strapi_uploads_dev:
+  chatwoot_db_dev:
+  chatwoot_redis_dev:
+  chatwoot_storage_dev:

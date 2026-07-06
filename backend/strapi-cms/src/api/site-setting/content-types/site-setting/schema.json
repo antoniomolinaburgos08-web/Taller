@@ -77,6 +77,61 @@
     "chatwootUrl": {
       "type": "string",
       "default": "http://localhost:3000"
+    },
+    "gaTrackingId": {
+      "type": "string",
+      "description": "ID de propiedad de Google Analytics 4 (G-XXXXXXXXXX)"
+    },
+    "gtmContainerId": {
+      "type": "string",
+      "description": "ID de contenedor de Google Tag Manager (GTM-XXXXXX)"
+    },
+    "fbPixelId": {
+      "type": "string",
+      "description": "ID de píxel de Facebook / Meta"
+    },
+    "telegramBotToken": {
+      "type": "string",
+      "description": "Token del bot de Telegram (BotFather)",
+      "private": true
+    },
+    "telegramChatId": {
+      "type": "string",
+      "description": "Chat ID donde el bot envía notificaciones"
+    },
+    "openaiApiKey": {
+      "type": "string",
+      "description": "API key para OCR e IA (OpenAI o Anthropic)",
+      "private": true
+    },
+    "wallapopEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "cochesnetEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "cochesnetDealerId": {
+      "type": "string",
+      "description": "ID de profesional de coches.net (para el feed XML)"
+    },
+    "whatsappCatalogEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "whatsappBusinessAccountId": {
+      "type": "string",
+      "description": "ID de cuenta de WhatsApp Business (Meta)"
+    },
+    "whatsappCatalogId": {
+      "type": "string",
+      "description": "ID del catálogo de WhatsApp Business"
+    },
+    "whatsappAccessToken": {
+      "type": "string",
+      "description": "Token de acceso permanente de Meta Graph API",
+      "private": true
     }
   }
 }

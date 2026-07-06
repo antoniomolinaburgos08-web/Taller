@@ -1,0 +1,124 @@
+## ============================================================
+## Caddy - Reverse proxy con HTTPS automático (Let's Encrypt)
+## ============================================================
+## Los tres dominios y el email de ACME se pasan por variables
+## de entorno desde docker-compose.yml (.env).
+## ============================================================
+
+{
+    email {$ACME_EMAIL}
+    admin off
+    servers {
+        protocols h1 h2 h3
+    }
+}
+
+# ---------- Web pública (solo landing, sin admin) ----------
+{$DOMAIN_WEB} {
+    root * /srv/web-publica
+    file_server
+    encode gzip zstd
+
+    # Cache largo para estáticos con hash; corto para HTML
+    @estaticos {
+        path *.png *.jpg *.jpeg *.webp *.svg *.ico *.woff *.woff2 *.mp4
+    }
+    header @estaticos Cache-Control "public, max-age=2592000, immutable"
+
+    @html {
+        path *.html
+    }
+    header @html Cache-Control "public, max-age=300, must-revalidate"
+
+    # PWA manifests con MIME correcto
+    @manifest path *.webmanifest /manifest.json /manifest-admin.json
+    header @manifest Content-Type application/manifest+json
+
+    # Cabeceras de seguridad
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Permissions-Policy "geolocation=(), camera=(), microphone=()"
+        -Server
+    }
+
+    log {
+        output file /data/access-web.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}
+
+# ---------- CRM (panel interno del taller) ----------
+{$DOMAIN_CRM} {
+    root * /srv/crm
+    file_server
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+        -Server
+        # Extra: no lo indexen los buscadores
+        X-Robots-Tag "noindex, nofollow"
+    }
+}
+
+# ---------- Strapi (CMS / API del CRM) ----------
+{$DOMAIN_CMS} {
+    reverse_proxy strapi:1337 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+
+    log {
+        output file /data/access-cms.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}
+
+# ---------- Automation worker (bot Telegram, OCR, syncs) ----------
+{$DOMAIN_AUTOMATION} {
+    reverse_proxy automation:4000 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+}
+
+# ---------- Chatwoot (chat multicanal) ----------
+{$DOMAIN_CHAT} {
+    reverse_proxy chatwoot-web:3000 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+
+    log {
+        output file /data/access-chat.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+}

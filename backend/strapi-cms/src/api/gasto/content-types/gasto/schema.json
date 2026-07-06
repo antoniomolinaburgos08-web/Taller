@@ -1,0 +1,81 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gastos",
+  "info": {
+    "singularName": "gasto",
+    "pluralName": "gastos",
+    "displayName": "Gasto",
+    "description": "Gastos e inversiones del taller (facturas de proveedores)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "fecha": {
+      "type": "date",
+      "required": true
+    },
+    "proveedor": {
+      "type": "string",
+      "required": true,
+      "maxLength": 150
+    },
+    "concepto": {
+      "type": "text",
+      "required": true
+    },
+    "importe": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "iva": {
+      "type": "decimal",
+      "default": 21,
+      "min": 0,
+      "max": 100
+    },
+    "categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Recambios",
+        "Herramientas",
+        "Consumibles",
+        "Alquiler / Suministros",
+        "Vehículo para taller",
+        "Formación",
+        "Marketing",
+        "Otros"
+      ],
+      "default": "Recambios"
+    },
+    "metodo_pago": {
+      "type": "enumeration",
+      "enum": [
+        "Efectivo",
+        "Transferencia",
+        "Tarjeta",
+        "Domiciliado",
+        "Otro"
+      ],
+      "default": "Transferencia"
+    },
+    "numero_factura": {
+      "type": "string"
+    },
+    "notas": {
+      "type": "text"
+    },
+    "factura_imagen": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images", "files"]
+    },
+    "extraido_por_ocr": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

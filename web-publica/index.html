@@ -81,9 +81,8 @@
     </script>
 
 
-    <!-- Analítica: los IDs anteriores eran de relleno (GTM-XXXXXXX / G-XXXXXXXXXX) y generaban
-         errores en consola. Cuando tengas los IDs reales de Google Analytics / Tag Manager,
-         añade aquí sus scripts oficiales. Este stub mantiene el modo de consentimiento. -->
+    <!-- Analítica: se carga dinámicamente desde site-setting de Strapi.
+         El taller configura los IDs desde el CRM (Ajustes → Analítica y píxeles). -->
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
@@ -94,6 +93,52 @@
             'ad_user_data': 'denied',
             'ad_personalization': 'denied'
         });
+
+        (async function cargarAnaliticaDesdeCMS() {
+            try {
+                for (const base of ['https://strapicms-production.up.railway.app',
+                                    'https://taller-migue-crm-production.up.railway.app']) {
+                    try {
+                        const r = await fetch(base + '/api/site-setting');
+                        if (!r.ok) continue;
+                        const j = await r.json();
+                        const s = j.data?.attributes || j.data || {};
+
+                        // Google Analytics 4
+                        if (s.gaTrackingId && /^G-[A-Z0-9]+$/i.test(s.gaTrackingId)) {
+                            const sc = document.createElement('script');
+                            sc.async = true;
+                            sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + s.gaTrackingId;
+                            document.head.appendChild(sc);
+                            gtag('config', s.gaTrackingId);
+                        }
+                        // Google Tag Manager
+                        if (s.gtmContainerId && /^GTM-/i.test(s.gtmContainerId)) {
+                            (function (w, d, s, l, i) {
+                                w[l] = w[l] || [];
+                                w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                                const f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+                                j.async = true;
+                                j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i;
+                                f.parentNode.insertBefore(j, f);
+                            })(window, document, 'script', 'dataLayer', s.gtmContainerId);
+                        }
+                        // Facebook Pixel
+                        if (s.fbPixelId && /^\d+$/.test(s.fbPixelId)) {
+                            !function (f, b, e, v, n, t, s2) {
+                                if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+                                if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+                                t = b.createElement(e); t.async = !0; t.src = v;
+                                s2 = b.getElementsByTagName(e)[0]; s2.parentNode.insertBefore(t, s2);
+                            }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+                            fbq('init', s.fbPixelId);
+                            fbq('track', 'PageView');
+                        }
+                        return;
+                    } catch (e) { /* siguiente URL */ }
+                }
+            } catch (err) { console.warn('Analítica: no se pudo cargar la configuración', err); }
+        })();
     </script>
 
 

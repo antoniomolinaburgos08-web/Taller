@@ -1,0 +1,197 @@
+## ============================================================
+## El Taller de Migue - Stack de PRODUCCIÓN para VPS
+## ============================================================
+## Sirve:
+##   - Web pública (web-publica/)              → ${DOMAIN_WEB}
+##   - CRM (crm/)                              → ${DOMAIN_CRM}
+##   - Strapi (base de datos del CRM)         → ${DOMAIN_CMS}
+##   - Chatwoot (chat omnicanal)              → ${DOMAIN_CHAT}
+##
+## Caddy gestiona HTTPS automático con Let's Encrypt.
+## Todos los secretos vienen de .env (usa .env.example como plantilla).
+## ============================================================
+
+name: taller
+
+services:
+
+  # ---------- Reverse proxy con HTTPS automático ----------
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN_WEB: ${DOMAIN_WEB}
+      DOMAIN_CRM: ${DOMAIN_CRM}
+      DOMAIN_CMS: ${DOMAIN_CMS}
+      DOMAIN_CHAT: ${DOMAIN_CHAT}
+      DOMAIN_AUTOMATION: ${DOMAIN_AUTOMATION}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../web-publica:/srv/web-publica:ro
+      - ../crm:/srv/crm:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - strapi
+      - chatwoot-web
+      - automation
+    networks:
+      - taller
+
+  # ---------- Strapi (CMS / API del CRM) ----------
+  strapi-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${STRAPI_DB_USER}
+      POSTGRES_PASSWORD: ${STRAPI_DB_PASSWORD}
+      POSTGRES_DB: ${STRAPI_DB_NAME}
+    volumes:
+      - strapi_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${STRAPI_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taller
+
+  strapi:
+    build: ../backend/strapi-cms
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      URL: https://${DOMAIN_CMS}
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: strapi-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${STRAPI_DB_NAME}
+      DATABASE_USERNAME: ${STRAPI_DB_USER}
+      DATABASE_PASSWORD: ${STRAPI_DB_PASSWORD}
+      DATABASE_SSL: "false"
+      APP_KEYS: ${STRAPI_APP_KEYS}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${STRAPI_TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${STRAPI_JWT_SECRET}
+      ENCRYPTION_KEY: ${STRAPI_ENCRYPTION_KEY}
+      FRONTEND_URL: https://${DOMAIN_WEB}
+    volumes:
+      - strapi_uploads:/app/public/uploads
+    depends_on:
+      strapi-db:
+        condition: service_healthy
+    networks:
+      - taller
+
+  # ---------- Chatwoot (bandeja unificada WhatsApp / web / redes) ----------
+  chatwoot-db:
+    image: pgvector/pgvector:pg15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${CHATWOOT_DB_USER}
+      POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD}
+      POSTGRES_DB: ${CHATWOOT_DB_NAME}
+    volumes:
+      - chatwoot_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CHATWOOT_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taller
+
+  chatwoot-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${CHATWOOT_REDIS_PASSWORD}"]
+    volumes:
+      - chatwoot_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$CHATWOOT_REDIS_PASSWORD ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taller
+
+  chatwoot-web:
+    image: chatwoot/chatwoot:latest
+    restart: unless-stopped
+    env_file: [chatwoot.env]
+    environment:
+      FRONTEND_URL: https://${DOMAIN_CHAT}
+      SECRET_KEY_BASE: ${CHATWOOT_SECRET_KEY_BASE}
+      POSTGRES_HOST: chatwoot-db
+      POSTGRES_USERNAME: ${CHATWOOT_DB_USER}
+      POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD}
+      POSTGRES_DATABASE: ${CHATWOOT_DB_NAME}
+      REDIS_URL: redis://:${CHATWOOT_REDIS_PASSWORD}@chatwoot-redis:6379
+      REDIS_PASSWORD: ${CHATWOOT_REDIS_PASSWORD}
+    command: ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+    volumes:
+      - chatwoot_storage:/app/storage
+    depends_on:
+      chatwoot-db:
+        condition: service_healthy
+      chatwoot-redis:
+        condition: service_healthy
+    networks:
+      - taller
+
+  chatwoot-worker:
+    image: chatwoot/chatwoot:latest
+    restart: unless-stopped
+    env_file: [chatwoot.env]
+    environment:
+      FRONTEND_URL: https://${DOMAIN_CHAT}
+      SECRET_KEY_BASE: ${CHATWOOT_SECRET_KEY_BASE}
+      POSTGRES_HOST: chatwoot-db
+      POSTGRES_USERNAME: ${CHATWOOT_DB_USER}
+      POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD}
+      POSTGRES_DATABASE: ${CHATWOOT_DB_NAME}
+      REDIS_URL: redis://:${CHATWOOT_REDIS_PASSWORD}@chatwoot-redis:6379
+      REDIS_PASSWORD: ${CHATWOOT_REDIS_PASSWORD}
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    volumes:
+      - chatwoot_storage:/app/storage
+    depends_on:
+      chatwoot-web:
+        condition: service_started
+    networks:
+      - taller
+
+  # ---------- Servicio de automatización (bot Telegram, OCR, syncs) ----------
+  automation:
+    build: ../backend/automation-worker
+    restart: unless-stopped
+    env_file: [automation.env]
+    environment:
+      PORT: 4000
+      STRAPI_URL: http://strapi:1337
+      ALLOWED_ORIGINS: "https://${DOMAIN_WEB},https://www.${DOMAIN_WEB}"
+    depends_on:
+      - strapi
+    networks:
+      - taller
+
+volumes:
+  strapi_db:
+  strapi_uploads:
+  chatwoot_db:
+  chatwoot_redis:
+  chatwoot_storage:
+  caddy_data:
+  caddy_config:
+
+networks:
+  taller:
+    driver: bridge
