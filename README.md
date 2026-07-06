@@ -15,9 +15,15 @@ Ecosistema digital completo de **El Taller de Migue** (Beniflà, Valencia): pág
 ├── backend/
 │   ├── strapi-cms/         # Strapi v5 (base de datos central, desplegado en Railway)
 │   └── chatwoot/           # Chat omnicanal (WhatsApp, web, redes)
-├── docs/                   # Manuales, análisis y guía de despliegue
+├── docs/                   # Manuales, análisis y guías de despliegue
 ├── scripts/seed-stock.js   # Utilidad para cargar vehículos de ejemplo en Strapi
-└── docker-compose.yml      # Entorno local completo (web + Strapi + Chatwoot)
+├── docker-compose.yml      # Entorno local completo (web + Strapi + Chatwoot)
+└── deploy/                 # Stack de PRODUCCIÓN para VPS (Google Cloud, Hetzner…)
+    ├── docker-compose.yml  # Stack con HTTPS automático (Caddy + Let's Encrypt)
+    ├── Caddyfile           # Reverse proxy: web + CMS + chat en 3 subdominios
+    ├── .env.example        # Plantilla con TODAS las variables necesarias
+    ├── chatwoot.env.example# Plantilla para SMTP y opciones de Chatwoot
+    └── scripts/            # setup-vps.sh · backup.sh · restore.sh
 ```
 
 ## Arquitectura
@@ -47,6 +53,23 @@ npm run develop
 ```
 
 ## Despliegue
+
+### Opción A · VPS propio (Google Cloud, Hetzner, DigitalOcean…) — recomendado
+
+Un solo servidor con Docker sirve toda la web, el CRM, Strapi y Chatwoot con HTTPS automático (Let's Encrypt vía Caddy). Guía completa paso a paso:
+
+📘 [`docs/DESPLIEGUE_VPS.md`](docs/DESPLIEGUE_VPS.md)
+
+Resumen en 3 comandos, sobre un Ubuntu recién instalado:
+
+```bash
+git clone <este-repo> ~/taller && cd ~/taller
+bash deploy/scripts/setup-vps.sh          # Docker + firewall + fail2ban + swap
+cd deploy && cp .env.example .env         # rellenar secretos y dominios
+docker compose up -d                      # arranca todo
+```
+
+### Opción B · Servicios gestionados (Vercel + Railway)
 
 - **Frontend → Vercel**: proyecto estático con *Root Directory* = `frontend`.
 - **Backend → Railway**: servicio con *Root Directory* = `backend/strapi-cms` + PostgreSQL. Configura las variables de `.env.example` y `FRONTEND_URL` con el dominio de Vercel (CORS).
