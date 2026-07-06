@@ -15,12 +15,19 @@ name: taller-dev
 
 services:
 
-  frontend:
+  web-publica:
     image: nginx:alpine
     restart: unless-stopped
     ports: ["8085:80"]
     volumes:
-      - ./frontend:/usr/share/nginx/html:ro
+      - ./web-publica:/usr/share/nginx/html:ro
+
+  crm:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports: ["8086:80"]
+    volumes:
+      - ./crm:/usr/share/nginx/html:ro
 
   strapi-db:
     image: postgres:15-alpine

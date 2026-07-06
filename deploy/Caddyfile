@@ -13,9 +13,9 @@
     }
 }
 
-# ---------- Web pública + CRM (frontend estático) ----------
+# ---------- Web pública (solo landing, sin admin) ----------
 {$DOMAIN_WEB} {
-    root * /srv/frontend
+    root * /srv/web-publica
     file_server
     encode gzip zstd
 
@@ -48,6 +48,22 @@
             roll_size 10mb
             roll_keep 5
         }
+    }
+}
+
+# ---------- CRM (panel interno del taller) ----------
+{$DOMAIN_CRM} {
+    root * /srv/crm
+    file_server
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+        -Server
+        # Extra: no lo indexen los buscadores
+        X-Robots-Tag "noindex, nofollow"
     }
 }
 

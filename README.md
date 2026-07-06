@@ -5,13 +5,18 @@ Ecosistema digital completo de **El Taller de Migue** (Beniflà, Valencia): pág
 ## Estructura del proyecto
 
 ```
-├── frontend/               # Web estática (Vercel)
-│   ├── index.html          # Web pública (servicios, stock, contacto)
-│   ├── admin.html          # CRM / Dashboard interno (facturas, órdenes, citas, clientes)
-│   ├── sw.js               # Service Worker (PWA)
-│   ├── manifest.json       # Manifest PWA de la web pública
-│   ├── manifest-admin.json # Manifest PWA del CRM
+├── web-publica/            # Web pública (GitHub Pages · Cloudflare Pages · o VPS)
+│   ├── index.html          # Landing (servicios, stock, contacto)
+│   ├── manifest.json       # Manifest PWA
+│   ├── sw.js               # Service Worker
+│   ├── sitemap.xml         # Mapa del sitio para Google
+│   ├── robots.txt          # Reglas de indexación
+│   ├── CNAME               # Dominio personalizado para GitHub Pages
 │   └── assets/cars/        # Fotos de vehículos en stock
+├── crm/                    # Panel interno (privado, NUNCA en GitHub Pages)
+│   ├── admin.html          # CRM completo
+│   ├── manifest-admin.json # Manifest PWA del CRM
+│   └── sw.js               # Service Worker
 ├── backend/
 │   ├── strapi-cms/         # Strapi v5 (base de datos central)
 │   ├── automation-worker/  # Node.js: bot Telegram + OCR facturas + sync WhatsApp Catalog
@@ -87,9 +92,16 @@ cd deploy && cp .env.example .env         # rellenar secretos y dominios
 docker compose up -d                      # arranca todo
 ```
 
-### Opción B · Servicios gestionados (Vercel + Railway)
+### Opción B · Web pública gratis en GitHub Pages + CRM en VPS
 
-- **Frontend → Vercel**: proyecto estático con *Root Directory* = `frontend`.
+- La carpeta `web-publica/` se publica automáticamente en **GitHub Pages** en cada push a `main` (workflow ya configurado en `.github/workflows/deploy-pages.yml`).
+- El **CRM** (carpeta `crm/`) queda solo en el VPS bajo `crm.tudominio.es` — nunca es accesible desde una URL pública.
+
+Configuración (una vez): GitHub → repo → Settings → Pages → Source **GitHub Actions** → Custom domain `eltallerdemigue.es`.
+
+### Opción C · Servicios gestionados (Vercel + Railway)
+
+- **Frontend → Vercel**: proyecto estático con *Root Directory* = `web-publica`.
 - **Backend → Railway**: servicio con *Root Directory* = `backend/strapi-cms` + PostgreSQL. Configura las variables de `.env.example` y `FRONTEND_URL` con el dominio de Vercel (CORS).
 
 Guía paso a paso en [`docs/INSTRUCCIONES_DESPLIEGUE.md`](docs/INSTRUCCIONES_DESPLIEGUE.md).

@@ -2,7 +2,8 @@
 ## El Taller de Migue - Stack de PRODUCCIÓN para VPS
 ## ============================================================
 ## Sirve:
-##   - Web pública y CRM (frontend estático)  → ${DOMAIN_WEB}
+##   - Web pública (web-publica/)              → ${DOMAIN_WEB}
+##   - CRM (crm/)                              → ${DOMAIN_CRM}
 ##   - Strapi (base de datos del CRM)         → ${DOMAIN_CMS}
 ##   - Chatwoot (chat omnicanal)              → ${DOMAIN_CHAT}
 ##
@@ -24,13 +25,15 @@ services:
       - "443:443/udp"
     environment:
       DOMAIN_WEB: ${DOMAIN_WEB}
+      DOMAIN_CRM: ${DOMAIN_CRM}
       DOMAIN_CMS: ${DOMAIN_CMS}
       DOMAIN_CHAT: ${DOMAIN_CHAT}
       DOMAIN_AUTOMATION: ${DOMAIN_AUTOMATION}
       ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ../frontend:/srv/frontend:ro
+      - ../web-publica:/srv/web-publica:ro
+      - ../crm:/srv/crm:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:

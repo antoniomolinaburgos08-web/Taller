@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Impide indexar recursos técnicos
+Disallow: /assets/cars/
+Disallow: /sw.js
+Disallow: /manifest.json
+
+Sitemap: https://eltallerdemigue.es/sitemap.xml
