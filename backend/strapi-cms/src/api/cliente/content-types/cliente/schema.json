@@ -1,0 +1,47 @@
+{
+    "kind": "collectionType",
+    "collectionName": "clientes",
+    "info": {
+        "singularName": "cliente",
+        "pluralName": "clientes",
+        "displayName": "Cliente (CRM)",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "nombre": {
+            "type": "string",
+            "required": true
+        },
+        "apellidos": {
+            "type": "string"
+        },
+        "telefono": {
+            "type": "string",
+            "required": true
+        },
+        "email": {
+            "type": "email"
+        },
+        "dni": {
+            "type": "string"
+        },
+        "direccion": {
+            "type": "string"
+        },
+        "consentimiento_gdpr": {
+            "type": "boolean",
+            "default": true
+        },
+        "vehiculos_propiedad": {
+            "type": "json",
+            "description": "Lista de matr\u00edculas y modelos del cliente"
+        },
+        "notas": {
+            "type": "text"
+        }
+    }
+}

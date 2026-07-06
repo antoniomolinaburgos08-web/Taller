@@ -1,0 +1,17 @@
+{
+  "name": "CRM Taller de Migue",
+  "short_name": "CRM Migue",
+  "description": "Panel de Administración y CRM del Taller de Migue",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#0B1226",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/logo_nuevo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

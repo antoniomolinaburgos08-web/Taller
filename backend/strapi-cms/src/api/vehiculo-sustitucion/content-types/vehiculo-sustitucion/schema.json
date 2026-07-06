@@ -1,0 +1,48 @@
+{
+    "kind": "collectionType",
+    "collectionName": "vehiculo_sustitucions",
+    "info": {
+        "singularName": "vehiculo-sustitucion",
+        "pluralName": "vehiculo-sustitucions",
+        "displayName": "Flota de Sustituci\u00f3n",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "matricula": {
+            "type": "string",
+            "required": true,
+            "unique": true
+        },
+        "marca_modelo": {
+            "type": "string",
+            "required": true
+        },
+        "estado": {
+            "type": "enumeration",
+            "enum": [
+                "Disponible",
+                "Prestado",
+                "En Mantenimiento"
+            ],
+            "default": "Disponible"
+        },
+        "cliente_actual": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::cliente.cliente"
+        },
+        "fecha_prestamo": {
+            "type": "datetime"
+        },
+        "fecha_devolucion_esperada": {
+            "type": "datetime"
+        },
+        "notas_danos": {
+            "type": "text"
+        }
+    }
+}

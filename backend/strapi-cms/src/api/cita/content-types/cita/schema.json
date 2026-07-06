@@ -1,0 +1,52 @@
+{
+    "kind": "collectionType",
+    "collectionName": "citas",
+    "info": {
+        "singularName": "cita",
+        "pluralName": "citas",
+        "displayName": "Citas y Calendario",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "titulo": {
+            "type": "string",
+            "required": true
+        },
+        "fecha_hora": {
+            "type": "datetime",
+            "required": true
+        },
+        "tipo": {
+            "type": "enumeration",
+            "enum": [
+                "Taller - Reparaci\u00f3n",
+                "Taller - Revisi\u00f3n",
+                "Ventas - Ver Veh\u00edculo",
+                "Ventas - Entregar Veh\u00edculo"
+            ],
+            "required": true
+        },
+        "estado": {
+            "type": "enumeration",
+            "enum": [
+                "Programada",
+                "Confirmada",
+                "Completada",
+                "Cancelada"
+            ],
+            "default": "Programada"
+        },
+        "cliente": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::cliente.cliente"
+        },
+        "notas": {
+            "type": "text"
+        }
+    }
+}

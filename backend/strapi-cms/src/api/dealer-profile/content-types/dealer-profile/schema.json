@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "dealer_profiles",
+  "info": {
+    "singularName": "dealer-profile",
+    "pluralName": "dealer-profiles",
+    "displayName": "Dealer Profile",
+    "description": "Information about a vehicle dealer"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "location": {
+      "type": "string"
+    },
+    "contactEmail": {
+      "type": "email"
+    },
+    "contactPhone": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "decimal",
+      "min": 0,
+      "max": 5
+    },
+    "aboutUs": {
+      "type": "richtext"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "medusa_seller_id": {
+      "type": "string",
+      "description": "The ID of the vendor/seller in MedusaJS"
+    }
+  }
+}

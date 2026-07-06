@@ -1,0 +1,53 @@
+version: '3.3'
+
+services:
+  chatwoot:
+    image: chatwoot/chatwoot:latest
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - chatwoot_data:/app/storage
+    depends_on:
+      - postgres
+      - redis
+    command: ['bundle', 'exec', 'rails', 'server', '-b', '0.0.0.0', '-p', '3000']
+    restart: always
+
+  sidekiq:
+    image: chatwoot/chatwoot:latest
+    env_file: .env
+    volumes:
+      - chatwoot_data:/app/storage
+    depends_on:
+      - postgres
+      - redis
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    restart: always
+
+  postgres:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chatwoot
+      - POSTGRES_USER=chatwoot
+      - POSTGRES_PASSWORD=chatwoot_db_password
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\""]
+    env_file: .env
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  chatwoot_data:
+  postgres_data:
+  redis_data:

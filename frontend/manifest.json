@@ -1,0 +1,17 @@
+{
+  "name": "El Taller de Migue",
+  "short_name": "Taller Migue",
+  "description": "Automoción Premium y Autocaravanas",
+  "start_url": "/Index.html",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#EAB308",
+  "icons": [
+    {
+      "src": "/logo_nuevo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

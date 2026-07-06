@@ -1,0 +1,2 @@
+CREATE DATABASE medusa;
+CREATE DATABASE strapi;

@@ -1,0 +1,59 @@
+{
+    "kind": "collectionType",
+    "collectionName": "orden_reparacions",
+    "info": {
+        "singularName": "orden-reparacion",
+        "pluralName": "orden-reparacions",
+        "displayName": "Orden de Reparaci\u00f3n",
+        "description": ""
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "numero_orden": {
+            "type": "uid",
+            "targetField": "matricula"
+        },
+        "matricula": {
+            "type": "string",
+            "required": true
+        },
+        "cliente": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::cliente.cliente"
+        },
+        "estado": {
+            "type": "enumeration",
+            "enum": [
+                "Pendiente",
+                "En Taller",
+                "Esperando Piezas",
+                "Terminado",
+                "Facturado"
+            ],
+            "default": "Pendiente"
+        },
+        "sintomas": {
+            "type": "text",
+            "required": true
+        },
+        "trabajos_realizados": {
+            "type": "richtext"
+        },
+        "kilometros_entrada": {
+            "type": "integer"
+        },
+        "fecha_entrada": {
+            "type": "datetime"
+        },
+        "fecha_salida": {
+            "type": "datetime"
+        },
+        "presupuesto_estimado": {
+            "type": "decimal"
+        }
+    }
+}
