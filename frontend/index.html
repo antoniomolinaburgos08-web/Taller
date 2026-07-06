@@ -8,45 +8,7 @@
     <meta name="color-scheme" content="dark">
 
         <title>El Taller de Migue | Taller Mecánico Benifla, Valencia | 625 78 64 38</title>
-    <!-- SEO ESTRUCTURAL -->
-    <meta name="description" content="El Taller de Migue. Taller mecánico de confianza en Beniflà, Valencia. Reparación de coches, furgonetas y autocaravanas. Venta de vehículos de ocasión revisados.">
-    <meta name="keywords" content="taller mecánico, beniflà, valencia, coches de ocasión, autocaravanas, mecánica general, diagnóstico, reparación">
-    <meta property="og:title" content="El Taller de Migue - Tu taller mecánico en Beniflà">
-    <meta property="og:description" content="Especialistas en mecánica multimarca, vehículos industriales y autocaravanas en Beniflà.">
-    <meta property="og:image" content="https://eltallerdemigue.es/taller_migue_logo.jpeg">
-    <meta property="og:url" content="https://eltallerdemigue.es">
-    <meta property="og:type" content="website">
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "AutoRepair",
-      "name": "El Taller de Migue",
-      "image": "https://eltallerdemigue.es/taller_migue_logo.jpeg",
-      "@id": "",
-      "url": "https://eltallerdemigue.es",
-      "telephone": "+34625786438",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Carrer Molí Nou, 8",
-        "addressLocality": "Beniflà",
-        "postalCode": "46722",
-        "addressRegion": "Valencia",
-        "addressCountry": "ES"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 38.932464,
-        "longitude": -0.190629
-      },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-        "opens": "08:00",
-        "closes": "19:00"
-      }
-    }
-    </script>
+
 
     <meta name="description"
         content="Taller mecánico en Benifla (Valencia). Reparación de coches y autocaravanas. Venta de vehículos de segunda mano revisados. +15 años de experiencia. Pide cita: 625 78 64 38.">
@@ -67,7 +29,7 @@
     <meta property="og:title" content="El Taller de Migue | Mecánica de confianza en Benifla">
     <meta property="og:description"
         content="Taller mecánico en Benifla (Valencia). Reparación de coches y autocaravanas. Venta de vehículos de segunda mano revisados. +15 años de experiencia.">
-    <meta property="og:image" content="https://eltallerdemigue.es/og-image.jpg">
+    <meta property="og:image" content="https://eltallerdemigue.es/taller_migue_logo.jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="es_ES">
@@ -77,7 +39,7 @@
     <meta name="twitter:url" content="https://eltallerdemigue.es/">
     <meta name="twitter:title" content="El Taller de Migue | Taller Mecánico Benifla">
     <meta name="twitter:description" content="Mecánica de confianza en Benifla, Valencia. Coches y autocaravanas.">
-    <meta name="twitter:image" content="https://eltallerdemigue.es/og-image.jpg">
+    <meta name="twitter:image" content="https://eltallerdemigue.es/taller_migue_logo.jpeg">
 
     <!-- FAVICON ACTUALIZADO CON EL LOGO NUEVO -->
     <link rel="icon" type="image/png" href="logo_transparente.png">
@@ -96,7 +58,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+        if (window.tailwind) tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
@@ -118,27 +80,14 @@
         }
     </script>
 
-    <script>
-            (function (w, d, s, l, i) {
-                w[l] = w[l] || []; w[l].push({
-                    'gtm.start':
-                        new Date().getTime(), event: 'gtm.js'
-                }); var f = d.getElementsByTagName(s)[0],
-                    j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-            })(window, document, 'script', 'dataLayer', 'GTM-XXXXXXX');
-    </script>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <!-- Analítica: los IDs anteriores eran de relleno (GTM-XXXXXXX / G-XXXXXXXXXX) y generaban
+         errores en consola. Cuando tengas los IDs reales de Google Analytics / Tag Manager,
+         añade aquí sus scripts oficiales. Este stub mantiene el modo de consentimiento. -->
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX', {
-            'page_title': 'El Taller de Migue - Taller Mecánico Benifla',
-            'page_path': '/',
-            'send_page_view': true
-        });
         gtag('consent', 'default', {
             'ad_storage': 'denied',
             'analytics_storage': 'denied',
@@ -147,23 +96,6 @@
         });
     </script>
 
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return; n = f.fbq = function () {
-                n.callMethod ?
-                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', 'XXXXXXXXXXXXXXX');
-        fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?ev=PageView&noscript=1" /></noscript>
 
     <script type="application/ld+json">
     {
@@ -176,7 +108,7 @@
         "telephone": "+34625786438",
         "email": "info@eltallerdemigue.es",
         "priceRange": "€€",
-        "image": "https://eltallerdemigue.es/og-image.jpg",
+        "image": "https://eltallerdemigue.es/taller_migue_logo.jpeg",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "Moli Nou 8",
@@ -450,11 +382,10 @@
 
         .brands-track {
             display: flex;
-            animation: scrollBrands 45s linear infinite;
             width: max-content;
         }
 
-        .brands-track:hover {
+        .brands-track:hover > div {
             animation-play-state: paused;
         }
 
@@ -777,7 +708,7 @@
             max-height: 32px;
             object-fit: contain;
         }
-    
+
         /* Extra Effects */
         .glow-effect:hover {
             box-shadow: 0 0 15px rgba(216, 48, 42, 0.4);
@@ -813,40 +744,7 @@
         .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(29, 45, 94, 0.4); }
         .parallax { background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; }
-        
-        /* GDPR Banner Styles */
-        #gdpr-banner {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-            transform: translateY(100%); transition: transform 0.5s ease-in-out;
-        }
-        #gdpr-banner.show { transform: translateY(0); }
-        .modal-overlay { background: rgba(11, 18, 38, 0.8); backdrop-filter: blur(5px); }
-    
-        /* Extra Effects */
-        .glow-effect:hover {
-            box-shadow: 0 0 15px rgba(216, 48, 42, 0.4);
-            border-color: rgba(216, 48, 42, 0.6);
-        }
-        .text-gradient {
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(90deg, #ffffff, #a0aec0);
-        }
-        .hover-scale-img img {
-            transition: transform 0.5s ease;
-        }
-        .hover-scale-img:hover img {
-            transform: scale(1.05);
-        }
-        .reveal-text {
-            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        @keyframes textReveal {
-            to { transform: translateY(0); opacity: 1; }
-        }
+
 
     </style>
     <!-- PWA -->
@@ -860,8 +758,6 @@
 
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0"
-            style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="toast" class="toast" role="alert" aria-live="polite">
         <div class="flex items-center gap-3">
@@ -1507,12 +1403,12 @@
                             <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-blue-400 uppercase tracking-wider transition-all duration-300">MICHELIN</span>
                         </a>
                         <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">IRELLI</span>
+                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">PIRELLI</span>
                         </a>
                         <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group">
                             <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-green-400 uppercase tracking-widest transition-all duration-300">Valeo</span>
                         </a>
-                        
+
                         <!-- Block 2 (Duplicate for smooth scroll) -->
                         <a href="https://www.bosch.es" target="_blank" class="flex-shrink-0 group">
                             <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-white uppercase tracking-[0.15em] transition-all duration-300">BOSCH</span>
@@ -1533,7 +1429,7 @@
                             <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-blue-400 uppercase tracking-wider transition-all duration-300">MICHELIN</span>
                         </a>
                         <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">IRELLI</span>
+                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">PIRELLI</span>
                         </a>
                         <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group">
                             <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-green-400 uppercase tracking-widest transition-all duration-300">Valeo</span>
@@ -1542,7 +1438,7 @@
                 </div>
             </div>
             </div>
-            
+
             <style>
                 @keyframes scrollBrands {
                     0% { transform: translateX(0); }
@@ -1727,7 +1623,7 @@
                 </div>
 
                 <div class="text-center mt-8 md:mt-12 fade-up">
-                    <a href="https://g.page/r/your-google-review-link" target="_blank" rel="noopener noreferrer"
+                    <a href="https://www.google.com/maps/search/?api=1&query=El+Taller+de+Migue+Benifla" target="_blank" rel="noopener noreferrer"
                         class="inline-flex items-center gap-2 md:gap-3 bg-dark-800 hover:bg-dark-700 border border-gray-800 hover:border-accent/50 px-5 md:px-8 py-3 md:py-4 rounded-lg transition-all group text-sm md:text-base">
                         <i class="fab fa-google text-lg md:text-xl group-hover:text-accent"></i>
                         <span class="font-semibold">Dejar opinión en Google</span>
@@ -1982,7 +1878,7 @@
     </main>
 
     <!-- Footer -->
-    
+
         <!-- FOOTER MEJORADO Y GDPR -->
         <footer class="bg-dark-900 border-t border-gray-800 pt-16 pb-8">
             <div class="max-w-7xl mx-auto px-4 md:px-8">
@@ -1999,7 +1895,7 @@
                             <a href="https://wa.me/34625786438" target="_blank" class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-gray-400 hover:bg-accent hover:text-white transition-all hover:-translate-y-1"><i class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
-                    
+
                     <!-- Links Rápidos -->
                     <div data-aos="fade-up" data-aos-delay="100">
                         <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase">Servicios</h4>
@@ -2011,7 +1907,7 @@
                             <li><a href="#inicio" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2 text-gray-600"></i> Autocaravanas</a></li>
                         </ul>
                     </div>
-                    
+
                     <!-- Contacto -->
                     <div data-aos="fade-up" data-aos-delay="200">
                         <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase">Contacto</h4>
@@ -2035,13 +1931,13 @@
                     <div data-aos="fade-up" data-aos-delay="300">
                         <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase">Legal</h4>
                         <ul class="space-y-3">
-                            <li><a href="javascript:void(0)" onclick="openGdprModal('legal')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-shield-alt text-xs mr-2 text-gray-600"></i> Aviso Legal</a></li>
-                            <li><a href="javascript:void(0)" onclick="openGdprModal('privacy')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-user-shield text-xs mr-2 text-gray-600"></i> Política de Privacidad</a></li>
-                            <li><a href="javascript:void(0)" onclick="openGdprModal('cookies')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-cookie text-xs mr-2 text-gray-600"></i> Política de Cookies</a></li>
+                            <li><a href="javascript:void(0)" onclick="openModal('modal-aviso-legal')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-shield-alt text-xs mr-2 text-gray-600"></i> Aviso Legal</a></li>
+                            <li><a href="javascript:void(0)" onclick="openModal('modal-privacidad')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-user-shield text-xs mr-2 text-gray-600"></i> Política de Privacidad</a></li>
+                            <li><a href="javascript:void(0)" onclick="openModal('modal-cookies')" class="text-gray-400 hover:text-accent transition-colors flex items-center"><i class="fas fa-cookie text-xs mr-2 text-gray-600"></i> Política de Cookies</a></li>
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                     <p>&copy; 2026 El Taller de Migue. Todos los derechos reservados.</p>
                     <p class="mt-2 md:mt-0">Diseñado y desarrollado por <a href="https://wa.me/34641329881" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline font-bold">Legends</a></p>
@@ -2067,59 +1963,8 @@
             { id: 6, name: 'Volkswagen Golf TSI', specs: 'TSI Gasolina · A estrenar', price: 'Consultar', km: '0 km', year: '2025', fuel: 'Gasolina', trans: 'Manual', power: 'TSI', color: 'Plata Metálico', doors: '5 puertas', category: 'coche', badge: 'A ESTRENAR', badgeColor: 'bg-accent', desc: 'Volkswagen Golf TSI prácticamente a estrenar (menos de un año). Color gris plata metálico. Vehículo totalmente garantizado y revisado en nuestras instalaciones.', features: ['Prácticamente nuevo', 'Garantía oficial', 'Revisado'], images: ['assets/cars/real_1.png'], video: null },
             { id: 7, name: 'Mini Cooper R50', specs: '1.6 Gasolina · Bajo consumo', price: 'Consultar', km: 'Revisado', year: 'Consultar', fuel: 'Gasolina', trans: 'Manual', power: '1.6', color: 'Consultar', doors: '3 puertas', category: 'coche', badge: 'OCASIÓN', badgeColor: 'bg-orange-500', desc: 'Mini Cooper R50 con motor 1.6 gasolina. Bajo consumo, ideal para la ciudad. Totalmente revisado y con garantía directa desde nuestro taller.', features: ['Bajo consumo', 'Ideal ciudad', 'Garantía del taller'], images: ['assets/cars/real_2.png'], video: null }
         ];
-        
+
         let vehiclesData = [];
-        
-        async function fetchVehiclesFromCRM() {
-            try {
-                // Conectando al CRM de Migue en Producción (Railway)
-                const API_BASE_URL = 'https://strapicms-production.up.railway.app';
-                const response = await fetch(`${API_BASE_URL}/api/stock-vehicles?populate=*`);
-                if (!response.ok) throw new Error('Error de red CRM');
-                
-                const json = await response.json();
-                if (json.data && json.data.length > 0) {
-                    // Mapear los datos de Strapi al formato que usa la web
-                    vehiclesData = json.data.map(item => {
-                        const attrs = item.attributes || item;
-                        return {
-                            id: item.id,
-                            name: attrs.title || attrs.titulo || 'Coche sin título',
-                            specs: attrs.specs || attrs.subtitulo || `${attrs.year || ''} · ${attrs.fuel_type || ''}`,
-                            price: attrs.price ? attrs.price + ' €' : 'Consultar',
-                            km: attrs.kilometers ? attrs.kilometers + ' km' : 'Consultar',
-                            year: attrs.year || attrs.ano || '-',
-                            fuel: attrs.fuel_type || attrs.combustible || '-',
-                            trans: attrs.transmission || attrs.transmision || '-',
-                            power: attrs.power || attrs.motor || '-',
-                            color: attrs.exterior_color || attrs.color || '-',
-                            doors: attrs.doors || '-',
-                            category: attrs.body_type || attrs.categoria || 'coche',
-                            badge: attrs.condition === 'Vendido' ? 'VENDIDO' : (attrs.badge || attrs.etiqueta_destacada || ''),
-                            badgeColor: attrs.condition === 'Vendido' ? 'bg-orange-600' : (attrs.badgeColor || attrs.color_etiqueta || 'bg-accent'),
-                            desc: attrs.description || attrs.descripcion || '',
-                            features: attrs.features || attrs.caracteristicas ? (attrs.features || attrs.caracteristicas).split(',') : [],
-                            images: attrs.image_url ? [attrs.image_url] : (attrs.imagen_principal && attrs.imagen_principal.data ? 
-                                    [attrs.imagen_principal.data.attributes.url] : 
-                                    ['assets/cars/real_1.png']),
-                            video: null
-                        };
-                    });
-                } else {
-                    // Si el CRM está vacío, carga el inventario de Google My Business
-                    vehiclesData = fallbackVehiclesData;
-                }
-            } catch (error) {
-                console.error("No se pudo conectar al CRM Strapi. Cargando inventario de respaldo local.", error);
-                vehiclesData = fallbackVehiclesData;
-            }
-            
-            // Renderizamos los coches (sean del CRM o los locales si ha fallado)
-            renderVehiclesGrid(vehiclesData);
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if(btn.dataset.filter === 'all') btn.click();
-            });
-        }
 
         // Función para renderizar el grid
         function renderVehiclesGrid(data) {
@@ -2128,14 +1973,14 @@
                 grid.innerHTML = '<p class="text-gray-400 col-span-full text-center py-10">No hay vehículos disponibles en este momento.</p>';
                 return;
             }
-            
+
             grid.innerHTML = data.map((v, i) => {
                 const delay = (i % 3) * 0.1;
                 let badgeHtml = '';
                 if (v.badge) {
                     badgeHtml = `<div class="absolute top-3 left-3 ${v.badgeColor} text-white text-xs font-bold px-3 py-1 rounded-sm">${v.badge}</div>`;
                 }
-                
+
                 let iconHtml = '<i class="fas fa-car text-white/20 text-6xl md:text-7xl"></i>';
                 let bgGradient = 'from-gray-700 to-gray-900';
                 if (v.category === 'suv') {
@@ -2152,7 +1997,7 @@
                 }
 
                 return `
-                    <article class="vehicle-card bg-dark-800 rounded-lg overflow-hidden border border-gray-800 fade-up visible group" 
+                    <article class="vehicle-card bg-dark-800 rounded-lg overflow-hidden border border-gray-800 fade-up visible group"
                         data-category="${v.category}" style="transition-delay: ${delay}s;" onclick="openVehicleModal(${v.id})">
                         <div class="relative h-48 bg-gradient-to-br ${bgGradient} flex items-center justify-center overflow-hidden">
                             ${imgHtml}
@@ -2180,103 +2025,84 @@
             }).join('');
         }
 
-        // Fetch desde Strapi
+        // Conexión al CRM (Strapi): un único punto de entrada con URLs de respaldo
+        const IS_LOCAL_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const CRM_BASES = [
+            ...(IS_LOCAL_HOST ? ['http://localhost:1337'] : []),
+            'https://strapicms-production.up.railway.app',
+            'https://taller-migue-crm-production.up.railway.app'
+        ];
+
+        async function fetchFromCRM(path) {
+            for (const base of CRM_BASES) {
+                try {
+                    const r = await fetch(base + path);
+                    if (r.ok) return { response: r, base };
+                } catch (e) { }
+            }
+            return null;
+        }
+
         async function fetchVehicles() {
             try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const API_BASE_URL = isLocal ? 'http://localhost:1337' : 'https://strapicms-production.up.railway.app';
-                // Endpoints para la API de Strapi
-                const API_ENDPOINTS = [
-                    `${API_BASE_URL}/api/stock-vehicles?populate=*`,
-                    '/api/stock-vehicles?populate=*',
-                    'http://localhost:1337/api/stock-vehicles?populate=*',
-                    'https://strapicms-production.up.railway.app/api/stock-vehicles?populate=*'
-                ];
-                let response = null;
-                for (const url of API_ENDPOINTS) {
-                    try {
-                        const r = await fetch(url);
-                        if (r.ok) {
-                            response = r;
-                            break;
-                        }
-                    } catch (e) {}
-                }
-
-                if (response && response.ok) {
-                    const json = await response.json();
+                const result = await fetchFromCRM('/api/stock-vehicles?populate=*');
+                if (result) {
+                    const json = await result.response.json();
                     if (json.data && json.data.length > 0) {
-                        // Mapear los datos de Strapi al formato del frontend
                         vehiclesData = json.data.map(item => {
                             const attrs = item.attributes || item;
-                            
-                            // Parsear imágenes si vienen de Strapi
+
                             let images = [];
-                            if (attrs.gallery && attrs.gallery.data) {
-                                const baseUrl = response.url.startsWith('http') ? new URL(response.url).origin : '';
-                                images = attrs.gallery.data.map(img => {
-                                    const u = img.attributes ? img.attributes.url : img.url;
-                                    return u.startsWith('http') ? u : baseUrl + u;
-                                });
+                            const galleryItems = attrs.gallery && (attrs.gallery.data || attrs.gallery);
+                            if (Array.isArray(galleryItems) && galleryItems.length > 0) {
+                                images = galleryItems.map(img => {
+                                    const u = (img.attributes ? img.attributes.url : img.url) || '';
+                                    return u.startsWith('http') ? u : result.base + u;
+                                }).filter(Boolean);
                             } else if (attrs.image_url) {
                                 images = [attrs.image_url];
-                            } else if (attrs.image_urls) {
-                                images = attrs.image_urls;
                             }
+
+                            const rawFeatures = attrs.features || '';
+                            const vendido = (attrs.condition || '').toLowerCase() === 'vendido';
 
                             return {
                                 id: item.id,
                                 name: attrs.title || attrs.name || 'Sin título',
-                                specs: `${attrs.engine_size || attrs.motor || 'Motor'} · ${attrs.year || '---'} · ${attrs.kilometers || attrs.km || 0} km`,
-                                price: (attrs.price || attrs.precio || 0) + '€',
-                                km: attrs.kilometers || attrs.km || 0,
+                                specs: [attrs.engine_size, attrs.year, attrs.fuel_type].filter(Boolean).join(' · ') || 'Consultar detalles',
+                                price: attrs.price ? attrs.price.toLocaleString('es-ES') + ' €' : 'Consultar',
+                                km: attrs.kilometers ? attrs.kilometers.toLocaleString('es-ES') + ' km' : 'Consultar',
                                 year: attrs.year || '---',
-                                fuel: attrs.fuel_type || attrs.fuel || 'Gasolina',
-                                trans: attrs.transmission || 'Manual',
-                                power: attrs.power || '---',
-                                color: attrs.exterior_color || attrs.color || '---',
-                                doors: attrs.doors || 5,
-                                category: attrs.body_type || attrs.category || 'coche',
-                                badge: attrs.condition || attrs.badge || 'Disponible',
-                                badgeColor: attrs.badgeColor || 'bg-accent',
-                                desc: attrs.description || attrs.features || 'Coche de ocasión en excelente estado.',
-                                features: attrs.features ? (typeof attrs.features === 'string' ? attrs.features.split(',') : []) : [],
-                                images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&q=80'],
-                                video: attrs.video_url
+                                fuel: attrs.fuel_type || '---',
+                                trans: attrs.transmission || '---',
+                                power: attrs.engine_size || '---',
+                                color: attrs.exterior_color || '---',
+                                doors: attrs.doors || '---',
+                                category: (attrs.body_type || 'coche').toLowerCase(),
+                                badge: vendido ? 'VENDIDO' : (attrs.condition && attrs.condition !== 'Disponible' ? String(attrs.condition).toUpperCase() : ''),
+                                badgeColor: vendido ? 'bg-red-600' : 'bg-accent',
+                                desc: attrs.description || 'Vehículo revisado y garantizado por El Taller de Migue.',
+                                features: typeof rawFeatures === 'string' ? rawFeatures.split(/[,\n]/).map(s => s.trim()).filter(Boolean) : [],
+                                images: images.length > 0 ? images : ['assets/cars/real_1.png'],
+                                video: attrs.video_url || null
                             };
                         });
-                    } else {
-                        console.warn('Backend vacío.');
                     }
-                } else {
-                    console.warn('Backend no disponible.');
                 }
             } catch (error) {
                 console.error('Error conectando a Strapi:', error);
+            }
+            if (!vehiclesData || vehiclesData.length === 0) {
+                console.warn('CRM sin stock disponible: mostrando inventario de respaldo local.');
+                vehiclesData = fallbackVehiclesData;
             }
             renderVehiclesGrid(vehiclesData);
         }
 
         async function fetchServices() {
             try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const API_BASE_URL = isLocal ? 'http://localhost:1337' : 'https://strapicms-production.up.railway.app';
-                const API_ENDPOINTS = [
-                    `${API_BASE_URL}/api/services?sort=order:asc`,
-                    '/api/services?sort=order:asc',
-                    'http://localhost:1337/api/services?sort=order:asc',
-                    'https://taller-migue-crm-production.up.railway.app/api/services?sort=order:asc'
-                ];
-                let response = null;
-                for (const url of API_ENDPOINTS) {
-                    try {
-                        const r = await fetch(url);
-                        if (r.ok) {
-                            response = r;
-                            break;
-                        }
-                    } catch (e) {}
-                }
+                const result = await fetchFromCRM('/api/services?sort=order:asc');
+                const response = result && result.response;
 
                 if (response && response.ok) {
                     const json = await response.json();
@@ -2307,24 +2133,8 @@
 
         async function fetchReviews() {
             try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const API_BASE_URL = isLocal ? 'http://localhost:1337' : 'https://strapicms-production.up.railway.app';
-                const API_ENDPOINTS = [
-                    `${API_BASE_URL}/api/reviews?populate=*`,
-                    '/api/reviews?populate=*',
-                    'http://localhost:1337/api/reviews?populate=*',
-                    'https://taller-migue-crm-production.up.railway.app/api/reviews?populate=*'
-                ];
-                let response = null;
-                for (const url of API_ENDPOINTS) {
-                    try {
-                        const r = await fetch(url);
-                        if (r.ok) {
-                            response = r;
-                            break;
-                        }
-                    } catch (e) {}
-                }
+                const result = await fetchFromCRM('/api/reviews?populate=*');
+                const response = result && result.response;
 
                 if (response && response.ok) {
                     const json = await response.json();
@@ -2345,7 +2155,7 @@
                                 const name = attrs.name || 'Cliente';
                                 const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                                 const gradient = gradients[i % gradients.length];
-                                
+
                                 let dateStr = 'Hace poco';
                                 if (attrs.date) {
                                     try {
@@ -2394,24 +2204,8 @@
 
         async function fetchChatwoot() {
             try {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const API_BASE_URL = isLocal ? 'http://localhost:1337' : 'https://strapicms-production.up.railway.app';
-                const API_ENDPOINTS = [
-                    `${API_BASE_URL}/api/site-setting`,
-                    '/api/site-setting',
-                    'http://localhost:1337/api/site-setting',
-                    'https://taller-migue-crm-production.up.railway.app/api/site-setting'
-                ];
-                let response = null;
-                for (const url of API_ENDPOINTS) {
-                    try {
-                        const r = await fetch(url);
-                        if (r.ok) {
-                            response = r;
-                            break;
-                        }
-                    } catch (e) {}
-                }
+                const result = await fetchFromCRM('/api/site-setting');
+                const response = result && result.response;
 
                 let enabled = false;
                 let token = '';
@@ -2473,17 +2267,20 @@
         // Abrir modal de vehículo
         function openVehicleModal(id) {
             const v = vehiclesData.find(x => x.id === id); if (!v) return;
+            currentVehicleImages = v.images;
+            currentGalleryIndex = 0;
             const body = document.getElementById('v-modal-body');
             body.innerHTML = `
                 <div class="vehicle-modal-gallery mb-6">
                     <div class="gallery-main">
                         <img src="${v.images[0]}" alt="${v.name}" id="gallery-main-img" class="w-full h-full object-cover">
+                        ${v.images.length > 1 ? `
                         <button class="gallery-nav prev" onclick="changeGalleryImage(-1)"><i class="fas fa-chevron-left"></i></button>
-                        <button class="gallery-nav next" onclick="changeGalleryImage(1)"><i class="fas fa-chevron-right"></i></button>
+                        <button class="gallery-nav next" onclick="changeGalleryImage(1)"><i class="fas fa-chevron-right"></i></button>` : ''}
                     </div>
-                    <div class="gallery-thumbs mt-4">
+                    ${v.images.length > 1 ? `<div class="gallery-thumbs mt-4">
                         ${v.images.map((img, i) => `<div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="setGalleryImage(${i})"><img src="${img}" alt="Foto ${i + 1} de ${v.name}"></div>`).join('')}
-                    </div>
+                    </div>` : ''}
                 </div>
                 ${v.video ? `<div class="mb-6"><h3 class="text-lg font-bold mb-3"><i class="fas fa-video text-accent mr-2"></i>Video del vehículo</h3><div class="rounded-lg overflow-hidden" style="aspect-ratio:16/9;background:#000;"><iframe src="${v.video}" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div></div>` : ''}
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
@@ -2562,6 +2359,7 @@
 
         function acceptCookies() {
             localStorage.setItem('cookies-accepted', 'all');
+            localStorage.setItem('gdpr_consent', 'all');
             document.getElementById('cookie-banner').classList.remove('show');
             if (typeof gtag !== 'undefined') {
                 gtag('consent', 'update', {
@@ -2575,6 +2373,7 @@
 
         function rejectCookies() {
             localStorage.setItem('cookies-accepted', 'necessary');
+            localStorage.setItem('gdpr_consent', 'essential');
             document.getElementById('cookie-banner').classList.remove('show');
         }
 
@@ -2710,7 +2509,7 @@
             const email = form.querySelector('[name="email"]').value || 'correo-no-especificado@eltallerdemigue.es';
             const servicio = form.querySelector('[name="servicio"]').value;
             const msgVal = form.querySelector('[name="mensaje"]').value || 'Sin mensaje adicional.';
-            
+
             const message = `Servicio solicitado: ${servicio}. Mensaje: ${msgVal}`;
 
             const payload = {
@@ -2723,16 +2522,10 @@
                 }
             };
 
-            const API_ENDPOINTS = [
-                '/api/contact-submissions',
-                'http://localhost:1337/api/contact-submissions',
-                'https://taller-migue-crm-production.up.railway.app/api/contact-submissions'
-            ];
-
             let success = false;
-            for (const url of API_ENDPOINTS) {
+            for (const base of CRM_BASES) {
                 try {
-                    const res = await fetch(url, {
+                    const res = await fetch(base + '/api/contact-submissions', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -2775,154 +2568,22 @@
             }, { passive: true });
         }
 
-        // ── Brands auto-scroll ──
-        const brandsTrack = document.querySelector('.brands-track');
-        if (brandsTrack && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            let scrollPos = 0;
-            const scrollSpeed = 0.5;
-            let brandsAnimationId;
-            function autoScrollBrands() {
-                scrollPos += scrollSpeed;
-                const maxScroll = brandsTrack.scrollWidth - brandsTrack.clientWidth;
-                if (scrollPos >= maxScroll) {
-                    scrollPos = 0;
-                }
-                brandsTrack.scrollLeft = scrollPos;
-                brandsAnimationId = requestAnimationFrame(autoScrollBrands);
-            }
-            brandsTrack.addEventListener('mouseenter', () => {
-                if (brandsAnimationId) cancelAnimationFrame(brandsAnimationId);
-            });
-            brandsTrack.addEventListener('mouseleave', () => {
-                brandsAnimationId = requestAnimationFrame(autoScrollBrands);
-            });
-            brandsAnimationId = requestAnimationFrame(autoScrollBrands);
-        }
     </script>
 
-    <!-- GDPR Modals -->
-    <div id="gdpr-modal" class="fixed inset-0 z-[10000] hidden flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeGdprModal()"></div>
-        <div class="bg-dark-800 border border-gray-700 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto relative z-10 shadow-2xl">
-            <div class="p-6 md:p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="gdpr-modal-title" class="text-2xl font-bold text-white"></h3>
-                    <button onclick="closeGdprModal()" class="text-gray-400 hover:text-white transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div id="gdpr-modal-content" class="text-gray-300 space-y-4 text-sm leading-relaxed"></div>
-                <div class="mt-8 pt-6 border-t border-gray-700 flex justify-end">
-                    <button onclick="closeGdprModal()" class="bg-accent hover:bg-accent-light text-white px-6 py-2 rounded font-medium transition-colors">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- GDPR Banner -->
-    <div id="gdpr-banner" class="bg-dark-800 border-t border-gray-700 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-        <div class="max-w-7xl mx-auto px-4 py-6 md:flex md:items-center md:justify-between gap-6">
-            <div class="mb-4 md:mb-0">
-                <h4 class="text-lg font-bold text-white mb-2"><i class="fas fa-cookie-bite text-accent mr-2"></i>Usamos Cookies</h4>
-                <p class="text-sm text-gray-400">
-                    Utilizamos cookies propias y de terceros para mejorar nuestros servicios, personalizar el contenido y analizar el tráfico de la web.
-                    Al hacer clic en "Aceptar todas", aceptas su uso. Puedes configurar o rechazar su uso haciendo clic en Configuración.
-                    <a href="javascript:void(0)" onclick="openGdprModal('cookies')" class="text-accent hover:underline">Leer política de cookies</a>.
-                </p>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3 shrink-0">
-                <button onclick="acceptCookies()" class="bg-accent hover:bg-accent-light text-white px-6 py-2.5 rounded font-bold transition-all hover:scale-105 whitespace-nowrap">Aceptar todas</button>
-                <button onclick="rejectCookies()" class="bg-transparent border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-6 py-2.5 rounded font-medium transition-colors whitespace-nowrap">Solo necesarias</button>
-            </div>
-        </div>
-    </div>
 
-    
-    <!-- Preparación Chatwoot WhatsApp Widget -->
-    <!-- 
-    <script>
-      (function(d,t) {
-        var BASE_URL="http://[TU_IP_O_DOMINIO]:3000";
-        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-        g.src=BASE_URL+"/packs/js/sdk.js";
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g,s);
-        g.onload=function(){
-          window.chatwootSDK.run({
-            websiteToken: 'TU_TOKEN_DE_CHATWOOT',
-            baseUrl: BASE_URL
-          })
-        }
-      })(document,"script");
-    </script>
-    -->
 
     <!-- AOS Script -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         // Init AOS
-        AOS.init({
+        if (typeof AOS !== 'undefined') AOS.init({
             duration: 800,
             once: true,
             offset: 100,
             easing: 'ease-out-cubic'
         });
 
-        // GDPR Logic
-        document.addEventListener("DOMContentLoaded", () => {
-            if (!localStorage.getItem('gdpr_consent')) {
-                setTimeout(() => {
-                    document.getElementById('gdpr-banner').classList.add('show');
-                }, 1000);
-            }
-        });
-
-        function acceptCookies() {
-            localStorage.setItem('gdpr_consent', 'all');
-            localStorage.setItem('cookies-accepted', 'all');
-            if(document.getElementById('gdpr-banner')) document.getElementById('gdpr-banner').classList.remove('show');
-            if(document.getElementById('cookie-banner')) document.getElementById('cookie-banner').classList.remove('show');
-            if(typeof closeModal === 'function') closeModal('modal-cookies');
-            if(typeof showToast === 'function') showToast('Cookies aceptadas', 'success');
-        }
-
-        function rejectCookies() {
-            localStorage.setItem('gdpr_consent', 'essential');
-            localStorage.setItem('cookies-accepted', 'necessary');
-            if(document.getElementById('gdpr-banner')) document.getElementById('gdpr-banner').classList.remove('show');
-            if(document.getElementById('cookie-banner')) document.getElementById('cookie-banner').classList.remove('show');
-            if(typeof closeModal === 'function') closeModal('modal-cookies');
-        }
-
-        const gdprTexts = {
-            legal: {
-                title: "Aviso Legal",
-                content: "<p>En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico, a continuación se reflejan los siguientes datos:</p><p>La empresa titular de dominio web es <strong>El Taller de Migue</strong>, con domicilio a estos efectos en Carrer Molí Nou, 8, 46722 Beniflà, Valencia.</p><p>El acceso y/o uso de este portal atribuye la condición de USUARIO, que acepta, desde dicho acceso y/o uso, las Condiciones Generales de Uso aquí reflejadas.</p>"
-            },
-            privacy: {
-                title: "Política de Privacidad",
-                content: "<p>En <strong>El Taller de Migue</strong> respetamos tu privacidad y protegemos tus datos personales. De acuerdo con el Reglamento General de Protección de Datos (RGPD), te informamos de que los datos recogidos a través de los formularios de la web, email o WhatsApp serán utilizados exclusivamente para gestionar tu solicitud, cita o consulta.</p><p>No cederemos tus datos a terceros salvo obligación legal. Tienes derecho a acceder, rectificar, limitar y suprimir tus datos en cualquier momento enviándonos una solicitud por escrito.</p>"
-            },
-            cookies: {
-                title: "Política de Cookies",
-                content: "<p>Una cookie es un fichero que se descarga en su ordenador al acceder a determinadas páginas web. Las cookies permiten a una página web, entre otras cosas, almacenar y recuperar información sobre los hábitos de navegación de un usuario o de su equipo.</p><p>Esta web utiliza cookies técnicas (necesarias para el funcionamiento) y cookies de análisis para cuantificar el número de usuarios y realizar la medición y análisis estadístico de la utilización que hacen del servicio ofertado.</p>"
-            }
-        };
-
-        function openGdprModal(type) {
-            const data = gdprTexts[type];
-            if(!data) return;
-            document.getElementById('gdpr-modal-title').innerHTML = data.title;
-            document.getElementById('gdpr-modal-content').innerHTML = data.content;
-            document.getElementById('gdpr-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeGdprModal() {
-            document.getElementById('gdpr-modal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
     </script>
     <script>
         if ('serviceWorker' in navigator) {

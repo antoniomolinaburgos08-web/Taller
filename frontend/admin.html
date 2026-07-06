@@ -8,10 +8,22 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Respaldo si el CDN de SweetAlert no carga: el CRM sigue funcionando con avisos nativos
+        if (typeof window.Swal === 'undefined') {
+            window.Swal = {
+                fire: function (t, m) {
+                    const o = (typeof t === 'object' && t !== null) ? t : { title: t, text: m };
+                    if (!o.toast) alert([o.title, o.text].filter(Boolean).join(' - '));
+                    return Promise.resolve({ isConfirmed: true });
+                }
+            };
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    
+
     <script>
 
         function getAuthHeaders() {
@@ -38,13 +50,13 @@
                 if(data.jwt) {
                     localStorage.setItem('crm_jwt', data.jwt);
                     document.getElementById('login-overlay').classList.add('hidden');
-                    fetchData(); 
+                    fetchData();
                     showSection('dashboard');
                 } else {
-                    alert('Error: Credenciales incorrectas');
+                    Swal.fire('Error', 'Credenciales incorrectas. Revisa el email y la contraseña.', 'error');
                 }
             } catch(e) {
-                alert('Error al conectar con el servidor');
+                Swal.fire('Sin conexión', 'No se pudo conectar con el servidor. Inténtalo de nuevo en unos segundos.', 'error');
             }
         }
 
@@ -61,7 +73,7 @@
             location.reload();
         }
 
-        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { dark: '#0f172a', darker: '#020617', primary: '#3b82f6', accent: '#10b981' } } } }
+        if (window.tailwind) tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { dark: '#0f172a', darker: '#020617', primary: '#3b82f6', accent: '#10b981' } } } }
     </script>
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #020617; color: white; }
@@ -103,7 +115,7 @@
             <form onsubmit="loginCRM(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm text-slate-400 mb-1">Email</label>
-                    <input type="email" id="login-email" class="w-full bg-slate-700 text-white border border-slate-600 rounded p-2.5" placeholder="taller@migue.com" required>
+                    <input type="email" id="login-email" class="w-full bg-slate-700 text-white border border-slate-600 rounded p-2.5" placeholder="correo@ejemplo.com" required>
                 </div>
                 <div>
                     <label class="block text-sm text-slate-400 mb-1">Contraseña</label>
@@ -116,7 +128,8 @@
 
 
     <!-- Sidebar -->
-    <aside class="w-64 glass-panel border-r border-slate-800 flex flex-col z-20 overflow-y-auto">
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden" onclick="toggleSidebar(false)"></div>
+    <aside id="sidebar" class="w-64 glass-panel border-r border-slate-800 flex flex-col overflow-y-auto fixed inset-y-0 left-0 z-40 -translate-x-full transition-transform duration-300 lg:static lg:translate-x-0">
         <div class="p-6 border-b border-slate-800 flex items-center justify-center">
             <img src="logo_transparente.png" alt="El Taller de Migue Logo" class="h-16 w-auto object-contain drop-shadow-lg" id="sidebar-logo">
         </div>
@@ -131,7 +144,7 @@
         <div class="px-4 py-3">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Administración 100%</p>
             <nav class="flex flex-col gap-1">
-                <a href="#" onclick="showSection('facturas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400 text-blue-400 font-bold bg-blue-900/20"><i class="fas fa-file-pdf w-5"></i> Facturación</a>
+                <a href="#" onclick="showSection('facturas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-file-pdf w-5"></i> Facturación</a>
                 <a href="#" onclick="showSection('garaje')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-warehouse w-5"></i> Garaje y Avisos</a>
                 <a href="#" onclick="showSection('ordenes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-clipboard-list w-5"></i> Reparaciones</a>
                 <a href="#" onclick="showSection('citas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-calendar-alt w-5"></i> Citas y Agenda</a>
@@ -141,7 +154,7 @@
         <div class="px-4 py-3">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Marketing Automático</p>
             <nav class="flex flex-col gap-1">
-                <a href="#" onclick="showSection('bot')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400 text-emerald-400 font-bold bg-emerald-900/20"><i class="fas fa-comments w-5"></i> Chat y Canales</a>
+                <a href="#" onclick="showSection('bot')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-comments w-5"></i> Chat y Canales</a>
                 <a href="#" onclick="showSection('promociones')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-tags w-5"></i> Promociones</a>
             </nav>
         </div>
@@ -159,7 +172,10 @@
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative">
         <header class="h-16 glass-panel border-x-0 border-t-0 flex justify-between items-center px-8 sticky top-0 z-10 border-b border-slate-800">
-            <div class="flex items-center gap-4"><h2 id="section-title" class="text-xl font-bold text-white">Panel General</h2></div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" aria-label="Abrir menú"><i class="fas fa-bars"></i></button>
+                <h2 id="section-title" class="text-xl font-bold text-white">Panel General</h2>
+            </div>
             <div class="flex items-center gap-4">
                 <div id="action-buttons" class="hidden flex gap-2"></div>
                 <div class="h-8 w-px bg-slate-700 mx-2"></div>
@@ -192,8 +208,8 @@
         const API_BASE = 'https://strapicms-production.up.railway.app/api';
 
         let state = {
-            vehiculos: [], 
-            ordenes: [], 
+            vehiculos: [],
+            ordenes: [],
             clientes: [],
             citas: [],
             leads: [],
@@ -216,8 +232,9 @@
 
         function showSection(section) {
             state.currentSection = section;
+            toggleSidebar(false);
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
+
             if (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) {
                 event.currentTarget.classList.add('active');
             } else {
@@ -228,24 +245,24 @@
                     }
                 });
             }
-            
+
             const titles = {
-                'dashboard': 'Panel General', 
-                'facturas': 'Sistema de Facturación PDF', 
-                'garaje': 'Garaje de Clientes', 
-                'bot': 'Chat y Canales de Alerta', 
-                'promociones': 'Campañas y Promociones', 
-                'stock': 'Coches en Venta', 
-                'ordenes': 'Reparaciones Abiertas', 
+                'dashboard': 'Panel General',
+                'facturas': 'Sistema de Facturación PDF',
+                'garaje': 'Garaje de Clientes',
+                'bot': 'Chat y Canales de Alerta',
+                'promociones': 'Campañas y Promociones',
+                'stock': 'Coches en Venta',
+                'ordenes': 'Reparaciones Abiertas',
                 'clientes': 'Base de Datos de Clientes',
                 'citas': 'Citas y Agenda del Taller',
                 'leads': 'Mensajes y Consultas Web'
             };
             document.getElementById('section-title').innerText = titles[section] || 'Panel';
-            
+
             const btnArea = document.getElementById('action-buttons');
             btnArea.classList.remove('hidden');
-            
+
             if (section === 'facturas') {
                 btnArea.innerHTML = `<button onclick="abrirModalFactura()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-file-invoice mr-2"></i> Crear Factura Nueva</button>`;
             } else if (section === 'promociones') {
@@ -263,33 +280,53 @@
             } else {
                 btnArea.innerHTML = '';
             }
-            
+
             renderContent();
         }
 
-        function closeModal() { 
-            document.getElementById('modal-overlay').classList.add('hidden'); 
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
         }
 
-        async function postEntity(endpoint, data, localKey) {
+        function toggleSidebar(force) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const open = typeof force === 'boolean' ? force : sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', !open);
+            backdrop.classList.toggle('hidden', !open);
+        }
+
+        function normalizeEntity(item) {
+            if (item && typeof item === 'object' && !item.attributes) {
+                const { id, documentId, ...rest } = item;
+                return { id: documentId || id || Date.now(), attributes: rest };
+            }
+            return item;
+        }
+
+        async function postEntity(endpoint, data, localKey, extras = {}) {
             try {
-                const res = await fetchAPI(`${API_BASE}/${endpoint}`, {
+                // Strapi v5: sin ?status=published la entrada se crea como borrador y no aparece en la web
+                const res = await fetchAPI(`${API_BASE}/${endpoint}?status=published`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data })
                 });
                 if (res.ok) {
                     const saved = await res.json();
-                    return saved.data;
+                    const normalized = normalizeEntity(saved.data);
+                    normalized.attributes = { ...extras, ...normalized.attributes };
+                    return normalized;
                 }
+                console.warn(`POST ${endpoint} falló (${res.status}):`, await res.text());
             } catch (e) {
                 console.warn(`Could not POST to ${endpoint}, using local storage fallback`, e);
             }
-            
+
             const localList = JSON.parse(localStorage.getItem(localKey)) || [];
             const localItem = {
                 id: 'local_' + Date.now(),
-                attributes: data
+                attributes: { ...data, ...extras }
             };
             localList.push(localItem);
             localStorage.setItem(localKey, JSON.stringify(localList));
@@ -299,40 +336,34 @@
         async function fetchData() {
             document.getElementById('sync-icon')?.classList.add('fa-spin');
             try {
-                const [vReq, oReq, cReq, ciReq, lReq] = await Promise.all([ 
-                    fetchAPI(`${API_BASE}/stock-vehicles?populate=*`), 
-                    fetchAPI(`${API_BASE}/orden-reparacions?populate=*`), 
+                const [vReq, oReq, cReq, ciReq, lReq] = await Promise.all([
+                    fetchAPI(`${API_BASE}/stock-vehicles?populate=*`),
+                    fetchAPI(`${API_BASE}/orden-reparacions?populate=*`),
                     fetchAPI(`${API_BASE}/clientes?populate=*`),
                     fetchAPI(`${API_BASE}/citas?populate=*`),
                     fetchAPI(`${API_BASE}/contact-submissions?populate=*`)
                 ]);
-                
+
                 const vData = resData(await vReq.json());
                 const oData = resData(await oReq.json());
                 const cData = resData(await cReq.json());
                 const ciData = resData(await ciReq.json());
                 const lData = resData(await lReq.json());
-                
+
                 const localVehs = JSON.parse(localStorage.getItem('crm_local_vehiculos')) || [];
                 const localOrds = JSON.parse(localStorage.getItem('crm_local_ordenes')) || [];
                 const localClis = JSON.parse(localStorage.getItem('crm_local_clientes')) || [];
                 const localCits = JSON.parse(localStorage.getItem('crm_local_citas')) || [];
                 const localLeads = JSON.parse(localStorage.getItem('crm_local_submissions')) || [];
-                
-                const normalize = (arr) => arr.map(item => {
-                    if (item && typeof item === 'object' && !item.attributes) {
-                        const { id, documentId, ...rest } = item;
-                        return { id: documentId || id || Date.now(), attributes: rest };
-                    }
-                    return item;
-                });
-                
+
+                const normalize = (arr) => arr.map(normalizeEntity);
+
                 state.vehiculos = normalize([...localVehs, ...vData]);
                 state.ordenes = normalize([...localOrds, ...oData]);
                 state.clientes = normalize([...localClis, ...cData]);
                 state.citas = normalize([...localCits, ...ciData]);
                 state.leads = normalize([...localLeads, ...lData]);
-                
+
                 // Fetch site-setting as well
                 try {
                     const ssReq = await fetchAPI(`${API_BASE}/site-setting`);
@@ -350,7 +381,7 @@
                 } catch (e) {
                     console.warn("Could not sync site-setting from Strapi.", e);
                 }
-                
+
                 renderContent();
             } catch (err) {
                 console.warn("API base inaccessible. Loading local offline database.", err);
@@ -360,8 +391,8 @@
                 state.citas = JSON.parse(localStorage.getItem('crm_local_citas')) || [];
                 state.leads = JSON.parse(localStorage.getItem('crm_local_submissions')) || [];
                 renderContent();
-            } finally { 
-                document.getElementById('sync-icon')?.classList.remove('fa-spin'); 
+            } finally {
+                document.getElementById('sync-icon')?.classList.remove('fa-spin');
             }
         }
 
@@ -375,17 +406,18 @@
 
         // --- INICIALIZAR GRÁFICOS DEL DASHBOARD ---
         function initDashboardCharts() {
+            if (typeof Chart === 'undefined') return;
             setTimeout(() => {
                 const ctxBilling = document.getElementById('billingChart')?.getContext('2d');
                 const ctxOrds = document.getElementById('ordsChart')?.getContext('2d');
-                
+
                 if (billingChart) billingChart.destroy();
                 if (ordsChart) ordsChart.destroy();
-                
+
                 const lastFacturas = state.facturas.slice(-6);
                 const labelsBilling = lastFacturas.map(f => f.numero);
                 const dataBilling = lastFacturas.map(f => f.total);
-                
+
                 if (ctxBilling) {
                     billingChart = new Chart(ctxBilling, {
                         type: 'bar',
@@ -411,13 +443,13 @@
                         }
                     });
                 }
-                
+
                 const statesCount = { 'Pendiente': 0, 'En Taller': 0, 'Esperando Piezas': 0, 'Terminado': 0, 'Facturado': 0 };
                 state.ordenes.forEach(o => {
                     const est = o.attributes?.estado || 'Pendiente';
                     if (statesCount[est] !== undefined) statesCount[est]++;
                 });
-                
+
                 if (ctxOrds) {
                     ordsChart = new Chart(ctxOrds, {
                         type: 'doughnut',
@@ -501,13 +533,13 @@
 
         function convertirAFactura(idOrden, matricula) {
             const ord = state.ordenes.find(o => o.id == idOrden);
-            const clientName = ord?.attributes?.cliente_nombre || 
-                               ord?.attributes?.cliente?.data?.attributes?.nombre || 
-                               "Cliente de Vehículo " + matricula;
-            const dni = ord?.attributes?.cliente?.data?.attributes?.dni || matricula;
+            const cliRel = ord?.attributes?.cliente;
+            const cliAttrs = cliRel?.data?.attributes || cliRel || {};
+            const clientName = ord?.attributes?.cliente_nombre || cliAttrs.nombre || ("Cliente de Vehículo " + matricula);
+            const dni = cliAttrs.dni || matricula;
             const desc = `Mano de obra y reparaciones en OR-${idOrden}: ${ord?.attributes?.sintomas || 'Reparaciones mecánicas'}`;
             const budget = ord?.attributes?.presupuesto_estimado || 150;
-            
+
             abrirModalFactura();
             setTimeout(() => {
                 document.getElementById('fac-cliente').value = clientName;
@@ -516,21 +548,25 @@
                 const priceEl = document.querySelector('.f-precio');
                 if(descEl) descEl.value = desc;
                 if(priceEl) priceEl.value = budget;
-                
+
                 updateORStatus(idOrden, 'Facturado');
             }, 150);
         }
 
         function descargarPDF(id) {
             const fac = state.facturas.find(f => f.id === id);
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                Swal.fire('Sin conexión', 'No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo.', 'error');
+                return;
+            }
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            
+
             doc.setFontSize(22); doc.setTextColor(59, 130, 246); doc.text("EL TALLER DE MIGUE", 20, 20);
             doc.setFontSize(10); doc.setTextColor(100); doc.text("Moli Nou 8, 46722 Benifla (Valencia) | CIF: B12345678", 20, 28);
-            
+
             doc.setFontSize(14); doc.setTextColor(0); doc.text(`FACTURA ${fac.numero}`, 140, 20);
             doc.setFontSize(10); doc.text(`Fecha: ${fac.fecha}`, 140, 28);
-            
+
             doc.setFillColor(240, 240, 240); doc.rect(20, 40, 170, 25, 'F');
             doc.text("DATOS DEL CLIENTE:", 25, 48); doc.setFontSize(11); doc.text(fac.cliente, 25, 54); doc.setFontSize(9); doc.text(`DNI/CIF: ${fac.dni}`, 25, 60);
 
@@ -611,9 +647,9 @@
                 return;
             }
 
-            const data = { nombre, apellidos, telefono, email, dni, direccion, notas, consentimiento_gdpr, publishedAt: new Date() };
+            const data = { nombre, apellidos, telefono, email, dni, direccion, notas, consentimiento_gdpr };
             const saved = await postEntity('clientes', data, 'crm_local_clientes');
-            
+
             state.clientes.push(saved);
             closeModal();
             renderContent();
@@ -623,7 +659,7 @@
         // --- FUNCIONES ORDENES DE REPARACION ---
         function abrirModalOrden() {
             document.getElementById('modal-title').innerText = 'Nueva Orden de Reparación';
-            
+
             let clientOptions = '<option value="">-- Seleccionar cliente registrado --</option>';
             state.clientes.forEach(c => {
                 const id = c.id;
@@ -645,7 +681,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div id="ord-nuevo-cliente-fields" class="hidden border border-slate-700 bg-slate-900/40 p-4 rounded-lg mb-4">
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Datos de Registro del Cliente</h4>
                     <div class="grid grid-cols-2 gap-4 mb-2">
@@ -721,32 +757,31 @@
                     Swal.fire('Error', 'Ingrese Nombre y Teléfono del cliente para crearlo.', 'error');
                     return;
                 }
-                const clientData = { nombre, telefono, consentimiento_gdpr: true, publishedAt: new Date() };
+                const clientData = { nombre, telefono, consentimiento_gdpr: true };
                 const savedClient = await postEntity('clientes', clientData, 'crm_local_clientes');
                 state.clientes.push(savedClient);
                 clienteId = savedClient.id;
                 clienteNombre = nombre;
             } else if (clienteVal) {
-                clienteId = Number(clienteVal);
+                clienteId = clienteVal;
                 const found = state.clientes.find(c => c.id == clienteId);
                 clienteNombre = found ? (found.attributes?.nombre || found.nombre) : 'Cliente de Ficha';
             }
 
             const data = {
                 matricula,
-                cliente: clienteId,
-                cliente_nombre: clienteNombre,
                 estado,
                 sintomas,
                 kilometros_entrada: km,
                 presupuesto_estimado: presupuesto,
-                fecha_entrada: new Date(fecha).toISOString(),
-                publishedAt: new Date()
+                fecha_entrada: new Date(fecha).toISOString()
             };
+            // La relacion solo se envia si el cliente existe en el servidor (documentId real)
+            if (clienteId && !String(clienteId).startsWith('local_')) data.cliente = clienteId;
 
-            const saved = await postEntity('orden-reparacions', data, 'crm_local_ordenes');
+            const saved = await postEntity('orden-reparacions', data, 'crm_local_ordenes', { cliente_nombre: clienteNombre });
             state.ordenes.push(saved);
-            
+
             const existsInGarage = state.garaje_clientes.some(g => g.matricula.replace(/\s+/g,'').toLowerCase() === matricula.replace(/\s+/g,'').toLowerCase());
             if (!existsInGarage) {
                 const nuevoVeh = {
@@ -773,7 +808,7 @@
             const ord = state.ordenes.find(o => o.id == id);
             if (ord) {
                 ord.attributes.estado = newStatus;
-                
+
                 if (String(id).startsWith('local_')) {
                     const localOrds = JSON.parse(localStorage.getItem('crm_local_ordenes')) || [];
                     const idx = localOrds.findIndex(o => o.id == id);
@@ -783,7 +818,7 @@
                     }
                 } else {
                     try {
-                        await fetchAPI(`${API_BASE}/orden-reparacions/${id}`, {
+                        await fetchAPI(`${API_BASE}/orden-reparacions/${id}?status=published`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: { estado: newStatus } })
@@ -792,7 +827,7 @@
                         console.warn("Could not sync state change with Strapi, saved local instance only", e);
                     }
                 }
-                
+
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
@@ -894,7 +929,7 @@
         // --- FUNCIONES AGENDA / CITAS ---
         function abrirModalCita() {
             document.getElementById('modal-title').innerText = 'Programar Nueva Cita';
-            
+
             let clientOptions = '<option value="">-- Seleccionar cliente registrado --</option>';
             state.clientes.forEach(c => {
                 const id = c.id;
@@ -954,7 +989,7 @@
                 return;
             }
 
-            let clienteId = clienteVal ? Number(clienteVal) : null;
+            let clienteId = clienteVal || null;
             let clienteNombre = 'Cliente Ocasional';
             if (clienteId) {
                 const found = state.clientes.find(c => c.id == clienteId);
@@ -966,13 +1001,11 @@
                 fecha_hora: new Date(fecha).toISOString(),
                 tipo,
                 estado: 'Programada',
-                cliente: clienteId,
-                cliente_nombre: clienteNombre,
-                notas,
-                publishedAt: new Date()
+                notas
             };
+            if (clienteId && !String(clienteId).startsWith('local_')) data.cliente = clienteId;
 
-            const saved = await postEntity('citas', data, 'crm_local_citas');
+            const saved = await postEntity('citas', data, 'crm_local_citas', { cliente_nombre: clienteNombre });
             state.citas.push(saved);
             closeModal();
             renderContent();
@@ -984,7 +1017,7 @@
             if (cit) {
                 if (cit.attributes) cit.attributes.estado = newStatus;
                 else cit.estado = newStatus;
-                
+
                 if (String(id).startsWith('local_')) {
                     const localCits = JSON.parse(localStorage.getItem('crm_local_citas')) || [];
                     const idx = localCits.findIndex(c => c.id == id);
@@ -994,7 +1027,7 @@
                     }
                 } else {
                     try {
-                        await fetchAPI(`${API_BASE}/citas/${id}`, {
+                        await fetchAPI(`${API_BASE}/citas/${id}?status=published`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: { estado: newStatus } })
@@ -1003,7 +1036,7 @@
                         console.warn("Could not put status update to Strapi, local change only", e);
                     }
                 }
-                
+
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
@@ -1022,10 +1055,10 @@
             if (lead) {
                 const currentRead = lead.attributes ? lead.attributes.read : lead.read;
                 const newRead = forceValue !== null ? forceValue : !currentRead;
-                
+
                 if (lead.attributes) lead.attributes.read = newRead;
                 else lead.read = newRead;
-                
+
                 if (String(id).startsWith('local_')) {
                     const localLeads = JSON.parse(localStorage.getItem('crm_local_submissions')) || [];
                     const idx = localLeads.findIndex(l => l.id == id);
@@ -1044,7 +1077,7 @@
                         console.warn("Failed syncing read status, local state updated only", e);
                     }
                 }
-                
+
                 renderContent();
             }
         }
@@ -1052,35 +1085,34 @@
         async function convertirLeadACliente(id) {
             const lead = state.leads.find(l => l.id == id);
             if (!lead) return;
-            
+
             const attrs = lead.attributes || lead;
             const phone = attrs.phone || attrs.telefono;
-            
+
             const exists = state.clientes.some(c => (c.attributes?.telefono || c.telefono) === phone);
             if (exists) {
                 Swal.fire('Info', 'Este número de teléfono ya pertenece a un cliente registrado.', 'info');
                 return;
             }
-            
+
             const nameParts = (attrs.name || attrs.nombre || 'Cliente Web').split(' ');
             const nombre = nameParts[0] || 'Cliente';
             const apellidos = nameParts.slice(1).join(' ') || '';
             const email = attrs.email || '';
-            
+
             const data = {
                 nombre,
                 apellidos,
-                telefono: phone || '34625786438',
+                telefono: phone || 'Sin teléfono',
                 email,
-                consentimiento_gdpr: true,
-                publishedAt: new Date()
+                consentimiento_gdpr: true
             };
-            
+
             const saved = await postEntity('clientes', data, 'crm_local_clientes');
             state.clientes.push(saved);
-            
+
             await toggleLeadRead(id, true);
-            
+
             Swal.fire('Registrado', `${nombre} ha sido incorporado como cliente en el CRM.`, 'success');
             renderContent();
         }
@@ -1128,12 +1160,12 @@
             const canal = document.getElementById('promo-canal').value;
             const segmento = document.getElementById('promo-segmento').value;
             const mensaje = document.getElementById('promo-mensaje').value;
-            
+
             if(!titulo || !mensaje) {
                 Swal.fire('Error', 'Por favor complete todos los campos obligatorios.', 'error');
                 return;
             }
-            
+
             let destinatarios = [];
             if (segmento === 'todos') {
                 destinatarios = state.clientes.map(c => c.attributes?.nombre || c.nombre)
@@ -1147,9 +1179,9 @@
                     .filter(g => g.km_actual >= g.prox_aceite_km)
                     .map(g => g.cliente);
             }
-            
+
             destinatarios = [...new Set(destinatarios.filter(Boolean))];
-            
+
             const nuevaPromo = {
                 id: Date.now(),
                 titulo,
@@ -1159,12 +1191,12 @@
                 mensaje,
                 fecha: new Date().toLocaleDateString()
             };
-            
+
             state.promociones.push(nuevaPromo);
             localStorage.setItem('crm_promos', JSON.stringify(state.promociones));
             closeModal();
             renderContent();
-            
+
             Swal.fire({
                 title: '¡Campaña Lanzada!',
                 text: `Campaña registrada correctamente. Se enviará a ${destinatarios.length} destinatarios mediante ${canal}.`,
@@ -1262,8 +1294,7 @@
             }
 
             const data = {
-                title, price, year, kilometers, fuel_type, transmission, condition,
-                publishedAt: new Date()
+                title, price, year, kilometers, fuel_type, transmission, condition
             };
 
             const saved = await postEntity('stock-vehicles', data, 'crm_local_vehiculos');
@@ -1273,10 +1304,10 @@
             Swal.fire('Guardado', 'Coche añadido correctamente al escaparate de ventas.', 'success');
         }
 
-        function toggleBot() { 
-            state.bot_active = !state.bot_active; 
-            localStorage.setItem('crm_bot_status', state.bot_active.toString()); 
-            renderContent(); 
+        function toggleBot() {
+            state.bot_active = !state.bot_active;
+            localStorage.setItem('crm_bot_status', state.bot_active.toString());
+            renderContent();
         }
 
         async function guardarConfigChatwoot() {
@@ -1292,7 +1323,7 @@
                 const resGet = await fetchAPI(`${API_BASE}/site-setting`);
                 if (resGet.ok) {
                     const jsonGet = await resGet.json();
-                    
+
                     const payload = {
                         data: {
                             chatwootEnabled: enabled,
@@ -1300,13 +1331,13 @@
                             chatwootUrl: url
                         }
                     };
-                    
+
                     const resPut = await fetchAPI(`${API_BASE}/site-setting`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    
+
                     if (resPut.ok) {
                         Swal.fire('Guardado', 'Ajustes de chat sincronizados correctamente.', 'success');
                     } else {
@@ -1325,11 +1356,11 @@
         // --- RENDERIZADO GENERAL DEL CONTENIDO ---
         function renderContent() {
             const c = document.getElementById('content-area');
-            
+
             if (state.currentSection === 'dashboard') {
                 const totalFacturado = state.facturas.reduce((sum, f) => sum + (f.total || 0), 0);
                 const activeORs = state.ordenes.filter(o => o.attributes?.estado !== 'Facturado').length;
-                
+
                 const todayStr = new Date().toISOString().split('T')[0];
                 const citasHoy = state.citas.filter(ct => {
                     const dt = ct.attributes?.fecha_hora || ct.fecha_hora;
@@ -1425,7 +1456,7 @@
                                 </table>
                             </div>
                         </div>
-                        
+
                         <!-- Agenda Citas -->
                         <div class="glass-panel p-6 rounded-2xl overflow-hidden">
                             <div class="flex justify-between items-center mb-4">
@@ -1446,7 +1477,7 @@
                                             const fDateTime = ct.attributes?.fecha_hora || ct.fecha_hora;
                                             const formattedDate = fDateTime ? new Date(fDateTime).toLocaleString('es-ES', {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : '---';
                                             const est = ct.attributes?.estado || ct.estado || 'Programada';
-                                            
+
                                             return `
                                                 <tr>
                                                     <td class="py-3 text-slate-400 text-xs">${formattedDate}</td>
@@ -1494,7 +1525,7 @@
                     </div>
                 `;
                 initDashboardCharts();
-            } 
+            }
             else if (state.currentSection === 'facturas') {
                 let html = `<div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left border-collapse">
                     <thead><tr class="bg-slate-800/50 border-b border-slate-800"><th class="p-4 text-slate-400">Nº Factura</th><th class="p-4 text-slate-400">Fecha</th><th class="p-4 text-slate-400">Cliente</th><th class="p-4 text-slate-400">Total</th><th class="p-4 text-right text-slate-400">Acciones</th></tr></thead>
@@ -1530,7 +1561,7 @@
                                     <p class="text-xs text-slate-400">Integra el widget de chat en tu web y centraliza WhatsApp, Web, Instagram y Facebook.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="space-y-4">
                                 <div class="flex items-center gap-3 bg-slate-900/30 p-4 rounded-xl border border-slate-800/50">
                                     <input type="checkbox" id="cw-enabled" class="w-5 h-5 rounded text-blue-600 bg-slate-950 border-slate-700" ${cwEnabled ? 'checked' : ''}>
@@ -1583,7 +1614,7 @@
                 state.garaje_clientes.forEach(g => {
                     const alertAceite = g.km_actual >= g.prox_aceite_km;
                     const alertITV = new Date(g.prox_itv) <= new Date(Date.now() + 30*24*60*60*1000);
-                    
+
                     let alertMsg = '';
                     if (alertAceite && alertITV) {
                         alertMsg = `Hola ${g.cliente}, te escribimos desde El Taller de Migue. Vemos que a tu ${g.marca} ${g.modelo} (${g.matricula}) le toca ya el cambio de aceite (${g.km_actual} km) y pasar la ITV (${g.prox_itv}). ¿Te reservamos cita para solucionarlo todo de una vez?`;
@@ -1594,9 +1625,9 @@
                     } else {
                         alertMsg = `Hola ${g.cliente}, desde El Taller de Migue queríamos saludarte y recordarte que estamos a tu disposición para cualquier revisión de tu ${g.marca} ${g.modelo} (${g.matricula}). ¡Un saludo!`;
                     }
-                    
+
                     const waLink = `https://wa.me/${g.telefono}?text=${encodeURIComponent(alertMsg)}`;
-                    
+
                     html += `<tr class="hover:bg-slate-800/30">
                         <td class="p-4 font-mono font-bold text-white"><span class="bg-white text-black px-2 py-0.5 rounded border-2 border-blue-600">${g.matricula}</span></td>
                         <td class="p-4 font-medium text-slate-300">${g.marca} ${g.modelo}</td>
@@ -1668,7 +1699,7 @@
                     const year = v.attributes?.year || '---';
                     const km = v.attributes?.kilometers || '---';
                     const fuel = v.attributes?.fuel_type || '---';
-                    
+
                     html += `
                         <tr class="hover:bg-slate-800/30">
                             <td class="p-4 font-semibold text-white">${title}</td>
@@ -1690,13 +1721,13 @@
                     const symptoms = o.attributes?.sintomas || 'Mantenimiento';
                     const stateText = o.attributes?.estado || 'Pendiente';
                     const budget = o.attributes?.presupuesto_estimado || 150;
-                    
+
                     const textWA = encodeURIComponent(`Hola, desde El Taller de Migue te enviamos el presupuesto estimado para tu vehículo ${matricula}:\n- Trabajos: ${symptoms}\n- Importe estimado: € ${budget}. ¿Damos luz verde para proceder?`);
                     const textWATerminado = encodeURIComponent(`¡Hola! Desde El Taller de Migue te informamos que la reparación de tu vehículo ${matricula} ya está terminada. Puedes pasar a recogerlo cuando mejor te venga. ¡Un saludo!`);
-                    const textWAReseña = encodeURIComponent(`¡Hola! Esperamos que estés encantado con la reparación de tu ${matricula}. Nos ayudaría muchísimo si pudieras dedicarnos un minuto para dejarnos una reseña en Google, nos ayuda a seguir creciendo: https://g.page/r/tu-enlace/review ¡Mil gracias y buen viaje!`);
-                    
+                    const textWAReseña = encodeURIComponent(`¡Hola! Esperamos que estés encantado con la reparación de tu ${matricula}. Nos ayudaría muchísimo si pudieras dedicarnos un minuto para dejarnos una reseña en Google, nos ayuda a seguir creciendo: https://www.google.com/maps/search/?api=1&query=El+Taller+de+Migue+Benifla ¡Mil gracias y buen viaje!`);
+
                     const selectEstado = `
-                        <select onchange="updateORStatus(${o.id}, this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-36">
+                        <select onchange="updateORStatus('${o.id}', this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-36">
                             <option value="Pendiente" ${stateText === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
                             <option value="En Taller" ${stateText === 'En Taller' ? 'selected' : ''}>En Taller</option>
                             <option value="Esperando Piezas" ${stateText === 'Esperando Piezas' ? 'selected' : ''}>Esperando Piezas</option>
@@ -1714,7 +1745,7 @@
                             <a href="https://wa.me/?text=${textWA}" target="_blank" class="text-xs bg-emerald-600/20 text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-emerald-600/40 transition-colors" title="Enviar presupuesto por WhatsApp"><i class="fab fa-whatsapp mr-1"></i> Presupuesto</a>
                             <a href="https://wa.me/?text=${textWATerminado}" target="_blank" class="text-xs bg-emerald-600/20 text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-emerald-600/40 transition-colors" title="Avisar recogida por WhatsApp"><i class="fab fa-whatsapp mr-1"></i> Terminado</a>
                             <a href="https://wa.me/?text=${textWAReseña}" target="_blank" class="text-xs bg-yellow-600/20 text-yellow-400 px-3 py-1.5 rounded-lg hover:bg-yellow-600/40 transition-colors" title="Pedir reseña en Google"><i class="fab fa-google mr-1"></i> Pedir Reseña</a>
-                            <button onclick="convertirAFactura(${o.id}, '${matricula}')" class="text-xs bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-600/40 transition-colors" title="Cerrar OR y crear Factura"><i class="fas fa-file-invoice mr-1"></i> Facturar</button>
+                            <button onclick="convertirAFactura('${o.id}', '${matricula}')" class="text-xs bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-600/40 transition-colors" title="Cerrar OR y crear Factura"><i class="fas fa-file-invoice mr-1"></i> Facturar</button>
                         </td>
                     </tr>`;
                 });
@@ -1732,7 +1763,7 @@
                     const dni = cl.attributes?.dni || cl.dni || '---';
                     const mail = cl.attributes?.email || cl.email || '---';
                     const gdpr = cl.attributes?.consentimiento_gdpr !== false && cl.consentimiento_gdpr !== false;
-                    
+
                     html += `<tr class="hover:bg-slate-800/30">
                         <td class="p-4 font-medium">${name} ${apellidos}</td>
                         <td class="p-4 text-slate-400">${tel}</td>
@@ -1767,15 +1798,16 @@
                     const formattedDate = fDateTime ? dateObj.toLocaleString('es-ES', {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : '---';
                     const est = ct.attributes?.estado || ct.estado || 'Programada';
                     const type = ct.attributes?.tipo || ct.tipo || 'Taller - Reparación';
-                    const cliName = ct.attributes?.cliente_nombre || (ct.attributes?.cliente?.data ? ct.attributes.cliente.data.attributes.nombre : 'Cliente');
+                    const cliRel = ct.attributes?.cliente;
+                    const cliName = ct.attributes?.cliente_nombre || cliRel?.data?.attributes?.nombre || cliRel?.nombre || 'Cliente';
                     const notes = ct.attributes?.notas || ct.notes || '';
-                    
+
                     const timeHour = dateObj.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
                     const dateDay = dateObj.toLocaleDateString('es-ES', {day: 'numeric', month: 'numeric', year: 'numeric'});
                     const reminderText = encodeURIComponent(`Hola ${cliName}, te recordamos tu cita en El Taller de Migue programada para el día ${dateDay} a las ${timeHour} para el servicio de: ${tituloCita(ct)}.\nPor favor, respóndenos a este mensaje para confirmar tu asistencia. ¡Gracias!`);
-                    
+
                     const selectEstado = `
-                        <select onchange="updateCitaStatus(${ct.id}, this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-32">
+                        <select onchange="updateCitaStatus('${ct.id}', this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-32">
                             <option value="Programada" ${est === 'Programada' ? 'selected' : ''}>Programada</option>
                             <option value="Confirmada" ${est === 'Confirmada' ? 'selected' : ''}>Confirmada</option>
                             <option value="Completada" ${est === 'Completada' ? 'selected' : ''}>Completada</option>
@@ -1836,9 +1868,9 @@
                     const mail = attrs.email || '---';
                     const msg = attrs.message || attrs.mensaje || '---';
                     const read = attrs.read === true;
-                    
+
                     const waText = encodeURIComponent(`Hola ${name}, te contactamos desde El Taller de Migue respecto a tu consulta en la web: "${msg.substring(0, 50)}...". ¿Cómo te podemos ayudar?`);
-                    
+
                     html += `
                         <tr class="${read ? 'opacity-65 hover:opacity-100' : 'font-bold bg-slate-900/30'} hover:bg-slate-800/20 transition-all">
                             <td class="p-4 text-white">${name}</td>
@@ -1846,15 +1878,15 @@
                             <td class="p-4 text-slate-400">${mail}</td>
                             <td class="p-4 text-slate-400 max-w-sm truncate" title="${msg}">${msg}</td>
                             <td class="p-4">
-                                <span class="badge ${read ? 'badge-draft' : 'badge-pending'} cursor-pointer" onclick="toggleLeadRead(${l.id})">
+                                <span class="badge ${read ? 'badge-draft' : 'badge-pending'} cursor-pointer" onclick="toggleLeadRead('${l.id}')">
                                     ${read ? 'Leído' : 'Nuevo'}
                                 </span>
                             </td>
                             <td class="p-4 text-right flex justify-end gap-2">
-                                <button onclick="toggleLeadRead(${l.id})" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded" title="Marcar leído/no leído">
+                                <button onclick="toggleLeadRead('${l.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded" title="Marcar leído/no leído">
                                     <i class="fas ${read ? 'fa-envelope' : 'fa-envelope-open'}"></i>
                                 </button>
-                                <button onclick="convertirLeadACliente(${l.id})" class="text-xs bg-orange-600/25 text-orange-400 hover:bg-orange-600/40 px-2.5 py-1 rounded-lg border border-orange-500/20" title="Guardar como Cliente CRM">
+                                <button onclick="convertirLeadACliente('${l.id}')" class="text-xs bg-orange-600/25 text-orange-400 hover:bg-orange-600/40 px-2.5 py-1 rounded-lg border border-orange-500/20" title="Guardar como Cliente CRM">
                                     <i class="fas fa-user-plus mr-1"></i> Fichar
                                 </button>
                                 <a href="https://wa.me/${tel}?text=${waText}" target="_blank" class="text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40 px-2.5 py-1 rounded-lg border border-emerald-500/20" title="Contactar por WhatsApp">
@@ -1873,10 +1905,10 @@
             return ct.attributes?.titulo || ct.titulo || 'Mantenimiento';
         }
 
-        document.addEventListener('DOMContentLoaded', () => { 
+        document.addEventListener('DOMContentLoaded', () => {
             if(!checkAuth()) return;
-            fetchData(); 
-            showSection('dashboard'); 
+            fetchData();
+            showSection('dashboard');
         });
     </script>
     <script>
