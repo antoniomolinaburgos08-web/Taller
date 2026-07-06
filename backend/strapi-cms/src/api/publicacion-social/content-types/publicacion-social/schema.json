@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "publicaciones_sociales",
+  "info": {
+    "singularName": "publicacion-social",
+    "pluralName": "publicacion-socials",
+    "displayName": "Publicación Social",
+    "description": "Anuncios y publicaciones generados para redes y portales (WhatsApp Estado, Instagram, Wallapop, coches.net)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "titulo": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "plataforma": {
+      "type": "enumeration",
+      "enum": [
+        "WhatsApp Estado",
+        "Instagram",
+        "Facebook",
+        "Wallapop",
+        "coches.net",
+        "Milanuncios",
+        "Otros"
+      ],
+      "required": true
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": [
+        "Borrador",
+        "Listo para publicar",
+        "Publicado",
+        "Archivado"
+      ],
+      "default": "Borrador"
+    },
+    "contenido": {
+      "type": "text",
+      "required": true
+    },
+    "hashtags": {
+      "type": "string"
+    },
+    "precio_mostrado": {
+      "type": "decimal"
+    },
+    "vehiculo": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::stock-vehicle.stock-vehicle"
+    },
+    "imagen_generada": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "url_publicada": {
+      "type": "string"
+    },
+    "fecha_publicacion": {
+      "type": "datetime"
+    }
+  }
+}

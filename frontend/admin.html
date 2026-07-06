@@ -145,6 +145,7 @@
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Administración 100%</p>
             <nav class="flex flex-col gap-1">
                 <a href="#" onclick="showSection('facturas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-file-pdf w-5"></i> Facturación</a>
+                <a href="#" onclick="showSection('gastos')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-receipt w-5"></i> Gastos del Taller</a>
                 <a href="#" onclick="showSection('garaje')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-warehouse w-5"></i> Garaje y Avisos</a>
                 <a href="#" onclick="showSection('ordenes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-clipboard-list w-5"></i> Reparaciones</a>
                 <a href="#" onclick="showSection('citas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-calendar-alt w-5"></i> Citas y Agenda</a>
@@ -155,6 +156,8 @@
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Marketing Automático</p>
             <nav class="flex flex-col gap-1">
                 <a href="#" onclick="showSection('bot')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-comments w-5"></i> Chat y Canales</a>
+                <a href="#" onclick="showSection('publicaciones')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-share-nodes w-5"></i> Publicaciones Sociales</a>
+                <a href="#" onclick="showSection('portales')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-globe w-5"></i> Portales de Venta</a>
                 <a href="#" onclick="showSection('promociones')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-tags w-5"></i> Promociones</a>
             </nav>
         </div>
@@ -165,6 +168,14 @@
                 <a href="#" onclick="showSection('stock')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-car w-5"></i> Coches en Venta</a>
                 <a href="#" onclick="showSection('clientes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-users w-5"></i> Base Clientes</a>
                 <a href="#" onclick="showSection('leads')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-envelope-open-text w-5"></i> Mensajes Web</a>
+            </nav>
+        </div>
+
+        <div class="px-4 py-3 mt-auto">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
+            <nav class="flex flex-col gap-1">
+                <a href="#" onclick="showSection('ajustes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-gear w-5"></i> Ajustes e Integraciones</a>
+                <a href="#" onclick="logoutCRM()" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400 hover:text-red-400"><i class="fas fa-sign-out-alt w-5"></i> Cerrar sesión</a>
             </nav>
         </div>
     </aside>
@@ -206,6 +217,11 @@
         if(!localStorage.getItem('crm_local_submissions')) localStorage.setItem('crm_local_submissions', JSON.stringify([]));
 
         const API_BASE = 'https://strapicms-production.up.railway.app/api';
+        // URL del servicio de automatización (bot Telegram, OCR, sync WhatsApp Catalog).
+        // Cámbiala al desplegar el worker: p.ej. https://automation.eltallerdemigue.es
+        const AUTOMATION_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:4000'
+            : 'https://automation.eltallerdemigue.es';
 
         let state = {
             vehiculos: [],
@@ -213,6 +229,9 @@
             clientes: [],
             citas: [],
             leads: [],
+            gastos: [],
+            publicaciones: [],
+            ajustes_remotos: {},
             garaje_clientes: JSON.parse(localStorage.getItem('crm_garaje')) || [
                 {id: 1, matricula: '4567 LMN', marca: 'Audi', modelo: 'A3', cliente: 'Carlos Ruiz', telefono: '34600111222', km_actual: 145000, prox_itv: '2026-08-15', prox_aceite_km: 150000},
                 {id: 2, matricula: '9876 XYZ', marca: 'Renault', modelo: 'Clio', cliente: 'Ana García', telefono: '34600333444', km_actual: 82000, prox_itv: '2024-05-10', prox_aceite_km: 80000}
@@ -249,14 +268,18 @@
             const titles = {
                 'dashboard': 'Panel General',
                 'facturas': 'Sistema de Facturación PDF',
+                'gastos': 'Gastos e Inversiones del Taller',
                 'garaje': 'Garaje de Clientes',
                 'bot': 'Chat y Canales de Alerta',
+                'publicaciones': 'Publicaciones Sociales',
+                'portales': 'Portales de Venta (Wallapop · coches.net · WhatsApp)',
                 'promociones': 'Campañas y Promociones',
                 'stock': 'Coches en Venta',
                 'ordenes': 'Reparaciones Abiertas',
                 'clientes': 'Base de Datos de Clientes',
                 'citas': 'Citas y Agenda del Taller',
-                'leads': 'Mensajes y Consultas Web'
+                'leads': 'Mensajes y Consultas Web',
+                'ajustes': 'Ajustes e Integraciones'
             };
             document.getElementById('section-title').innerText = titles[section] || 'Panel';
 
@@ -277,6 +300,12 @@
                 btnArea.innerHTML = `<button onclick="abrirModalStock()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-car mr-2"></i> Añadir Coche Stock</button>`;
             } else if (section === 'citas') {
                 btnArea.innerHTML = `<button onclick="abrirModalCita()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-calendar-plus mr-2"></i> Programar Cita</button>`;
+            } else if (section === 'gastos') {
+                btnArea.innerHTML = `
+                    <button onclick="abrirModalGastoOCR()" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg mr-2" title="Sube una foto de la factura y la IA rellena los datos"><i class="fas fa-camera mr-2"></i> Factura por foto (OCR)</button>
+                    <button onclick="abrirModalGasto()" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Nuevo gasto manual</button>`;
+            } else if (section === 'publicaciones') {
+                btnArea.innerHTML = `<button onclick="abrirModalPublicacion()" class="bg-pink-600 hover:bg-pink-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-wand-magic-sparkles mr-2"></i> Generar Publicación</button>`;
             } else {
                 btnArea.innerHTML = '';
             }
@@ -336,12 +365,14 @@
         async function fetchData() {
             document.getElementById('sync-icon')?.classList.add('fa-spin');
             try {
-                const [vReq, oReq, cReq, ciReq, lReq] = await Promise.all([
+                const [vReq, oReq, cReq, ciReq, lReq, gReq, pReq] = await Promise.all([
                     fetchAPI(`${API_BASE}/stock-vehicles?populate=*`),
                     fetchAPI(`${API_BASE}/orden-reparacions?populate=*`),
                     fetchAPI(`${API_BASE}/clientes?populate=*`),
                     fetchAPI(`${API_BASE}/citas?populate=*`),
-                    fetchAPI(`${API_BASE}/contact-submissions?populate=*`)
+                    fetchAPI(`${API_BASE}/contact-submissions?populate=*`),
+                    fetchAPI(`${API_BASE}/gastos?populate=*&sort[0]=fecha:desc`),
+                    fetchAPI(`${API_BASE}/publicacion-socials?populate=*&sort[0]=createdAt:desc`)
                 ]);
 
                 const vData = resData(await vReq.json());
@@ -349,12 +380,16 @@
                 const cData = resData(await cReq.json());
                 const ciData = resData(await ciReq.json());
                 const lData = resData(await lReq.json());
+                const gData = gReq.ok ? resData(await gReq.json()) : [];
+                const pData = pReq.ok ? resData(await pReq.json()) : [];
 
                 const localVehs = JSON.parse(localStorage.getItem('crm_local_vehiculos')) || [];
                 const localOrds = JSON.parse(localStorage.getItem('crm_local_ordenes')) || [];
                 const localClis = JSON.parse(localStorage.getItem('crm_local_clientes')) || [];
                 const localCits = JSON.parse(localStorage.getItem('crm_local_citas')) || [];
                 const localLeads = JSON.parse(localStorage.getItem('crm_local_submissions')) || [];
+                const localGas = JSON.parse(localStorage.getItem('crm_local_gastos')) || [];
+                const localPubs = JSON.parse(localStorage.getItem('crm_local_publicaciones')) || [];
 
                 const normalize = (arr) => arr.map(normalizeEntity);
 
@@ -363,6 +398,8 @@
                 state.clientes = normalize([...localClis, ...cData]);
                 state.citas = normalize([...localCits, ...ciData]);
                 state.leads = normalize([...localLeads, ...lData]);
+                state.gastos = normalize([...localGas, ...gData]);
+                state.publicaciones = normalize([...localPubs, ...pData]);
 
                 // Fetch site-setting as well
                 try {
@@ -390,6 +427,8 @@
                 state.clientes = JSON.parse(localStorage.getItem('crm_local_clientes')) || [];
                 state.citas = JSON.parse(localStorage.getItem('crm_local_citas')) || [];
                 state.leads = JSON.parse(localStorage.getItem('crm_local_submissions')) || [];
+                state.gastos = JSON.parse(localStorage.getItem('crm_local_gastos')) || [];
+                state.publicaciones = JSON.parse(localStorage.getItem('crm_local_publicaciones')) || [];
                 renderContent();
             } finally {
                 document.getElementById('sync-icon')?.classList.remove('fa-spin');
@@ -617,6 +656,11 @@
                     </div>
                 </div>
                 <div class="mb-4">
+                    <label class="block text-sm text-slate-400 mb-1">Vehículos del cliente</label>
+                    <div id="cli-vehiculos-list" class="space-y-2 mb-2"></div>
+                    <button type="button" onclick="addVehiculoClienteInput()" class="text-sm text-blue-400 hover:text-blue-300"><i class="fas fa-plus"></i> Añadir vehículo</button>
+                </div>
+                <div class="mb-4">
                     <label class="block text-sm text-slate-400 mb-1">Notas del Cliente</label>
                     <textarea id="cli-notas" rows="3" placeholder="Observaciones del vehículo o historial del cliente..."></textarea>
                 </div>
@@ -641,13 +685,22 @@
             const direccion = document.getElementById('cli-direccion').value;
             const notas = document.getElementById('cli-notas').value;
             const consentimiento_gdpr = document.getElementById('cli-gdpr').checked;
+            const vehiculos_propiedad = collectVehiculosPropiedad();
+            const editId = document.getElementById('cli-editar-id')?.value;
 
             if (!nombre || !telefono) {
                 Swal.fire('Error', 'El nombre y el teléfono son campos obligatorios.', 'error');
                 return;
             }
 
-            const data = { nombre, apellidos, telefono, email, dni, direccion, notas, consentimiento_gdpr };
+            const data = { nombre, apellidos, telefono, email, dni, direccion, notas, consentimiento_gdpr, vehiculos_propiedad };
+
+            if (editId) {
+                await updateEntity('clientes', editId, data, 'crm_local_clientes');
+                closeModal(); await fetchData();
+                Swal.fire('Actualizado', 'Ficha del cliente actualizada.', 'success');
+                return;
+            }
             const saved = await postEntity('clientes', data, 'crm_local_clientes');
 
             state.clientes.push(saved);
@@ -1297,6 +1350,14 @@
                 title, price, year, kilometers, fuel_type, transmission, condition
             };
 
+            const editId = document.getElementById('stk-editar-id')?.value;
+            if (editId) {
+                await updateEntity('stock-vehicles', editId, data, 'crm_local_vehiculos');
+                closeModal(); await fetchData();
+                Swal.fire('Actualizado', 'Coche del stock actualizado.', 'success');
+                return;
+            }
+
             const saved = await postEntity('stock-vehicles', data, 'crm_local_vehiculos');
             state.vehiculos.push(saved);
             closeModal();
@@ -1690,22 +1751,28 @@
             }
             else if (state.currentSection === 'stock') {
                 let html = `<div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left border-collapse">
-                    <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400"><th class="p-4">Coche</th><th class="p-4">Detalles Técnicos</th><th class="p-4">Precio</th><th class="p-4">Condición</th></tr></thead><tbody class="divide-y divide-slate-800/50">`;
-                if(state.vehiculos.length===0) html += `<tr><td colspan="4" class="p-8 text-center text-slate-500">No hay vehículos en venta.</td></tr>`;
+                    <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400"><th class="p-4">Coche</th><th class="p-4">Detalles Técnicos</th><th class="p-4">Precio</th><th class="p-4">Condición</th><th class="p-4 text-right">Acciones</th></tr></thead><tbody class="divide-y divide-slate-800/50">`;
+                if(state.vehiculos.length===0) html += `<tr><td colspan="5" class="p-8 text-center text-slate-500">No hay vehículos en venta. Añade uno con el botón "Añadir Coche Stock".</td></tr>`;
                 state.vehiculos.forEach(v => {
-                    const title = v.attributes?.title || v.attributes?.titulo || 'Sin título';
-                    const price = v.attributes?.price || v.attributes?.precio || 0;
-                    const condition = v.attributes?.condition || v.attributes?.estado_stock || 'Disponible';
-                    const year = v.attributes?.year || '---';
-                    const km = v.attributes?.kilometers || '---';
-                    const fuel = v.attributes?.fuel_type || '---';
+                    const a = v.attributes || v;
+                    const title = a.title || a.titulo || 'Sin título';
+                    const price = a.price || a.precio || 0;
+                    const condition = a.condition || a.estado_stock || 'Disponible';
+                    const year = a.year || '---';
+                    const km = a.kilometers || '---';
+                    const fuel = a.fuel_type || '---';
 
                     html += `
                         <tr class="hover:bg-slate-800/30">
                             <td class="p-4 font-semibold text-white">${title}</td>
                             <td class="p-4 text-slate-400">${year} | ${km} km | ${fuel}</td>
-                            <td class="p-4 font-bold text-emerald-400">€ ${price.toLocaleString('es-ES')}</td>
+                            <td class="p-4 font-bold text-emerald-400">€ ${Number(price).toLocaleString('es-ES')}</td>
                             <td class="p-4"><span class="badge ${condition === 'Vendido' ? 'badge-draft' : condition === 'Reservado' ? 'badge-piezas' : 'badge-success'}">${condition}</span></td>
+                            <td class="p-4 text-right whitespace-nowrap">
+                                <button onclick="generarPublicacionRapida('${v.id}')" class="text-xs bg-pink-600/20 text-pink-400 hover:bg-pink-600/40 px-2 py-1 rounded mr-1" title="Generar publicación para redes"><i class="fas fa-wand-magic-sparkles"></i></button>
+                                <button onclick="editarStock('${v.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded mr-1" title="Editar"><i class="fas fa-pen"></i></button>
+                                <button onclick="eliminarStock('${v.id}', '${title.replace(/'/g,"")}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded" title="Eliminar"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -1746,6 +1813,7 @@
                             <a href="https://wa.me/?text=${textWATerminado}" target="_blank" class="text-xs bg-emerald-600/20 text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-emerald-600/40 transition-colors" title="Avisar recogida por WhatsApp"><i class="fab fa-whatsapp mr-1"></i> Terminado</a>
                             <a href="https://wa.me/?text=${textWAReseña}" target="_blank" class="text-xs bg-yellow-600/20 text-yellow-400 px-3 py-1.5 rounded-lg hover:bg-yellow-600/40 transition-colors" title="Pedir reseña en Google"><i class="fab fa-google mr-1"></i> Pedir Reseña</a>
                             <button onclick="convertirAFactura('${o.id}', '${matricula}')" class="text-xs bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-600/40 transition-colors" title="Cerrar OR y crear Factura"><i class="fas fa-file-invoice mr-1"></i> Facturar</button>
+                            <button onclick="eliminarOrden('${o.id}')" class="text-xs bg-red-600/20 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-600/40 transition-colors" title="Eliminar orden"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
                 });
@@ -1754,22 +1822,32 @@
             }
             else if (state.currentSection === 'clientes') {
                 let html = `<div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left border-collapse">
-                    <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400"><th class="p-4">Nombre</th><th class="p-4">Teléfono</th><th class="p-4">DNI / CIF</th><th class="p-4">Email</th><th class="p-4">RGPD Consentido</th></tr></thead><tbody class="divide-y divide-slate-800/50">`;
-                if(state.clientes.length===0) html += `<tr><td colspan="5" class="p-8 text-center text-slate-500">No hay clientes.</td></tr>`;
+                    <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400"><th class="p-4">Nombre</th><th class="p-4">Teléfono</th><th class="p-4">Vehículos</th><th class="p-4">DNI / CIF</th><th class="p-4">Email</th><th class="p-4">RGPD</th><th class="p-4 text-right">Acciones</th></tr></thead><tbody class="divide-y divide-slate-800/50">`;
+                if(state.clientes.length===0) html += `<tr><td colspan="7" class="p-8 text-center text-slate-500">No hay clientes.</td></tr>`;
                 state.clientes.forEach(cl => {
-                    const name = cl.attributes?.nombre || cl.nombre || '---';
-                    const apellidos = cl.attributes?.apellidos || cl.apellidos || '';
-                    const tel = cl.attributes?.telefono || cl.telefono || '---';
-                    const dni = cl.attributes?.dni || cl.dni || '---';
-                    const mail = cl.attributes?.email || cl.email || '---';
-                    const gdpr = cl.attributes?.consentimiento_gdpr !== false && cl.consentimiento_gdpr !== false;
+                    const a = cl.attributes || cl;
+                    const name = a.nombre || '---';
+                    const apellidos = a.apellidos || '';
+                    const tel = a.telefono || '---';
+                    const dni = a.dni || '---';
+                    const mail = a.email || '---';
+                    const gdpr = a.consentimiento_gdpr !== false;
+                    const vehs = Array.isArray(a.vehiculos_propiedad) ? a.vehiculos_propiedad : [];
+                    const vehsHtml = vehs.length
+                        ? vehs.map(v => `<span class="inline-block bg-slate-800 px-2 py-0.5 rounded text-xs mr-1 mb-1" title="${v.marca||''} ${v.modelo||''}">${v.matricula || '?'}</span>`).join('')
+                        : '<span class="text-slate-600 text-xs">Sin coches</span>';
 
                     html += `<tr class="hover:bg-slate-800/30">
                         <td class="p-4 font-medium">${name} ${apellidos}</td>
                         <td class="p-4 text-slate-400">${tel}</td>
+                        <td class="p-4">${vehsHtml}</td>
                         <td class="p-4 font-mono text-slate-400">${dni}</td>
                         <td class="p-4 text-slate-400">${mail}</td>
-                        <td class="p-4"><span class="badge ${gdpr ? 'badge-success' : 'badge-danger'}">${gdpr ? 'Firmado' : 'No Firmado'}</span></td>
+                        <td class="p-4"><span class="badge ${gdpr ? 'badge-success' : 'badge-danger'}">${gdpr ? 'OK' : 'No'}</span></td>
+                        <td class="p-4 text-right whitespace-nowrap">
+                            <button onclick="editarCliente('${cl.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded mr-1" title="Editar"><i class="fas fa-pen"></i></button>
+                            <button onclick="eliminarCliente('${cl.id}', '${(name+' '+apellidos).replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tr>`;
                 });
                 html += `</tbody></table></div>`;
@@ -1833,6 +1911,7 @@
                                 <a href="https://wa.me/?text=${reminderText}" target="_blank" class="text-xs bg-emerald-600/20 text-emerald-400 px-3 py-1.5 rounded-lg hover:bg-emerald-600/40 transition-colors inline-flex items-center gap-1">
                                     <i class="fab fa-whatsapp"></i> Recordar
                                 </a>
+                                <button onclick="eliminarCita('${ct.id}', '${(ct.attributes?.titulo || ct.titulo || '').replace(/'/g,"")}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2.5 py-1.5 rounded-lg ml-1" title="Eliminar cita"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -1899,6 +1978,782 @@
                 html += `</tbody></table></div>`;
                 c.innerHTML = html;
             }
+            else if (state.currentSection === 'gastos') { renderGastos(c); }
+            else if (state.currentSection === 'publicaciones') { renderPublicaciones(c); }
+            else if (state.currentSection === 'portales') { renderPortales(c); }
+            else if (state.currentSection === 'ajustes') { renderAjustes(c); }
+        }
+
+        // ============================================================
+        // SECCIÓN: GASTOS DEL TALLER (contabilidad)
+        // ============================================================
+        function renderGastos(c) {
+            const gastos = state.gastos || [];
+            const total = gastos.reduce((s, g) => s + Number((g.attributes || g).importe || 0), 0);
+            const totalConIva = gastos.reduce((s, g) => {
+                const a = g.attributes || g;
+                return s + Number(a.importe || 0) * (1 + Number(a.iva || 0) / 100);
+            }, 0);
+            const esteMes = gastos.filter(g => {
+                const f = (g.attributes || g).fecha;
+                if (!f) return false;
+                const d = new Date(f), n = new Date();
+                return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+            }).reduce((s, g) => s + Number((g.attributes || g).importe || 0), 0);
+
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-red-500">
+                        <p class="text-slate-400 text-sm">Total gastado (histórico, base)</p>
+                        <h3 class="text-2xl font-bold mt-1">€ ${total.toLocaleString('es-ES',{minimumFractionDigits:2})}</h3>
+                    </div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-fuchsia-500">
+                        <p class="text-slate-400 text-sm">Total con IVA</p>
+                        <h3 class="text-2xl font-bold mt-1">€ ${totalConIva.toLocaleString('es-ES',{minimumFractionDigits:2})}</h3>
+                    </div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-amber-500">
+                        <p class="text-slate-400 text-sm">Gastos este mes</p>
+                        <h3 class="text-2xl font-bold mt-1">€ ${esteMes.toLocaleString('es-ES',{minimumFractionDigits:2})}</h3>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400">
+                            <th class="p-4">Fecha</th><th class="p-4">Proveedor</th><th class="p-4">Concepto</th>
+                            <th class="p-4">Categoría</th><th class="p-4 text-right">Importe</th>
+                            <th class="p-4">Factura</th><th class="p-4 text-right">Acciones</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-slate-800/50">`;
+            if (gastos.length === 0) {
+                html += `<tr><td colspan="7" class="p-8 text-center text-slate-500">No hay gastos registrados. Usa el botón "Factura por foto" para que la IA lea la factura automáticamente, o "Nuevo gasto manual".</td></tr>`;
+            }
+            gastos.forEach(g => {
+                const a = g.attributes || g;
+                const fecha = a.fecha ? new Date(a.fecha).toLocaleDateString('es-ES') : '---';
+                const imp = Number(a.importe || 0);
+                const iva = Number(a.iva || 0);
+                const total = imp * (1 + iva / 100);
+                html += `<tr class="hover:bg-slate-800/30">
+                    <td class="p-4 text-slate-300">${fecha}</td>
+                    <td class="p-4 font-semibold text-white">${a.proveedor || '---'}</td>
+                    <td class="p-4 text-slate-400 max-w-xs truncate" title="${a.concepto || ''}">${a.concepto || '---'}</td>
+                    <td class="p-4"><span class="badge badge-piezas">${a.categoria || 'Otros'}</span></td>
+                    <td class="p-4 text-right">
+                        <div class="font-bold text-red-400">€ ${imp.toFixed(2)}</div>
+                        <div class="text-xs text-slate-500">+${iva}% IVA = € ${total.toFixed(2)}</div>
+                    </td>
+                    <td class="p-4">${a.extraido_por_ocr ? '<span class="badge badge-success"><i class="fas fa-camera mr-1"></i>OCR</span>' : (a.numero_factura || '<span class="text-slate-600">—</span>')}</td>
+                    <td class="p-4 text-right whitespace-nowrap">
+                        <button onclick="eliminarGasto('${g.id}', '${(a.proveedor||'').replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
+        }
+
+        function abrirModalGasto(prefill = {}) {
+            document.getElementById('modal-title').innerText = 'Registrar gasto del taller';
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Fecha *</label><input type="date" id="gas-fecha" value="${prefill.fecha || new Date().toISOString().split('T')[0]}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Proveedor *</label><input type="text" id="gas-proveedor" value="${prefill.proveedor || ''}" placeholder="Ej: Recambios García"></div>
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Concepto *</label>
+                    <textarea id="gas-concepto" rows="2" placeholder="Ej: Pastillas de freno Bosch + filtros para OR-045">${prefill.concepto || ''}</textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Importe (base) €</label><input type="number" id="gas-importe" value="${prefill.importe || ''}" step="0.01" placeholder="120.00"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">IVA %</label><input type="number" id="gas-iva" value="${prefill.iva ?? 21}" step="0.1"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Nº factura</label><input type="text" id="gas-num" value="${prefill.numero_factura || ''}"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Categoría</label>
+                        <select id="gas-categoria">
+                            ${['Recambios','Herramientas','Consumibles','Alquiler / Suministros','Vehículo para taller','Formación','Marketing','Otros']
+                                .map(cat => `<option value="${cat}" ${prefill.categoria===cat?'selected':''}>${cat}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Método de pago</label>
+                        <select id="gas-metodo">
+                            ${['Efectivo','Transferencia','Tarjeta','Domiciliado','Otro'].map(m => `<option value="${m}" ${prefill.metodo_pago===m?'selected':''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Notas</label>
+                    <textarea id="gas-notas" rows="2">${prefill.notas || ''}</textarea>
+                </div>
+                <input type="hidden" id="gas-ocr" value="${prefill.extraido_por_ocr ? '1' : '0'}">
+                <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarGasto()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar gasto</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function guardarGasto() {
+            const data = {
+                fecha: document.getElementById('gas-fecha').value,
+                proveedor: document.getElementById('gas-proveedor').value.trim(),
+                concepto: document.getElementById('gas-concepto').value.trim(),
+                importe: Number(document.getElementById('gas-importe').value) || 0,
+                iva: Number(document.getElementById('gas-iva').value) || 0,
+                categoria: document.getElementById('gas-categoria').value,
+                metodo_pago: document.getElementById('gas-metodo').value,
+                numero_factura: document.getElementById('gas-num').value.trim(),
+                notas: document.getElementById('gas-notas').value.trim(),
+                extraido_por_ocr: document.getElementById('gas-ocr').value === '1'
+            };
+            if (!data.fecha || !data.proveedor || !data.concepto || !data.importe) {
+                Swal.fire('Faltan datos', 'Fecha, proveedor, concepto e importe son obligatorios.', 'error');
+                return;
+            }
+            const saved = await postEntity('gastos', data, 'crm_local_gastos');
+            state.gastos.unshift(saved);
+            closeModal(); renderContent();
+            Swal.fire('Guardado', 'Gasto registrado correctamente.', 'success');
+        }
+
+        function abrirModalGastoOCR() {
+            document.getElementById('modal-title').innerText = 'Factura por foto (OCR con IA)';
+            document.getElementById('form-content').innerHTML = `
+                <div class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center mb-4">
+                    <i class="fas fa-camera text-4xl text-fuchsia-500 mb-3"></i>
+                    <p class="text-slate-300 mb-3">Sube una foto o PDF de la factura del proveedor.</p>
+                    <input type="file" id="ocr-file" accept="image/*,application/pdf" class="hidden" onchange="procesarFacturaOCR(event)">
+                    <button onclick="document.getElementById('ocr-file').click()" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold py-2 px-6 rounded-lg"><i class="fas fa-upload mr-2"></i>Elegir archivo</button>
+                    <p id="ocr-status" class="text-sm text-slate-400 mt-4"></p>
+                </div>
+                <div class="text-xs text-slate-500 leading-relaxed p-3 rounded bg-slate-900/40 border border-slate-800">
+                    <b>Requisitos:</b> el OCR necesita una clave de API (Anthropic o OpenAI) configurada en <a href="#" onclick="showSection('ajustes')" class="text-blue-400 hover:underline">Ajustes e Integraciones</a> y el servicio de automatización en marcha.
+                    Sin ellos, la subida guarda solo la foto y tú rellenas los datos a mano.
+                </div>
+                <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cerrar</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function procesarFacturaOCR(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const status = document.getElementById('ocr-status');
+            status.textContent = 'Enviando al servicio de OCR...';
+            const fd = new FormData();
+            fd.append('factura', file);
+            try {
+                const res = await fetchAPI(`${AUTOMATION_BASE}/ocr/factura`, { method: 'POST', body: fd });
+                if (res.ok) {
+                    const data = await res.json();
+                    status.textContent = 'Datos extraídos. Revísalos antes de guardar.';
+                    closeModal();
+                    abrirModalGasto({ ...data, extraido_por_ocr: true });
+                } else {
+                    status.innerHTML = `<span class="text-amber-400">Servicio no disponible (${res.status}). Rellena los datos a mano.</span>`;
+                    setTimeout(() => { closeModal(); abrirModalGasto({ extraido_por_ocr: false }); }, 1500);
+                }
+            } catch (err) {
+                status.innerHTML = '<span class="text-amber-400">Servicio de automatización no configurado. Abro el formulario manual.</span>';
+                setTimeout(() => { closeModal(); abrirModalGasto({ extraido_por_ocr: false }); }, 1500);
+            }
+        }
+
+        // ============================================================
+        // SECCIÓN: PUBLICACIONES SOCIALES (generador para redes)
+        // ============================================================
+        function renderPublicaciones(c) {
+            const pubs = state.publicaciones || [];
+            let html = `
+                <div class="glass-panel p-6 rounded-2xl mb-6">
+                    <h3 class="text-lg font-bold mb-2 text-slate-200">Publicaciones para redes y portales</h3>
+                    <p class="text-sm text-slate-400">Genera texto e imagen listos para <b>WhatsApp Estado</b>, <b>Instagram</b>, <b>Wallapop</b> y <b>coches.net</b> a partir de un coche del stock. Descarga el pack o envíalo al móvil por Telegram.</p>
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400">
+                            <th class="p-4">Título</th><th class="p-4">Plataforma</th><th class="p-4">Estado</th>
+                            <th class="p-4">Vehículo</th><th class="p-4">Fecha</th><th class="p-4 text-right">Acciones</th>
+                        </tr></thead><tbody class="divide-y divide-slate-800/50">`;
+            if (pubs.length === 0) {
+                html += `<tr><td colspan="6" class="p-8 text-center text-slate-500">No hay publicaciones generadas. Pulsa "Generar Publicación" arriba, o desde un coche del stock (icono varita mágica).</td></tr>`;
+            }
+            pubs.forEach(p => {
+                const a = p.attributes || p;
+                const veh = a.vehiculo?.title || a.vehiculo?.data?.attributes?.title || '—';
+                html += `<tr class="hover:bg-slate-800/30">
+                    <td class="p-4 font-semibold text-white">${a.titulo || 'Sin título'}</td>
+                    <td class="p-4"><span class="badge badge-taller">${a.plataforma || '—'}</span></td>
+                    <td class="p-4"><span class="badge ${a.estado === 'Publicado' ? 'badge-success' : 'badge-piezas'}">${a.estado || 'Borrador'}</span></td>
+                    <td class="p-4 text-slate-400">${veh}</td>
+                    <td class="p-4 text-slate-500 text-xs">${a.createdAt ? new Date(a.createdAt).toLocaleDateString('es-ES') : '—'}</td>
+                    <td class="p-4 text-right whitespace-nowrap">
+                        <button onclick="verPublicacion('${p.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded mr-1" title="Ver / copiar"><i class="fas fa-eye"></i></button>
+                        <button onclick="eliminarPublicacion('${p.id}', '${(a.titulo||'').replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
+        }
+
+        function abrirModalPublicacion(vehId = '') {
+            document.getElementById('modal-title').innerText = 'Generar publicación para redes';
+            let opts = '<option value="">-- Elige el coche --</option>';
+            state.vehiculos.forEach(v => {
+                const t = v.attributes?.title || 'Sin título';
+                opts += `<option value="${v.id}" ${vehId==v.id?'selected':''}>${t}</option>`;
+            });
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Coche del stock *</label>
+                        <select id="pub-vehiculo" onchange="rellenarPublicacion()">${opts}</select>
+                    </div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Plataforma *</label>
+                        <select id="pub-plataforma" onchange="rellenarPublicacion()">
+                            ${['WhatsApp Estado','Instagram','Facebook','Wallapop','coches.net','Milanuncios','Otros'].map(p=>`<option>${p}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Título *</label>
+                    <input type="text" id="pub-titulo" placeholder="Ej: Audi Q5 ETIQUETA ECO al mejor precio">
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Texto del anuncio *</label>
+                    <textarea id="pub-contenido" rows="7"></textarea>
+                    <p class="text-xs text-slate-500 mt-1">Consejo: usa emojis 🚗🔥 en WhatsApp/Instagram, texto sobrio en Wallapop/coches.net.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Hashtags</label>
+                        <input type="text" id="pub-hashtags" placeholder="#tallermigue #cocheocasion #benifla">
+                    </div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Precio mostrado (€)</label>
+                        <input type="number" id="pub-precio">
+                    </div>
+                </div>
+
+                <div class="mb-4 p-4 bg-slate-900/40 rounded-lg border border-slate-800">
+                    <h4 class="text-sm font-bold text-slate-200 mb-2"><i class="fas fa-image text-pink-400 mr-1"></i> Vista previa de la tarjeta para redes</h4>
+                    <canvas id="pub-canvas" width="1080" height="1350" class="w-full max-w-sm mx-auto rounded border border-slate-700 bg-slate-900" style="aspect-ratio:1080/1350"></canvas>
+                    <div class="flex flex-wrap gap-2 justify-center mt-3">
+                        <button onclick="regenerarCanvas()" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg"><i class="fas fa-arrows-rotate mr-1"></i>Regenerar</button>
+                        <button onclick="descargarCanvas()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg"><i class="fas fa-download mr-1"></i>Descargar PNG</button>
+                        <button onclick="copiarTextoPublicacion()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg"><i class="fas fa-copy mr-1"></i>Copiar texto</button>
+                        <button onclick="enviarTelegram()" class="text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg" title="Envía imagen + texto al Telegram del taller para publicarlo en 1 clic desde el móvil"><i class="fab fa-telegram mr-1"></i>Enviar al móvil</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarPublicacion()" class="bg-pink-600 hover:bg-pink-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar publicación</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            if (vehId) { document.getElementById('pub-vehiculo').value = vehId; rellenarPublicacion(); }
+        }
+
+        function generarPublicacionRapida(vehId) { abrirModalPublicacion(vehId); }
+
+        function rellenarPublicacion() {
+            const vId = document.getElementById('pub-vehiculo').value;
+            const plat = document.getElementById('pub-plataforma').value;
+            const v = state.vehiculos.find(x => x.id == vId);
+            if (!v) return;
+            const a = v.attributes || v;
+            const titulo = `${a.title} · ${a.year || ''} · ${a.kilometers ? a.kilometers.toLocaleString('es-ES')+' km' : ''}`.trim();
+            const precio = a.price || '';
+            let cuerpo = '';
+            if (plat === 'WhatsApp Estado' || plat === 'Instagram' || plat === 'Facebook') {
+                cuerpo = `🚗 ${a.title}\n📅 ${a.year || 'Consultar'} · ⛽ ${a.fuel_type || 'Gasolina'} · ⚙️ ${a.transmission || 'Manual'}\n📏 ${a.kilometers ? a.kilometers.toLocaleString('es-ES') + ' km' : 'Revisado'}\n\n✅ Revisado por nuestro taller\n✅ Garantía documentada\n✅ Cambio y financiación\n\n💰 ${precio ? precio.toLocaleString('es-ES') + ' €' : 'Consulta precio'}\n📞 625 78 64 38 · Beniflà (Valencia)`;
+            } else if (plat === 'Wallapop') {
+                cuerpo = `${a.title} en perfecto estado. Año ${a.year || ''}, ${a.kilometers ? a.kilometers.toLocaleString('es-ES') + ' km' : 'kilómetros revisados'}, motor ${a.engine_size || ''} ${a.fuel_type || ''}, cambio ${a.transmission || 'manual'}. Color ${a.exterior_color || 'consultar'}. Revisado por nuestro taller mecánico (El Taller de Migue, Beniflà - Valencia) con garantía documentada y trámites incluidos. Aceptamos coche a cambio y financiación. Preguntas: 625 78 64 38.`;
+            } else {
+                cuerpo = `${a.title}. ${a.year || ''} · ${a.kilometers ? a.kilometers.toLocaleString('es-ES') + ' km' : ''} · ${a.fuel_type || ''} · ${a.transmission || ''}. ${a.description || 'Vehículo revisado por nuestro taller con garantía.'}`;
+            }
+            document.getElementById('pub-titulo').value = titulo;
+            document.getElementById('pub-contenido').value = cuerpo;
+            document.getElementById('pub-precio').value = precio;
+            document.getElementById('pub-hashtags').value = '#tallermigue #cocheocasion #benifla #valencia #cochesegundamano';
+            regenerarCanvas();
+        }
+
+        function regenerarCanvas() {
+            const canvas = document.getElementById('pub-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+
+            const vId = document.getElementById('pub-vehiculo').value;
+            const v = state.vehiculos.find(x => x.id == vId);
+            const a = (v && (v.attributes || v)) || {};
+            const titulo = a.title || 'Vehículo';
+            const precio = document.getElementById('pub-precio').value || a.price || '';
+
+            // Fondo con gradiente accent taller
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#1D2D5E');
+            grad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Overlay decorativo
+            ctx.fillStyle = 'rgba(249, 115, 22, 0.15)';
+            ctx.beginPath();
+            ctx.arc(w * 0.85, h * 0.12, 220, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Banda superior
+            ctx.fillStyle = '#f97316';
+            ctx.fillRect(0, 60, 24, 120);
+            ctx.font = 'bold 42px Outfit, sans-serif';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('EL TALLER DE MIGUE', 60, 110);
+            ctx.font = '24px Outfit, sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Beniflà · Valencia · 625 78 64 38', 60, 155);
+
+            // Título del coche (wrap manual)
+            ctx.font = 'bold 78px Outfit, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            wrapText(ctx, titulo.toUpperCase(), 60, 340, w - 120, 92);
+
+            // Etiqueta destacada
+            const cond = (a.condition || 'DISPONIBLE').toUpperCase();
+            ctx.font = 'bold 32px Outfit, sans-serif';
+            ctx.fillStyle = '#f97316';
+            ctx.fillRect(60, 540, ctx.measureText(cond).width + 40, 60);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(cond, 80, 583);
+
+            // Ficha técnica
+            ctx.font = 'bold 36px Outfit, sans-serif';
+            ctx.fillStyle = '#f1f5f9';
+            const specs = [
+                `📅 ${a.year || 'Consultar'}`,
+                `📏 ${a.kilometers ? a.kilometers.toLocaleString('es-ES') + ' km' : 'Revisado'}`,
+                `⛽ ${a.fuel_type || 'Consultar'}`,
+                `⚙️ ${a.transmission || 'Consultar'}`
+            ];
+            specs.forEach((s, i) => { ctx.fillText(s, 60, 720 + i * 68); });
+
+            // Precio destacado
+            ctx.font = 'bold 96px Outfit, sans-serif';
+            ctx.fillStyle = '#10b981';
+            const priceText = precio ? Number(precio).toLocaleString('es-ES') + ' €' : 'Consultar';
+            ctx.fillText(priceText, 60, 1130);
+
+            // Footer / CTA
+            ctx.font = 'bold 34px Outfit, sans-serif';
+            ctx.fillStyle = '#f1f5f9';
+            ctx.fillText('✅ Revisado con garantía · ✅ Cambio y financiación', 60, 1220);
+            ctx.font = '30px Outfit, sans-serif';
+            ctx.fillStyle = '#f97316';
+            ctx.fillText('eltallerdemigue.es · WhatsApp 625 78 64 38', 60, 1280);
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for (let n = 0; n < words.length; n++) {
+                const test = line + words[n] + ' ';
+                if (ctx.measureText(test).width > maxWidth && n > 0) {
+                    ctx.fillText(line.trim(), x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else line = test;
+            }
+            ctx.fillText(line.trim(), x, y);
+        }
+
+        function descargarCanvas() {
+            const canvas = document.getElementById('pub-canvas');
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `taller-migue-publicacion-${Date.now()}.png`;
+            a.click();
+        }
+
+        async function copiarTextoPublicacion() {
+            const t = document.getElementById('pub-contenido').value + '\n\n' + document.getElementById('pub-hashtags').value;
+            try {
+                await navigator.clipboard.writeText(t);
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Texto copiado', showConfirmButton: false, timer: 1500 });
+            } catch { Swal.fire('Copia', t, 'info'); }
+        }
+
+        async function enviarTelegram() {
+            const canvas = document.getElementById('pub-canvas');
+            const texto = document.getElementById('pub-contenido').value + '\n\n' + document.getElementById('pub-hashtags').value;
+            canvas.toBlob(async blob => {
+                const fd = new FormData();
+                fd.append('imagen', blob, 'publicacion.png');
+                fd.append('texto', texto);
+                try {
+                    const res = await fetchAPI(`${AUTOMATION_BASE}/telegram/send-publication`, { method: 'POST', body: fd });
+                    if (res.ok) Swal.fire('Enviado', 'La publicación está en tu Telegram lista para subir al estado.', 'success');
+                    else throw new Error();
+                } catch {
+                    Swal.fire('Servicio no configurado', 'Configura el bot de Telegram en Ajustes y despliega el servicio de automatización.', 'info');
+                }
+            });
+        }
+
+        async function guardarPublicacion() {
+            const vId = document.getElementById('pub-vehiculo').value;
+            const data = {
+                titulo: document.getElementById('pub-titulo').value.trim(),
+                plataforma: document.getElementById('pub-plataforma').value,
+                estado: 'Listo para publicar',
+                contenido: document.getElementById('pub-contenido').value.trim(),
+                hashtags: document.getElementById('pub-hashtags').value.trim(),
+                precio_mostrado: Number(document.getElementById('pub-precio').value) || null,
+            };
+            if (vId && !String(vId).startsWith('local_')) data.vehiculo = vId;
+            if (!data.titulo || !data.contenido) {
+                Swal.fire('Faltan datos', 'Título y contenido son obligatorios.', 'error'); return;
+            }
+            const saved = await postEntity('publicacion-socials', data, 'crm_local_publicaciones');
+            state.publicaciones.unshift(saved);
+            closeModal(); renderContent();
+            Swal.fire('Guardada', 'Publicación lista para descargar / enviar.', 'success');
+        }
+
+        function verPublicacion(id) {
+            const p = state.publicaciones.find(x => x.id == id);
+            if (!p) return;
+            const a = p.attributes || p;
+            Swal.fire({
+                title: a.titulo,
+                html: `<div class="text-left text-sm">
+                    <p><b>Plataforma:</b> ${a.plataforma}</p>
+                    <p><b>Estado:</b> ${a.estado}</p>
+                    <div class="mt-3 bg-slate-800 p-3 rounded border border-slate-700 whitespace-pre-wrap font-mono text-xs">${(a.contenido || '').replace(/</g,'&lt;')}</div>
+                    <p class="mt-2 text-blue-400">${a.hashtags || ''}</p>
+                </div>`,
+                showCancelButton: true,
+                confirmButtonText: 'Copiar texto',
+                cancelButtonText: 'Cerrar'
+            }).then(r => { if (r.isConfirmed) navigator.clipboard.writeText(a.contenido + '\n\n' + (a.hashtags||'')); });
+        }
+
+        // ============================================================
+        // SECCIÓN: PORTALES DE VENTA (Wallapop, coches.net, WhatsApp Catalog)
+        // ============================================================
+        function renderPortales(c) {
+            const s = state.ajustes_remotos || {};
+            const feedBase = API_BASE.replace(/\/api$/, '') + '/api/stock-vehicles/feed';
+            c.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Wallapop -->
+                    <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-yellow-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-2xl"><i class="fas fa-tag"></i></div>
+                            <div>
+                                <h3 class="text-lg font-bold">Wallapop</h3>
+                                <p class="text-xs text-slate-400">Estado: <span class="badge ${s.wallapopEnabled ? 'badge-success' : 'badge-draft'}">${s.wallapopEnabled ? 'Activo' : 'No configurado'}</span></p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-4">Wallapop no permite publicación automática por API pública. Descarga el feed y súbelo desde la app profesional de Wallapop, o abre cada coche con un tap.</p>
+                        <div class="flex flex-col gap-2">
+                            <a href="${feedBase}/wallapop.json" target="_blank" class="text-xs bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-2 rounded text-center"><i class="fas fa-download mr-1"></i>Descargar feed JSON</a>
+                            <a href="${feedBase}/generic.csv" target="_blank" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded text-center"><i class="fas fa-file-csv mr-1"></i>Descargar CSV</a>
+                            <button onclick="publicarPortal('wallapop')" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded"><i class="fab fa-telegram mr-1"></i>Enviar pack al móvil</button>
+                        </div>
+                    </div>
+
+                    <!-- coches.net -->
+                    <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-blue-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl"><i class="fas fa-car"></i></div>
+                            <div>
+                                <h3 class="text-lg font-bold">coches.net</h3>
+                                <p class="text-xs text-slate-400">Estado: <span class="badge ${s.cochesnetEnabled ? 'badge-success' : 'badge-draft'}">${s.cochesnetEnabled ? 'Activo' : 'No configurado'}</span></p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-4">Requiere alta de profesional. Da esta URL a coches.net para que sincronice tu stock automáticamente cada 24 h:</p>
+                        <div class="bg-slate-900 p-2 rounded text-xs font-mono text-emerald-400 mb-3 truncate" title="${feedBase}/cochesnet.xml">${feedBase}/cochesnet.xml</div>
+                        <div class="flex flex-col gap-2">
+                            <a href="${feedBase}/cochesnet.xml" target="_blank" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded text-center"><i class="fas fa-external-link-alt mr-1"></i>Ver feed XML</a>
+                            <button onclick="copiarFeedUrl('${feedBase}/cochesnet.xml')" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded"><i class="fas fa-copy mr-1"></i>Copiar URL</button>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp Business Catalog -->
+                    <div class="glass-panel rounded-2xl p-6 border-t-4 border-t-emerald-500">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl"><i class="fab fa-whatsapp"></i></div>
+                            <div>
+                                <h3 class="text-lg font-bold">WhatsApp Catálogo</h3>
+                                <p class="text-xs text-slate-400">Estado: <span class="badge ${s.whatsappCatalogEnabled ? 'badge-success' : 'badge-draft'}">${s.whatsappCatalogEnabled ? 'Activo' : 'No configurado'}</span></p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-400 mb-4">Sincroniza tus coches con el catálogo de WhatsApp Business (Meta). Requiere WhatsApp Business API con BSP y token permanente configurado en <a href="#" onclick="showSection('ajustes')" class="text-blue-400 underline">Ajustes</a>.</p>
+                        <button onclick="sincronizarWhatsAppCatalog()" ${s.whatsappCatalogEnabled?'':'disabled'} class="text-xs bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2 rounded w-full"><i class="fas fa-sync-alt mr-1"></i>Sincronizar catálogo ahora</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-2 text-slate-200"><i class="fas fa-circle-info mr-2 text-blue-400"></i>Cómo funciona</h3>
+                    <ul class="text-sm text-slate-400 leading-relaxed space-y-2 list-disc pl-5">
+                        <li><b>coches.net y Milanuncios profesional</b> aceptan un feed XML/CSV público. Alta el taller como profesional en el portal y les das la URL de arriba — sincroniza cada 24 h sin que tú hagas nada.</li>
+                        <li><b>Wallapop</b> no tiene API pública para publicar. Alternativa realista: el CRM genera el pack (foto + texto + precio) y lo envía a tu Telegram; subes cada anuncio con un tap desde el móvil.</li>
+                        <li><b>WhatsApp Estados</b> solo se pueden subir manualmente desde el móvil (Meta no lo automatiza). El botón "Enviar al móvil" te lo prepara.</li>
+                        <li><b>WhatsApp Catálogo</b> sí es automatizable con la WhatsApp Business API (Meta): sincronización real con la API Graph si tienes el token.</li>
+                    </ul>
+                </div>`;
+        }
+
+        function copiarFeedUrl(url) {
+            navigator.clipboard.writeText(url);
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'URL copiada', showConfirmButton: false, timer: 1500 });
+        }
+
+        function publicarPortal(portal) {
+            Swal.fire('Enviando pack…', 'Genera imagen y texto para cada coche y los manda a tu Telegram para publicar desde el móvil.', 'info');
+            // Implementación: recorrer state.vehiculos y usar enviarTelegram para cada uno
+            (async () => {
+                for (const v of state.vehiculos.slice(0, 5)) {
+                    try {
+                        await fetchAPI(`${AUTOMATION_BASE}/publish/${portal}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ vehicleId: v.id })
+                        });
+                    } catch (e) { /* servicio no disponible */ }
+                }
+            })();
+        }
+
+        async function sincronizarWhatsAppCatalog() {
+            Swal.fire('Sincronizando…', 'Enviando el stock al catálogo de WhatsApp Business.', 'info');
+            try {
+                const res = await fetchAPI(`${AUTOMATION_BASE}/sync/whatsapp-catalog`, { method: 'POST' });
+                if (res.ok) { const j = await res.json(); Swal.fire('Sincronizado', `${j.count || 0} vehículos actualizados.`, 'success'); }
+                else throw new Error();
+            } catch { Swal.fire('Servicio no disponible', 'Comprueba que el token de WhatsApp está configurado y el servicio de automatización activo.', 'error'); }
+        }
+
+        // ============================================================
+        // SECCIÓN: AJUSTES E INTEGRACIONES
+        // ============================================================
+        async function renderAjustes(c) {
+            // Traer los ajustes remotos
+            let s = state.ajustes_remotos || {};
+            try {
+                const res = await fetchAPI(`${API_BASE}/site-setting`);
+                if (res.ok) { const j = await res.json(); s = j.data?.attributes || j.data || {}; state.ajustes_remotos = s; }
+            } catch (e) { /* offline */ }
+
+            c.innerHTML = `
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-lg font-bold text-slate-200 mb-1"><i class="fas fa-gear text-blue-400 mr-2"></i>Ajustes e integraciones</h3>
+                        <p class="text-sm text-slate-400">Configura desde aquí los servicios externos. Los cambios se guardan en Strapi (site-setting).</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fab fa-google mr-2 text-red-400"></i>Analítica y píxeles</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="text-xs text-slate-400">Google Analytics 4 (G-XXXXXXXXXX)</label><input id="cfg-ga" type="text" value="${s.gaTrackingId||''}"></div>
+                            <div><label class="text-xs text-slate-400">Google Tag Manager (GTM-XXXXXX)</label><input id="cfg-gtm" type="text" value="${s.gtmContainerId||''}"></div>
+                            <div><label class="text-xs text-slate-400">Facebook Pixel ID</label><input id="cfg-fb" type="text" value="${s.fbPixelId||''}"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fab fa-telegram mr-2 text-cyan-400"></i>Bot de Telegram (para enviar publicaciones al móvil)</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="text-xs text-slate-400">Token del bot (@BotFather)</label><input id="cfg-tg-token" type="password" value="${s.telegramBotToken||''}"></div>
+                            <div><label class="text-xs text-slate-400">Chat ID de destino</label><input id="cfg-tg-chat" type="text" value="${s.telegramChatId||''}"></div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Habla con @BotFather en Telegram → /newbot → guarda el token. El Chat ID se saca escribiendo al bot y consultando <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code>.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fas fa-brain mr-2 text-fuchsia-400"></i>IA para OCR y descripciones (Anthropic / OpenAI)</h4>
+                        <label class="text-xs text-slate-400">API Key</label>
+                        <input id="cfg-ai" type="password" value="${s.openaiApiKey||''}" placeholder="sk-ant-... o sk-...">
+                        <p class="text-xs text-slate-500 mt-2">Se usa para leer facturas por foto (OCR) y generar descripciones de coches. Coste: ~1-3 céntimos por factura procesada.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fas fa-tag mr-2 text-yellow-400"></i>Wallapop</h4>
+                        <label class="flex items-center gap-2 mb-2"><input id="cfg-wall" type="checkbox" ${s.wallapopEnabled?'checked':''} class="w-4 h-4"><span class="text-sm text-slate-300">Activar módulo Wallapop (genera packs para publicar desde el móvil)</span></label>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fas fa-car mr-2 text-blue-400"></i>coches.net (feed XML profesional)</h4>
+                        <label class="flex items-center gap-2 mb-2"><input id="cfg-cn" type="checkbox" ${s.cochesnetEnabled?'checked':''} class="w-4 h-4"><span class="text-sm text-slate-300">Activar feed público para coches.net</span></label>
+                        <label class="text-xs text-slate-400 mt-2 block">ID de dealer / profesional en coches.net</label>
+                        <input id="cfg-cn-id" type="text" value="${s.cochesnetDealerId||''}">
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fab fa-whatsapp mr-2 text-emerald-400"></i>WhatsApp Business Catálogo (Meta)</h4>
+                        <label class="flex items-center gap-2 mb-2"><input id="cfg-wa" type="checkbox" ${s.whatsappCatalogEnabled?'checked':''} class="w-4 h-4"><span class="text-sm text-slate-300">Activar sincronización con Meta Business Catalog</span></label>
+                        <div class="grid md:grid-cols-2 gap-4 mt-2">
+                            <div><label class="text-xs text-slate-400">WhatsApp Business Account ID</label><input id="cfg-wa-baid" type="text" value="${s.whatsappBusinessAccountId||''}"></div>
+                            <div><label class="text-xs text-slate-400">Catalog ID</label><input id="cfg-wa-cid" type="text" value="${s.whatsappCatalogId||''}"></div>
+                            <div class="md:col-span-2"><label class="text-xs text-slate-400">Access Token permanente</label><input id="cfg-wa-tok" type="password" value="${s.whatsappAccessToken||''}"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-4 mt-2">
+                        <button onclick="guardarAjustes()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar ajustes</button>
+                    </div>
+                </div>`;
+        }
+
+        async function guardarAjustes() {
+            const data = {
+                gaTrackingId: document.getElementById('cfg-ga').value.trim(),
+                gtmContainerId: document.getElementById('cfg-gtm').value.trim(),
+                fbPixelId: document.getElementById('cfg-fb').value.trim(),
+                telegramBotToken: document.getElementById('cfg-tg-token').value.trim(),
+                telegramChatId: document.getElementById('cfg-tg-chat').value.trim(),
+                openaiApiKey: document.getElementById('cfg-ai').value.trim(),
+                wallapopEnabled: document.getElementById('cfg-wall').checked,
+                cochesnetEnabled: document.getElementById('cfg-cn').checked,
+                cochesnetDealerId: document.getElementById('cfg-cn-id').value.trim(),
+                whatsappCatalogEnabled: document.getElementById('cfg-wa').checked,
+                whatsappBusinessAccountId: document.getElementById('cfg-wa-baid').value.trim(),
+                whatsappCatalogId: document.getElementById('cfg-wa-cid').value.trim(),
+                whatsappAccessToken: document.getElementById('cfg-wa-tok').value.trim(),
+            };
+            try {
+                const res = await fetchAPI(`${API_BASE}/site-setting`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data })
+                });
+                if (res.ok) { state.ajustes_remotos = { ...state.ajustes_remotos, ...data }; Swal.fire('Guardado', 'Ajustes actualizados.', 'success'); }
+                else throw new Error(await res.text());
+            } catch (e) { Swal.fire('Error', 'No se pudo guardar en el servidor. Comprueba tu conexión.', 'error'); }
+        }
+
+        // ============================================================
+        // HELPERS GENÉRICOS DE CRUD (Strapi v5)
+        // ============================================================
+        async function updateEntity(endpoint, id, data, localKey) {
+            if (String(id).startsWith('local_')) {
+                const list = JSON.parse(localStorage.getItem(localKey)) || [];
+                const idx = list.findIndex(x => x.id == id);
+                if (idx !== -1) {
+                    list[idx].attributes = { ...list[idx].attributes, ...data };
+                    localStorage.setItem(localKey, JSON.stringify(list));
+                }
+                return { id, attributes: data };
+            }
+            try {
+                const res = await fetchAPI(`${API_BASE}/${endpoint}/${id}?status=published`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data })
+                });
+                if (res.ok) return normalizeEntity((await res.json()).data);
+                console.warn(`PUT ${endpoint}/${id} falló (${res.status})`);
+            } catch (e) { console.warn('PUT error', e); }
+            return null;
+        }
+
+        async function deleteEntity(endpoint, id, localKey, label) {
+            const confirmRes = await Swal.fire({
+                title: '¿Eliminar?',
+                text: label ? `Vas a borrar: ${label}. Esta acción no se puede deshacer.` : 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#ef4444'
+            });
+            if (!confirmRes.isConfirmed) return false;
+
+            if (String(id).startsWith('local_')) {
+                const list = JSON.parse(localStorage.getItem(localKey)) || [];
+                localStorage.setItem(localKey, JSON.stringify(list.filter(x => x.id != id)));
+            } else {
+                try {
+                    const res = await fetchAPI(`${API_BASE}/${endpoint}/${id}`, { method: 'DELETE' });
+                    if (!res.ok) {
+                        console.warn(`DELETE ${endpoint}/${id} falló (${res.status})`);
+                        Swal.fire('Error', 'No se pudo eliminar en el servidor. Comprueba tu conexión.', 'error');
+                        return false;
+                    }
+                } catch (e) {
+                    Swal.fire('Sin conexión', 'No se pudo eliminar en el servidor.', 'error');
+                    return false;
+                }
+            }
+            await fetchData();
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Eliminado', showConfirmButton: false, timer: 1500 });
+            return true;
+        }
+
+        // ============================================================
+        // VEHÍCULOS DEL CLIENTE (campo JSON vehiculos_propiedad)
+        // ============================================================
+        function addVehiculoClienteInput(v = {}) {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 items-center veh-row';
+            div.innerHTML = `
+                <input type="text" placeholder="Matrícula" class="w-32 v-mat" value="${v.matricula || ''}">
+                <input type="text" placeholder="Marca" class="w-32 v-marca" value="${v.marca || ''}">
+                <input type="text" placeholder="Modelo" class="flex-1 v-modelo" value="${v.modelo || ''}">
+                <input type="number" placeholder="Km" class="w-24 v-km" value="${v.km || ''}">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2"><i class="fas fa-trash"></i></button>`;
+            document.getElementById('cli-vehiculos-list').appendChild(div);
+        }
+        function collectVehiculosPropiedad() {
+            return Array.from(document.querySelectorAll('.veh-row')).map(row => ({
+                matricula: row.querySelector('.v-mat').value.trim().toUpperCase(),
+                marca: row.querySelector('.v-marca').value.trim(),
+                modelo: row.querySelector('.v-modelo').value.trim(),
+                km: Number(row.querySelector('.v-km').value) || 0
+            })).filter(v => v.matricula || v.marca || v.modelo);
+        }
+
+        function editarCliente(id) {
+            const cli = state.clientes.find(c => c.id == id);
+            if (!cli) return;
+            const a = cli.attributes || cli;
+            abrirModalCliente();
+            document.getElementById('modal-title').innerText = 'Editar cliente';
+            const form = document.getElementById('form-content');
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden'; hidden.id = 'cli-editar-id'; hidden.value = id;
+            form.appendChild(hidden);
+            document.getElementById('cli-nombre').value = a.nombre || '';
+            document.getElementById('cli-apellidos').value = a.apellidos || '';
+            document.getElementById('cli-telefono').value = a.telefono || '';
+            document.getElementById('cli-email').value = a.email || '';
+            document.getElementById('cli-dni').value = a.dni || '';
+            document.getElementById('cli-direccion').value = a.direccion || '';
+            document.getElementById('cli-notas').value = a.notas || '';
+            document.getElementById('cli-gdpr').checked = a.consentimiento_gdpr !== false;
+            (Array.isArray(a.vehiculos_propiedad) ? a.vehiculos_propiedad : []).forEach(v => addVehiculoClienteInput(v));
+        }
+
+        function eliminarCliente(id, nombre) { deleteEntity('clientes', id, 'crm_local_clientes', nombre); }
+        function eliminarStock(id, titulo) { deleteEntity('stock-vehicles', id, 'crm_local_vehiculos', titulo); }
+        function eliminarOrden(id) { deleteEntity('orden-reparacions', id, 'crm_local_ordenes', `OR-${id}`); }
+        function eliminarCita(id, titulo) { deleteEntity('citas', id, 'crm_local_citas', titulo); }
+        function eliminarGasto(id, desc) { deleteEntity('gastos', id, 'crm_local_gastos', desc); }
+        function eliminarPublicacion(id, titulo) { deleteEntity('publicacion-socials', id, 'crm_local_publicaciones', titulo); }
+
+        function editarStock(id) {
+            const v = state.vehiculos.find(x => x.id == id);
+            if (!v) return;
+            const a = v.attributes || v;
+            abrirModalStock();
+            document.getElementById('modal-title').innerText = 'Editar coche en stock';
+            const form = document.getElementById('form-content');
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden'; hidden.id = 'stk-editar-id'; hidden.value = id;
+            form.appendChild(hidden);
+            document.getElementById('stk-titulo').value = a.title || '';
+            document.getElementById('stk-precio').value = a.price || '';
+            document.getElementById('stk-year').value = a.year || '';
+            document.getElementById('stk-km').value = a.kilometers || '';
+            document.getElementById('stk-combustible').value = a.fuel_type || 'Gasolina';
+            document.getElementById('stk-transmision').value = a.transmission || 'Manual';
+            document.getElementById('stk-condition').value = a.condition || 'Disponible';
         }
 
         function tituloCita(ct) {

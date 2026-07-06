@@ -72,6 +72,20 @@
     }
 }
 
+# ---------- Automation worker (bot Telegram, OCR, syncs) ----------
+{$DOMAIN_AUTOMATION} {
+    reverse_proxy automation:4000 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+    }
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+}
+
 # ---------- Chatwoot (chat multicanal) ----------
 {$DOMAIN_CHAT} {
     reverse_proxy chatwoot-web:3000 {

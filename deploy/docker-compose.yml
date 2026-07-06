@@ -26,6 +26,7 @@ services:
       DOMAIN_WEB: ${DOMAIN_WEB}
       DOMAIN_CMS: ${DOMAIN_CMS}
       DOMAIN_CHAT: ${DOMAIN_CHAT}
+      DOMAIN_AUTOMATION: ${DOMAIN_AUTOMATION}
       ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
@@ -35,6 +36,7 @@ services:
     depends_on:
       - strapi
       - chatwoot-web
+      - automation
     networks:
       - taller
 
@@ -161,6 +163,20 @@ services:
     depends_on:
       chatwoot-web:
         condition: service_started
+    networks:
+      - taller
+
+  # ---------- Servicio de automatización (bot Telegram, OCR, syncs) ----------
+  automation:
+    build: ../backend/automation-worker
+    restart: unless-stopped
+    env_file: [automation.env]
+    environment:
+      PORT: 4000
+      STRAPI_URL: http://strapi:1337
+      ALLOWED_ORIGINS: "https://${DOMAIN_WEB},https://www.${DOMAIN_WEB}"
+    depends_on:
+      - strapi
     networks:
       - taller
 
