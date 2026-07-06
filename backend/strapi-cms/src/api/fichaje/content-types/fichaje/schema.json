@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fichajes",
+  "info": {
+    "singularName": "fichaje",
+    "pluralName": "fichajes",
+    "displayName": "Fichaje de Jornada"
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "trabajador": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::trabajador.trabajador",
+      "inversedBy": "fichajes"
+    },
+    "entrada": { "type": "datetime", "required": true },
+    "salida": { "type": "datetime" },
+    "duracion_min": {
+      "type": "integer",
+      "description": "Se rellena en el lifecycle beforeUpdate al cerrar el fichaje"
+    },
+    "orden_reparacion": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::orden-reparacion.orden-reparacion",
+      "description": "Opcional: fichaje ligado a una OR concreta"
+    },
+    "notas": { "type": "text" },
+    "origen": {
+      "type": "enumeration",
+      "enum": ["Kiosco taller", "CRM web", "Móvil"],
+      "default": "Kiosco taller"
+    }
+  }
+}

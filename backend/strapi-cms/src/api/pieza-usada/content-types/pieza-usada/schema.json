@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "piezas_usadas",
+  "info": {
+    "singularName": "pieza-usada",
+    "pluralName": "pieza-usadas",
+    "displayName": "Pieza utilizada en OR"
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "orden_reparacion": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::orden-reparacion.orden-reparacion",
+      "inversedBy": "piezas_usadas"
+    },
+    "nombre": { "type": "string", "required": true, "maxLength": 200 },
+    "referencia": { "type": "string", "maxLength": 100 },
+    "proveedor": { "type": "string", "maxLength": 150 },
+    "cantidad": { "type": "decimal", "default": 1, "min": 0 },
+    "coste_unitario": { "type": "decimal", "min": 0 },
+    "precio_venta_unitario": { "type": "decimal", "min": 0 },
+    "gasto_asociado": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::gasto.gasto"
+    }
+  }
+}

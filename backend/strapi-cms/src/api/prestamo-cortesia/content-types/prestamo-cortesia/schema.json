@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "prestamos_cortesia",
+  "info": {
+    "singularName": "prestamo-cortesia",
+    "pluralName": "prestamo-cortesias",
+    "displayName": "Préstamo de Coche de Cortesía"
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "vehiculo": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vehiculo-sustitucion.vehiculo-sustitucion"
+    },
+    "cliente": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::cliente.cliente"
+    },
+    "orden_reparacion": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::orden-reparacion.orden-reparacion"
+    },
+    "fecha_prestamo": { "type": "datetime", "required": true },
+    "fecha_devolucion_esperada": { "type": "datetime" },
+    "fecha_devolucion_real": { "type": "datetime" },
+    "km_salida": { "type": "integer", "min": 0 },
+    "km_entrada": { "type": "integer", "min": 0 },
+    "combustible_salida": { "type": "integer", "min": 0, "max": 100, "description": "% de depósito a la salida" },
+    "combustible_entrada": { "type": "integer", "min": 0, "max": 100 },
+    "fotos_salida": { "type": "media", "multiple": true, "required": false, "allowedTypes": ["images"] },
+    "fotos_entrada": { "type": "media", "multiple": true, "required": false, "allowedTypes": ["images"] },
+    "danos_reportados": { "type": "text" },
+    "firma_cliente": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["Activo", "Devuelto", "Vencido"],
+      "default": "Activo"
+    }
+  }
+}

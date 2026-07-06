@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "whatsapp_templates",
+  "info": {
+    "singularName": "whatsapp-template",
+    "pluralName": "whatsapp-templates",
+    "displayName": "Plantilla de WhatsApp"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "clave": {
+      "type": "enumeration",
+      "enum": [
+        "or_entregado_review",
+        "cita_confirmacion_24h",
+        "mantenimiento_aceite",
+        "mantenimiento_itv",
+        "mantenimiento_frenos",
+        "mantenimiento_correa",
+        "cortesia_vencido"
+      ],
+      "required": true,
+      "unique": true
+    },
+    "titulo": { "type": "string", "required": true, "maxLength": 200 },
+    "cuerpo": {
+      "type": "text",
+      "required": true,
+      "description": "Variables permitidas: {{cliente}}, {{matricula}}, {{trabajos}}, {{review_url}}, {{fecha}}, {{hora}}, {{km}}, {{tipo}}"
+    },
+    "activa": { "type": "boolean", "default": true }
+  }
+}

@@ -23,6 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <script>
 
@@ -149,6 +150,11 @@
                 <a href="#" onclick="showSection('garaje')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-warehouse w-5"></i> Garaje y Avisos</a>
                 <a href="#" onclick="showSection('ordenes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-clipboard-list w-5"></i> Reparaciones</a>
                 <a href="#" onclick="showSection('citas')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-calendar-alt w-5"></i> Citas y Agenda</a>
+                <a href="#" onclick="showSection('kanban')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-columns w-5"></i> Kanban Taller</a>
+                <a href="#" onclick="showSection('trabajadores')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-hard-hat w-5"></i> Trabajadores</a>
+                <a href="#" onclick="showSection('mantenimientos')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-oil-can w-5"></i> Mantenimientos</a>
+                <a href="#" onclick="showSection('cortesia')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-car-side w-5"></i> Coches de Cortesía</a>
+                <a href="#" onclick="showSection('caja')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-vault w-5"></i> Caja Interna</a>
             </nav>
         </div>
 
@@ -232,6 +238,12 @@
             gastos: [],
             publicaciones: [],
             ajustes_remotos: {},
+            trabajadores: [],
+            fichajes: [],
+            mantenimientos: [],
+            prestamos: [],
+            flota: [],
+            caja_movimientos: [],
             garaje_clientes: JSON.parse(localStorage.getItem('crm_garaje')) || [
                 {id: 1, matricula: '4567 LMN', marca: 'Audi', modelo: 'A3', cliente: 'Carlos Ruiz', telefono: '34600111222', km_actual: 145000, prox_itv: '2026-08-15', prox_aceite_km: 150000},
                 {id: 2, matricula: '9876 XYZ', marca: 'Renault', modelo: 'Clio', cliente: 'Ana García', telefono: '34600333444', km_actual: 82000, prox_itv: '2024-05-10', prox_aceite_km: 80000}
@@ -279,6 +291,11 @@
                 'clientes': 'Base de Datos de Clientes',
                 'citas': 'Citas y Agenda del Taller',
                 'leads': 'Mensajes y Consultas Web',
+                'kanban': 'Kanban del Taller',
+                'trabajadores': 'Equipo del Taller',
+                'mantenimientos': 'Mantenimientos Preventivos',
+                'cortesia': 'Coches de Cortesía',
+                'caja': 'Caja Interna (analítica)',
                 'ajustes': 'Ajustes e Integraciones'
             };
             document.getElementById('section-title').innerText = titles[section] || 'Panel';
@@ -300,6 +317,14 @@
                 btnArea.innerHTML = `<button onclick="abrirModalStock()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-car mr-2"></i> Añadir Coche Stock</button>`;
             } else if (section === 'citas') {
                 btnArea.innerHTML = `<button onclick="abrirModalCita()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-calendar-plus mr-2"></i> Programar Cita</button>`;
+            } else if (section === 'trabajadores') {
+                btnArea.innerHTML = `<a href="kiosco.html" target="_blank" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg mr-2"><i class="fas fa-stopwatch mr-2"></i> Kiosco fichaje</a><button onclick="abrirModalTrabajador()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-user-plus mr-2"></i> Nuevo trabajador</button>`;
+            } else if (section === 'mantenimientos') {
+                btnArea.innerHTML = `<button onclick="abrirModalMantenimiento()" class="bg-lime-600 hover:bg-lime-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Programar mantenimiento</button>`;
+            } else if (section === 'cortesia') {
+                btnArea.innerHTML = `<button onclick="abrirModalFlota()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg mr-2"><i class="fas fa-car mr-2"></i> Añadir coche a la flota</button><button onclick="abrirModalPrestamo()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-handshake mr-2"></i> Registrar préstamo</button>`;
+            } else if (section === 'caja') {
+                btnArea.innerHTML = `<button onclick="abrirModalCaja()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Nuevo movimiento</button>`;
             } else if (section === 'gastos') {
                 btnArea.innerHTML = `
                     <button onclick="abrirModalGastoOCR()" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg mr-2" title="Sube una foto de la factura y la IA rellena los datos"><i class="fas fa-camera mr-2"></i> Factura por foto (OCR)</button>
@@ -399,6 +424,17 @@
                 state.citas = normalize([...localCits, ...ciData]);
                 state.leads = normalize([...localLeads, ...lData]);
                 state.gastos = normalize([...localGas, ...gData]);
+
+                // Fase 6: entidades del taller (si el backend aún no las tiene, quedan vacías)
+                const f6 = async (path) => { try { const r = await fetchAPI(`${API_BASE}/${path}`); return r.ok ? normalize(resData(await r.json())) : []; } catch { return []; } };
+                [state.trabajadores, state.fichajes, state.mantenimientos, state.prestamos, state.flota, state.caja_movimientos] = await Promise.all([
+                    f6('trabajadores?populate=*&pagination[pageSize]=100'),
+                    f6('fichajes?populate=trabajador&sort[0]=entrada:desc&pagination[pageSize]=100'),
+                    f6('mantenimientos?populate=cliente&sort[0]=proximo_en_fecha:asc&pagination[pageSize]=100'),
+                    f6('prestamo-cortesias?populate[cliente]=true&populate[vehiculo]=true&sort[0]=fecha_prestamo:desc&pagination[pageSize]=100'),
+                    f6('vehiculo-sustitucions?populate=*&pagination[pageSize]=50'),
+                    f6('movimiento-caja-internas?sort[0]=fecha:desc&pagination[pageSize]=200')
+                ]);
                 state.publicaciones = normalize([...localPubs, ...pData]);
 
                 // Fetch site-setting as well
@@ -1794,12 +1830,8 @@
                     const textWAReseña = encodeURIComponent(`¡Hola! Esperamos que estés encantado con la reparación de tu ${matricula}. Nos ayudaría muchísimo si pudieras dedicarnos un minuto para dejarnos una reseña en Google, nos ayuda a seguir creciendo: https://www.google.com/maps/search/?api=1&query=El+Taller+de+Migue+Benifla ¡Mil gracias y buen viaje!`);
 
                     const selectEstado = `
-                        <select onchange="updateORStatus('${o.id}', this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-36">
-                            <option value="Pendiente" ${stateText === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                            <option value="En Taller" ${stateText === 'En Taller' ? 'selected' : ''}>En Taller</option>
-                            <option value="Esperando Piezas" ${stateText === 'Esperando Piezas' ? 'selected' : ''}>Esperando Piezas</option>
-                            <option value="Terminado" ${stateText === 'Terminado' ? 'selected' : ''}>Terminado</option>
-                            <option value="Facturado" ${stateText === 'Facturado' ? 'selected' : ''}>Facturado</option>
+                        <select onchange="updateORStatus('${o.id}', this.value)" class="text-xs bg-slate-900 border border-slate-700 rounded-lg p-1 w-40">
+                            ${OR_ESTADOS.map(e => `<option value="${e}" ${stateText === e ? 'selected' : ''}>${e}</option>`).join('')}
                         </select>
                     `;
 
@@ -1982,6 +2014,11 @@
             else if (state.currentSection === 'publicaciones') { renderPublicaciones(c); }
             else if (state.currentSection === 'portales') { renderPortales(c); }
             else if (state.currentSection === 'ajustes') { renderAjustes(c); }
+            else if (state.currentSection === 'kanban') { renderKanban(c); }
+            else if (state.currentSection === 'trabajadores') { renderTrabajadores(c); }
+            else if (state.currentSection === 'mantenimientos') { renderMantenimientos(c); }
+            else if (state.currentSection === 'cortesia') { renderCortesia(c); }
+            else if (state.currentSection === 'caja') { renderCaja(c); }
         }
 
         // ============================================================
@@ -2754,6 +2791,393 @@
             document.getElementById('stk-combustible').value = a.fuel_type || 'Gasolina';
             document.getElementById('stk-transmision').value = a.transmission || 'Manual';
             document.getElementById('stk-condition').value = a.condition || 'Disponible';
+        }
+
+        // ============================================================
+        // FASE 6 · OPERATIVA DEL TALLER
+        // ============================================================
+        const OR_ESTADOS = ['Pendiente', 'Diagnostico', 'En Taller', 'Esperando Piezas', 'Control Calidad', 'Terminado', 'Entregado', 'Facturado'];
+        const OR_COLORES = { 'Pendiente':'#ef4444','Diagnostico':'#f97316','En Taller':'#3b82f6','Esperando Piezas':'#eab308','Control Calidad':'#a855f7','Terminado':'#10b981','Entregado':'#14b8a6','Facturado':'#64748b' };
+        const A = x => x?.attributes || x || {};
+
+        // ---------- KANBAN ----------
+        function renderKanban(c) {
+            c.innerHTML = `<div class="flex gap-3 overflow-x-auto pb-4" id="kanban-board">${OR_ESTADOS.map(est => `
+                <div class="min-w-[230px] w-[230px] flex-shrink-0">
+                    <div class="flex items-center gap-2 mb-2 px-1">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background:${OR_COLORES[est]}"></span>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">${est}</h4>
+                        <span class="text-[10px] text-slate-600 ml-auto">${state.ordenes.filter(o => (A(o).estado||'Pendiente') === est).length}</span>
+                    </div>
+                    <div class="kanban-col space-y-2 min-h-[120px] rounded-xl bg-slate-900/40 border border-slate-800/60 p-2" data-estado="${est}">
+                        ${state.ordenes.filter(o => (A(o).estado||'Pendiente') === est).map(o => {
+                            const a = A(o);
+                            const dias = a.fecha_entrada ? Math.floor((Date.now() - new Date(a.fecha_entrada)) / 86400000) : null;
+                            return `<div class="kanban-card glass-panel rounded-lg p-3 cursor-grab border-l-4" style="border-left-color:${OR_COLORES[est]}" data-id="${o.id}">
+                                <div class="font-mono font-bold text-white text-sm">${a.matricula || '---'}</div>
+                                <div class="text-xs text-slate-400 truncate" title="${a.sintomas || ''}">${a.sintomas || 'Sin descripción'}</div>
+                                <div class="flex justify-between items-center mt-1.5">
+                                    <span class="text-[10px] text-slate-500">${a.cliente_nombre || A(a.cliente).nombre || ''}</span>
+                                    ${dias !== null ? `<span class="text-[10px] ${dias > 7 ? 'text-red-400' : 'text-slate-600'}">${dias}d</span>` : ''}
+                                </div>
+                            </div>`;
+                        }).join('') || '<div class="text-center text-slate-700 text-xs py-4">—</div>'}
+                    </div>
+                </div>`).join('')}</div>`;
+            if (typeof Sortable !== 'undefined') {
+                document.querySelectorAll('.kanban-col').forEach(col => {
+                    new Sortable(col, {
+                        group: 'kanban', animation: 150,
+                        onEnd: async evt => {
+                            const id = evt.item.dataset.id;
+                            const nuevo = evt.to.dataset.estado;
+                            if (evt.from !== evt.to && id && nuevo) await updateORStatus(id, nuevo);
+                        }
+                    });
+                });
+            }
+        }
+
+        // ---------- TRABAJADORES ----------
+        function renderTrabajadores(c) {
+            const fichados = state.fichajes.filter(f => !A(f).salida).map(f => A(A(f).trabajador).documentId || A(f).trabajador?.id);
+            c.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-cyan-500"><p class="text-slate-400 text-sm">Trabajadores activos</p><h3 class="text-2xl font-bold mt-1">${state.trabajadores.filter(t=>A(t).activo!==false).length}</h3></div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-emerald-500"><p class="text-slate-400 text-sm">Fichados ahora</p><h3 class="text-2xl font-bold mt-1">${state.fichajes.filter(f=>!A(f).salida).length}</h3></div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-blue-500"><p class="text-slate-400 text-sm">Horas esta semana</p><h3 class="text-2xl font-bold mt-1">${(state.fichajes.filter(f=>A(f).entrada && (Date.now()-new Date(A(f).entrada))<7*86400000).reduce((s,f)=>s+(A(f).duracion_min||0),0)/60).toFixed(1)} h</h3></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    ${state.trabajadores.map(t => { const a = A(t);
+                        const enTaller = fichados.includes(t.id) || fichados.includes(a.documentId);
+                        return `<div class="glass-panel rounded-2xl p-5 border-l-4" style="border-left-color:${a.color || '#3b82f6'}">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-11 h-11 rounded-full flex items-center justify-center font-bold text-white" style="background:${a.color || '#3b82f6'}">${(a.nombre||'?')[0]}</div>
+                                <div><div class="font-bold text-white">${a.nombre || ''} ${a.apellidos || ''}</div><div class="text-xs text-slate-400">${a.rol || 'Mecánico'}</div></div>
+                                <span class="ml-auto badge ${enTaller ? 'badge-success' : 'badge-draft'}">${enTaller ? 'En taller' : 'Fuera'}</span>
+                            </div>
+                            <div class="text-xs text-slate-500 mb-3">${a.telefono || ''} ${a.email ? '· ' + a.email : ''}</div>
+                            <div class="flex gap-2">
+                                <button onclick="editarTrabajador('${t.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded"><i class="fas fa-pen"></i></button>
+                                <button onclick="deleteEntity('trabajadores','${t.id}','crm_local_trabajadores','${(a.nombre||'').replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`; }).join('') || '<p class="text-slate-500 col-span-full text-center py-8">No hay trabajadores. Añade el primero con el botón de arriba.</p>'}
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-4 border-b border-slate-800"><h4 class="font-bold text-slate-200 text-sm"><i class="fas fa-stopwatch mr-2 text-cyan-400"></i>Últimos fichajes</h4></div>
+                    <table class="w-full text-left text-sm"><thead><tr class="bg-slate-800/50 text-slate-400"><th class="p-3">Trabajador</th><th class="p-3">Entrada</th><th class="p-3">Salida</th><th class="p-3">Duración</th></tr></thead>
+                    <tbody class="divide-y divide-slate-800/50">${state.fichajes.slice(0,15).map(f => { const a = A(f); const t = A(a.trabajador);
+                        return `<tr><td class="p-3 text-white">${t.nombre || '—'}</td><td class="p-3 text-slate-400">${a.entrada ? new Date(a.entrada).toLocaleString('es-ES') : '—'}</td><td class="p-3 text-slate-400">${a.salida ? new Date(a.salida).toLocaleString('es-ES') : '<span class=\"text-emerald-400\">Abierto</span>'}</td><td class="p-3 text-slate-300">${a.duracion_min ? (a.duracion_min/60).toFixed(1)+' h' : '—'}</td></tr>`; }).join('') || '<tr><td colspan="4" class="p-6 text-center text-slate-500">Sin fichajes todavía.</td></tr>'}</tbody></table>
+                </div>`;
+        }
+
+        function abrirModalTrabajador(pref = {}) {
+            document.getElementById('modal-title').innerText = pref.editId ? 'Editar trabajador' : 'Nuevo trabajador';
+            document.getElementById('form-content').innerHTML = `
+                <input type="hidden" id="tr-edit" value="${pref.editId || ''}">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Nombre *</label><input id="tr-nombre" value="${pref.nombre||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Apellidos</label><input id="tr-apellidos" value="${pref.apellidos||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Rol</label><select id="tr-rol">${['Mecánico','Jefe de taller','Chapa y pintura','Administrativo','Comercial','Aprendiz'].map(r=>`<option ${pref.rol===r?'selected':''}>${r}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Teléfono</label><input id="tr-tel" value="${pref.telefono||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Email</label><input id="tr-email" type="email" value="${pref.email||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">PIN de fichaje (4 dígitos)</label><input id="tr-pin" maxlength="6" value="${pref.pin_fichaje||''}" placeholder="Ej: 1234"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Color (Kanban)</label><input id="tr-color" type="color" value="${pref.color||'#3b82f6'}" class="h-11"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Salario €/hora (opcional)</label><input id="tr-salario" type="number" step="0.5" value="${pref.salario_hora||''}"></div>
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarTrabajador()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function editarTrabajador(id) {
+            const t = state.trabajadores.find(x => x.id == id); if (!t) return;
+            abrirModalTrabajador({ ...A(t), editId: id });
+        }
+
+        async function guardarTrabajador() {
+            const data = {
+                nombre: document.getElementById('tr-nombre').value.trim(),
+                apellidos: document.getElementById('tr-apellidos').value.trim(),
+                rol: document.getElementById('tr-rol').value,
+                telefono: document.getElementById('tr-tel').value.trim(),
+                email: document.getElementById('tr-email').value.trim() || null,
+                pin_fichaje: document.getElementById('tr-pin').value.trim(),
+                color: document.getElementById('tr-color').value,
+                salario_hora: Number(document.getElementById('tr-salario').value) || null,
+                activo: true
+            };
+            if (!data.nombre) return Swal.fire('Falta el nombre', '', 'error');
+            const editId = document.getElementById('tr-edit').value;
+            if (editId) await updateEntity('trabajadores', editId, data, 'crm_local_trabajadores');
+            else await postEntity('trabajadores', data, 'crm_local_trabajadores');
+            closeModal(); await fetchData();
+            Swal.fire('Guardado', 'Trabajador registrado.', 'success');
+        }
+
+        // ---------- MANTENIMIENTOS ----------
+        function renderMantenimientos(c) {
+            const hoy = new Date();
+            c.innerHTML = `<div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left text-sm">
+                <thead><tr class="bg-slate-800/50 text-slate-400"><th class="p-3">Matrícula</th><th class="p-3">Cliente</th><th class="p-3">Tipo</th><th class="p-3">Próximo</th><th class="p-3">Estado</th><th class="p-3 text-right">Acciones</th></tr></thead>
+                <tbody class="divide-y divide-slate-800/50">${state.mantenimientos.map(m => { const a = A(m); const cli = A(a.cliente);
+                    const fechaProx = a.proximo_en_fecha ? new Date(a.proximo_en_fecha) : null;
+                    const urgente = fechaProx && (fechaProx - hoy) < 30*86400000;
+                    return `<tr class="hover:bg-slate-800/30">
+                        <td class="p-3 font-mono font-bold text-white">${a.matricula || ''}</td>
+                        <td class="p-3 text-slate-300">${cli.nombre || '—'}</td>
+                        <td class="p-3"><span class="badge badge-taller">${a.tipo || ''}</span></td>
+                        <td class="p-3 ${urgente ? 'text-red-400 font-bold' : 'text-slate-400'}">${a.proximo_en_fecha || ''} ${a.proximo_en_km ? '· ' + Number(a.proximo_en_km).toLocaleString('es-ES') + ' km' : ''} ${urgente ? '<i class=\"fas fa-exclamation-triangle ml-1\"></i>' : ''}</td>
+                        <td class="p-3"><span class="badge ${a.estado === 'Ejecutado' ? 'badge-success' : a.estado === 'Aviso enviado' ? 'badge-piezas' : 'badge-draft'}">${a.estado || 'Programado'}</span></td>
+                        <td class="p-3 text-right whitespace-nowrap">
+                            <button onclick="ejecutarMantenimiento('${m.id}')" class="text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40 px-2 py-1 rounded mr-1" title="Crear OR y marcar ejecutado"><i class="fas fa-wrench"></i></button>
+                            <button onclick="posponerMantenimiento('${m.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded mr-1" title="Posponer 30 días"><i class="fas fa-clock"></i></button>
+                            <button onclick="deleteEntity('mantenimientos','${m.id}','crm_local_mantenimientos','${a.matricula||''} ${a.tipo||''}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                        </td></tr>`; }).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-500">Sin mantenimientos programados. Los avisos por WhatsApp se envían solos cada mañana cuando se acerca la fecha.</td></tr>'}</tbody></table></div>`;
+        }
+
+        function abrirModalMantenimiento() {
+            let cliOpts = '<option value="">— Sin cliente vinculado —</option>' + state.clientes.map(c2 => `<option value="${c2.id}">${A(c2).nombre || ''} ${A(c2).apellidos || ''}</option>`).join('');
+            document.getElementById('modal-title').innerText = 'Programar mantenimiento preventivo';
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Matrícula *</label><input id="mnt-mat" placeholder="1234ABC"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Cliente</label><select id="mnt-cli">${cliOpts}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Tipo *</label><select id="mnt-tipo">${['Aceite y filtros','Correa distribución','ITV','Frenos','Neumáticos','Batería','Aire acondicionado','Otro'].map(t=>`<option>${t}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Marca y modelo</label><input id="mnt-mm" placeholder="Audi A3"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Próxima fecha</label><input id="mnt-fecha" type="date"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Próximos km</label><input id="mnt-km" type="number" placeholder="150000"></div>
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Notas</label><textarea id="mnt-notas" rows="2"></textarea></div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarMantenimiento()" class="bg-lime-600 hover:bg-lime-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Programar</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function guardarMantenimiento() {
+            const cli = document.getElementById('mnt-cli').value;
+            const data = {
+                matricula: document.getElementById('mnt-mat').value.trim().toUpperCase(),
+                tipo: document.getElementById('mnt-tipo').value,
+                marca_modelo: document.getElementById('mnt-mm').value.trim(),
+                proximo_en_fecha: document.getElementById('mnt-fecha').value || null,
+                proximo_en_km: Number(document.getElementById('mnt-km').value) || null,
+                notas: document.getElementById('mnt-notas').value.trim(),
+                estado: 'Programado'
+            };
+            if (cli && !String(cli).startsWith('local_')) data.cliente = cli;
+            if (!data.matricula) return Swal.fire('Falta la matrícula', '', 'error');
+            await postEntity('mantenimientos', data, 'crm_local_mantenimientos');
+            closeModal(); await fetchData();
+            Swal.fire('Programado', 'El aviso por WhatsApp se enviará automáticamente cuando se acerque la fecha.', 'success');
+        }
+
+        async function ejecutarMantenimiento(id) {
+            const m = state.mantenimientos.find(x => x.id == id); if (!m) return;
+            const a = A(m);
+            await updateEntity('mantenimientos', id, { estado: 'Ejecutado', fecha_ejecucion: new Date().toISOString().split('T')[0] }, 'crm_local_mantenimientos');
+            abrirModalOrden();
+            setTimeout(() => {
+                const mat = document.getElementById('ord-matricula'); if (mat) mat.value = a.matricula || '';
+                const sin = document.getElementById('ord-sintomas'); if (sin) sin.value = `Mantenimiento preventivo: ${a.tipo}`;
+            }, 150);
+        }
+
+        async function posponerMantenimiento(id) {
+            const m = state.mantenimientos.find(x => x.id == id); if (!m) return;
+            const a = A(m);
+            const base = a.proximo_en_fecha ? new Date(a.proximo_en_fecha) : new Date();
+            const nueva = new Date(base.getTime() + 30 * 86400000).toISOString().split('T')[0];
+            await updateEntity('mantenimientos', id, { proximo_en_fecha: nueva, estado: 'Postpuesto' }, 'crm_local_mantenimientos');
+            await fetchData();
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: `Pospuesto al ${nueva}`, showConfirmButton: false, timer: 1800 });
+        }
+
+        // ---------- COCHES DE CORTESÍA ----------
+        function renderCortesia(c) {
+            const activos = state.prestamos.filter(p => ['Activo','Vencido'].includes(A(p).estado));
+            c.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fas fa-warehouse mr-2 text-violet-400"></i>Flota (${state.flota.length})</h4>
+                        <div class="space-y-3">${state.flota.map(v => { const a = A(v);
+                            const badge = a.estado === 'Disponible' ? 'badge-success' : a.estado === 'Vencido' ? 'badge-danger' : 'badge-piezas';
+                            return `<div class="glass-panel rounded-xl p-4 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-lg bg-violet-600/20 text-violet-400 flex items-center justify-center text-xl"><i class="fas fa-car-side"></i></div>
+                                <div class="flex-1"><div class="font-bold text-white">${a.marca_modelo || ''}</div>
+                                    <div class="text-xs text-slate-400 font-mono">${a.matricula || ''} ${a.km_actual ? '· ' + Number(a.km_actual).toLocaleString('es-ES') + ' km' : ''}</div></div>
+                                <span class="badge ${badge}">${a.estado || 'Disponible'}</span>
+                                <button onclick="deleteEntity('vehiculo-sustitucions','${v.id}','crm_local_flota','${a.matricula||''}')" class="text-xs text-red-400 hover:bg-red-600/20 p-2 rounded"><i class="fas fa-trash"></i></button>
+                            </div>`; }).join('') || '<p class="text-slate-500 text-sm py-4 text-center">Sin coches de cortesía registrados.</p>'}</div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-200 mb-3"><i class="fas fa-handshake mr-2 text-emerald-400"></i>Préstamos activos (${activos.length})</h4>
+                        <div class="space-y-3">${activos.map(p => { const a = A(p); const cli = A(a.cliente); const veh = A(a.vehiculo);
+                            const vence = a.fecha_devolucion_esperada ? new Date(a.fecha_devolucion_esperada) : null;
+                            const dias = vence ? Math.ceil((vence - Date.now()) / 86400000) : null;
+                            return `<div class="glass-panel rounded-xl p-4 ${a.estado === 'Vencido' || (dias !== null && dias < 0) ? 'border border-red-500/40' : ''}">
+                                <div class="flex justify-between items-start mb-1">
+                                    <div><span class="font-bold text-white">${veh.matricula || '?'}</span> <span class="text-slate-400 text-sm">→ ${cli.nombre || 'cliente'}</span></div>
+                                    ${dias !== null ? `<span class="badge ${dias < 0 ? 'badge-danger' : dias <= 2 ? 'badge-piezas' : 'badge-success'}">${dias < 0 ? Math.abs(dias) + 'd de retraso' : dias + 'd restantes'}</span>` : ''}
+                                </div>
+                                <div class="text-xs text-slate-500 mb-2">Desde ${a.fecha_prestamo ? new Date(a.fecha_prestamo).toLocaleDateString('es-ES') : ''} ${a.km_salida ? '· salida ' + a.km_salida + ' km' : ''}</div>
+                                <button onclick="registrarDevolucion('${p.id}')" class="text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/40 px-3 py-1.5 rounded-lg"><i class="fas fa-rotate-left mr-1"></i>Registrar devolución</button>
+                            </div>`; }).join('') || '<p class="text-slate-500 text-sm py-4 text-center">Ningún coche prestado ahora mismo.</p>'}</div>
+                    </div>
+                </div>`;
+        }
+
+        function abrirModalFlota() {
+            document.getElementById('modal-title').innerText = 'Añadir coche de cortesía';
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Matrícula *</label><input id="flo-mat" placeholder="1234ABC"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Marca y modelo *</label><input id="flo-mm" placeholder="Renault Clio"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Km actuales</label><input id="flo-km" type="number"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Combustible (%)</label><input id="flo-comb" type="number" min="0" max="100" value="100"></div>
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarFlota()" class="bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Añadir</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function guardarFlota() {
+            const data = {
+                matricula: document.getElementById('flo-mat').value.trim().toUpperCase(),
+                marca_modelo: document.getElementById('flo-mm').value.trim(),
+                km_actual: Number(document.getElementById('flo-km').value) || null,
+                combustible_actual: Number(document.getElementById('flo-comb').value) || null,
+                estado: 'Disponible'
+            };
+            if (!data.matricula || !data.marca_modelo) return Swal.fire('Faltan datos', 'Matrícula y marca/modelo son obligatorios.', 'error');
+            await postEntity('vehiculo-sustitucions', data, 'crm_local_flota');
+            closeModal(); await fetchData();
+            Swal.fire('Añadido', 'Coche de cortesía en la flota.', 'success');
+        }
+
+        function abrirModalPrestamo() {
+            const libres = state.flota.filter(v => A(v).estado === 'Disponible');
+            if (!libres.length) return Swal.fire('Sin coches libres', 'Todos los coches de cortesía están prestados o en mantenimiento.', 'info');
+            document.getElementById('modal-title').innerText = 'Registrar préstamo de cortesía';
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Coche *</label><select id="pre-veh">${libres.map(v=>`<option value="${v.id}">${A(v).matricula} · ${A(v).marca_modelo}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Cliente *</label><select id="pre-cli">${state.clientes.map(c2=>`<option value="${c2.id}">${A(c2).nombre||''} ${A(c2).apellidos||''}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Devolución esperada</label><input id="pre-dev" type="date" value="${new Date(Date.now()+3*86400000).toISOString().split('T')[0]}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Km a la salida</label><input id="pre-km" type="number"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Combustible salida (%)</label><input id="pre-comb" type="number" min="0" max="100" value="100"></div>
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarPrestamo()" class="bg-violet-600 hover:bg-violet-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-handshake mr-2"></i>Registrar préstamo</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function guardarPrestamo() {
+            const vehId = document.getElementById('pre-veh').value;
+            const cliId = document.getElementById('pre-cli').value;
+            const data = {
+                fecha_prestamo: new Date().toISOString(),
+                fecha_devolucion_esperada: document.getElementById('pre-dev').value ? new Date(document.getElementById('pre-dev').value + 'T18:00:00').toISOString() : null,
+                km_salida: Number(document.getElementById('pre-km').value) || null,
+                combustible_salida: Number(document.getElementById('pre-comb').value) || null,
+                estado: 'Activo'
+            };
+            if (vehId && !String(vehId).startsWith('local_')) data.vehiculo = vehId;
+            if (cliId && !String(cliId).startsWith('local_')) data.cliente = cliId;
+            await postEntity('prestamo-cortesias', data, 'crm_local_prestamos');
+            if (vehId && !String(vehId).startsWith('local_')) {
+                const cli = state.clientes.find(x => x.id == cliId);
+                await updateEntity('vehiculo-sustitucions', vehId, { estado: 'Prestado', fecha_prestamo: data.fecha_prestamo, fecha_devolucion_esperada: data.fecha_devolucion_esperada, ...(cli && !String(cliId).startsWith('local_') ? { cliente_actual: cliId } : {}) }, 'crm_local_flota');
+            }
+            closeModal(); await fetchData();
+            Swal.fire('Registrado', 'Préstamo activo. Se avisará si vence sin devolución.', 'success');
+        }
+
+        async function registrarDevolucion(id) {
+            const p = state.prestamos.find(x => x.id == id); if (!p) return;
+            const a = A(p);
+            const { value: form } = await Swal.fire({
+                title: 'Registrar devolución',
+                html: `<input id="dev-km" type="number" class="swal2-input" placeholder="Km a la entrada">
+                       <input id="dev-comb" type="number" class="swal2-input" placeholder="Combustible % entrada">
+                       <textarea id="dev-danos" class="swal2-textarea" placeholder="Daños detectados (vacío si está OK)"></textarea>`,
+                showCancelButton: true, confirmButtonText: 'Confirmar devolución', cancelButtonText: 'Cancelar',
+                preConfirm: () => ({
+                    km_entrada: Number(document.getElementById('dev-km').value) || null,
+                    combustible_entrada: Number(document.getElementById('dev-comb').value) || null,
+                    danos_reportados: document.getElementById('dev-danos').value.trim()
+                })
+            });
+            if (!form) return;
+            await updateEntity('prestamo-cortesias', id, { ...form, estado: 'Devuelto', fecha_devolucion_real: new Date().toISOString() }, 'crm_local_prestamos');
+            const vehId = a.vehiculo?.documentId || a.vehiculo?.id;
+            if (vehId) await updateEntity('vehiculo-sustitucions', vehId, { estado: form.danos_reportados ? 'En Mantenimiento' : 'Disponible', ...(form.km_entrada ? { km_actual: form.km_entrada } : {}) }, 'crm_local_flota');
+            await fetchData();
+            Swal.fire('Devuelto', form.danos_reportados ? 'Coche marcado En Mantenimiento por los daños anotados.' : 'Coche disponible de nuevo.', 'success');
+        }
+
+        // ---------- CAJA INTERNA (analítica, solo gestión interna legal) ----------
+        function renderCaja(c) {
+            const movs = state.caja_movimientos;
+            const bal = movs.reduce((s,m)=>{ const a=A(m); return s + (a.tipo==='Ingreso'?1:a.tipo==='Gasto'?-1:0)*Number(a.importe||0); },0);
+            c.innerHTML = `
+                <div class="glass-panel p-4 rounded-2xl mb-6 border border-amber-500/30 bg-amber-900/10">
+                    <p class="text-xs text-amber-300"><i class="fas fa-lock mr-1"></i> Módulo de gestión analítica interna (adelantos de socio, préstamos, retiradas). No forma parte de la facturación oficial ni sustituye la contabilidad fiscal.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 ${bal>=0?'border-t-emerald-500':'border-t-red-500'}"><p class="text-slate-400 text-sm">Balance de caja interna</p><h3 class="text-2xl font-bold mt-1 ${bal>=0?'text-emerald-400':'text-red-400'}">€ ${bal.toLocaleString('es-ES',{minimumFractionDigits:2})}</h3></div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-emerald-500"><p class="text-slate-400 text-sm">Entradas</p><h3 class="text-2xl font-bold mt-1">€ ${movs.filter(m=>A(m).tipo==='Ingreso').reduce((s,m)=>s+Number(A(m).importe||0),0).toLocaleString('es-ES',{minimumFractionDigits:2})}</h3></div>
+                    <div class="glass-panel stat-card rounded-2xl p-6 border-t-4 border-t-red-500"><p class="text-slate-400 text-sm">Salidas</p><h3 class="text-2xl font-bold mt-1">€ ${movs.filter(m=>A(m).tipo==='Gasto').reduce((s,m)=>s+Number(A(m).importe||0),0).toLocaleString('es-ES',{minimumFractionDigits:2})}</h3></div>
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left text-sm">
+                    <thead><tr class="bg-slate-800/50 text-slate-400"><th class="p-3">Fecha</th><th class="p-3">Concepto</th><th class="p-3">Categoría</th><th class="p-3">Contraparte</th><th class="p-3 text-right">Importe</th><th class="p-3 text-right">Acciones</th></tr></thead>
+                    <tbody class="divide-y divide-slate-800/50">${movs.map(m => { const a = A(m);
+                        return `<tr class="hover:bg-slate-800/30"><td class="p-3 text-slate-400">${a.fecha || ''}</td><td class="p-3 text-white">${a.concepto || ''}</td><td class="p-3"><span class="badge badge-draft">${a.categoria || ''}</span></td><td class="p-3 text-slate-400">${a.contraparte || '—'}</td>
+                        <td class="p-3 text-right font-bold ${a.tipo==='Ingreso'?'text-emerald-400':a.tipo==='Gasto'?'text-red-400':'text-slate-300'}">${a.tipo==='Gasto'?'-':a.tipo==='Ingreso'?'+':''} € ${Number(a.importe||0).toFixed(2)}</td>
+                        <td class="p-3 text-right"><button onclick="deleteEntity('movimiento-caja-internas','${m.id}','crm_local_caja','${(a.concepto||'').replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button></td></tr>`; }).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-500">Sin movimientos. Registra el primero con el botón de arriba.</td></tr>'}</tbody></table></div>`;
+        }
+
+        function abrirModalCaja() {
+            document.getElementById('modal-title').innerText = 'Nuevo movimiento de caja interna';
+            document.getElementById('form-content').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Fecha *</label><input id="cj-fecha" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Tipo *</label><select id="cj-tipo"><option>Ingreso</option><option>Gasto</option><option>Traspaso</option></select></div>
+                    <div class="md:col-span-2"><label class="block text-sm text-slate-400 mb-1">Concepto *</label><input id="cj-concepto"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Importe € *</label><input id="cj-importe" type="number" step="0.01"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Categoría</label><select id="cj-cat">${['Adelanto de socio','Préstamo entre socios','Retirada personal','Propina / regalo','Reintegro de socio','Gasto personal cargado al negocio','Movimiento interno','Otro'].map(x=>`<option>${x}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Método</label><select id="cj-met">${['Efectivo','Transferencia','Bizum','Compensación','Otro'].map(x=>`<option>${x}</option>`).join('')}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Contraparte</label><input id="cj-contra" placeholder="Socio, empleado..."></div>
+                </div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarCaja()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        async function guardarCaja() {
+            const data = {
+                fecha: document.getElementById('cj-fecha').value,
+                tipo: document.getElementById('cj-tipo').value,
+                concepto: document.getElementById('cj-concepto').value.trim(),
+                importe: Number(document.getElementById('cj-importe').value) || 0,
+                categoria: document.getElementById('cj-cat').value,
+                metodo: document.getElementById('cj-met').value,
+                contraparte: document.getElementById('cj-contra').value.trim()
+            };
+            if (!data.fecha || !data.concepto || !data.importe) return Swal.fire('Faltan datos', 'Fecha, concepto e importe son obligatorios.', 'error');
+            await postEntity('movimiento-caja-internas', data, 'crm_local_caja');
+            closeModal(); await fetchData();
+            Swal.fire('Guardado', 'Movimiento registrado en caja interna.', 'success');
         }
 
         function tituloCita(ct) {

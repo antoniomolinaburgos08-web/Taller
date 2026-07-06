@@ -15,6 +15,24 @@ export default {
         'api::cita.cita', 'api::cliente.cliente', 'api::orden-reparacion.orden-reparacion',
       ];
 
+      // Colecciones internas del CRM: solo usuarios autenticados (nunca public)
+      const crmUids = [
+        'api::gasto.gasto', 'api::publicacion-social.publicacion-social',
+        'api::trabajador.trabajador', 'api::fichaje.fichaje',
+        'api::pieza-usada.pieza-usada', 'api::mantenimiento.mantenimiento',
+        'api::prestamo-cortesia.prestamo-cortesia',
+        'api::vehiculo-sustitucion.vehiculo-sustitucion',
+        'api::whatsapp-template.whatsapp-template',
+        'api::movimiento-caja-interna.movimiento-caja-interna',
+      ];
+      for (const uid of crmUids) {
+        for (const action of ['find', 'findOne', 'create', 'update', 'delete']) {
+          await strapi.db.query('plugin::users-permissions.permission').create({
+            data: { action: `${uid}.${action}`, role: authRole.id },
+          }).catch(() => {});
+        }
+      }
+
       // Public: SOLO Lectura (find, findOne) para que la web funcione
       for (const uid of uids) {
         for (const action of ['find', 'findOne']) {
@@ -54,6 +72,23 @@ export default {
       }
     }
     await configureAuthAndPermissions();
+
+    // Seed de plantillas de WhatsApp (solo si no existen)
+    const hasTemplates = await strapi.entityService.count('api::whatsapp-template.whatsapp-template').catch(() => 0);
+    if (hasTemplates === 0) {
+      const plantillas = [
+        { clave: 'or_entregado_review', titulo: 'Agradecimiento al entregar el coche', cuerpo: 'Hola {{cliente}} 👋 Tu {{matricula}} ya está listo y entregado. Trabajos realizados: {{trabajos}}. ¡Gracias por confiar en nosotros! Si te ha gustado el servicio, nos ayudaría muchísimo una reseña ⭐ {{review_url}}' },
+        { clave: 'cita_confirmacion_24h', titulo: 'Confirmación de cita 24h antes', cuerpo: 'Hola {{cliente}}, te esperamos mañana {{fecha}} a las {{hora}} en el taller. Responde SÍ para confirmar o NO para cancelar. ¡Gracias!' },
+        { clave: 'mantenimiento_aceite', titulo: 'Aviso cambio de aceite', cuerpo: 'Hola {{cliente}}, a tu {{matricula}} le toca el cambio de aceite y filtros ({{km}} km). ¿Te reservamos cita esta semana? Responde a este mensaje y te damos hora.' },
+        { clave: 'mantenimiento_itv', titulo: 'Aviso ITV próxima', cuerpo: 'Hola {{cliente}}, la ITV de tu {{matricula}} vence pronto ({{fecha}}). ¿Quieres que le hagamos la revisión pre-ITV para ir sobre seguro? Escríbenos y te damos cita.' },
+        { clave: 'mantenimiento_frenos', titulo: 'Aviso revisión de frenos', cuerpo: 'Hola {{cliente}}, según nuestro registro a tu {{matricula}} le toca revisión de frenos. Tu seguridad es lo primero: escríbenos y te damos cita sin compromiso.' },
+        { clave: 'mantenimiento_correa', titulo: 'Aviso correa de distribución', cuerpo: 'Hola {{cliente}}, tu {{matricula}} está cerca del cambio de correa de distribución ({{km}} km). Es una pieza crítica: te preparamos presupuesto sin compromiso.' },
+        { clave: 'cortesia_vencido', titulo: 'Coche de cortesía pendiente de devolución', cuerpo: 'Hola {{cliente}}, te recordamos que el coche de cortesía {{matricula}} tenía fecha de devolución {{fecha}}. ¿Cuándo te viene bien acercarte a devolverlo? ¡Gracias!' },
+      ];
+      for (const t of plantillas) {
+        await strapi.entityService.create('api::whatsapp-template.whatsapp-template', { data: { ...t, activa: true, publishedAt: new Date() } }).catch(() => {});
+      }
+    }
 
     const hasServices = await strapi.entityService.count('api::service.service').catch(() => 0);
     if (hasServices > 0) return;
