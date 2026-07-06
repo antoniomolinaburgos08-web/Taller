@@ -1,0 +1,82 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_settings",
+  "info": {
+    "singularName": "site-setting",
+    "pluralName": "site-settings",
+    "displayName": "Configuración del sitio",
+    "description": "Configuración global del sitio web"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "siteName": {
+      "type": "string",
+      "required": true,
+      "default": "El Taller de Migue"
+    },
+    "tagline": {
+      "type": "string",
+      "default": "Tu mecánico de confianza en Benifla"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "favicon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "address": {
+      "type": "string",
+      "default": "Moli Nou 8, 46722 Benifla, Valencia"
+    },
+    "phone": {
+      "type": "string",
+      "default": "625 78 64 38"
+    },
+    "email": {
+      "type": "email",
+      "default": "info@eltallerdemigue.es"
+    },
+    "whatsapp": {
+      "type": "string",
+      "default": "34625786438"
+    },
+    "schedule": {
+      "type": "json"
+    },
+    "googleMapsUrl": {
+      "type": "string"
+    },
+    "googleReviewUrl": {
+      "type": "string"
+    },
+    "socialLinks": {
+      "type": "json"
+    },
+    "seoDescription": {
+      "type": "text"
+    },
+    "seoKeywords": {
+      "type": "text"
+    },
+    "chatwootEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "chatwootToken": {
+      "type": "string"
+    },
+    "chatwootUrl": {
+      "type": "string",
+      "default": "http://localhost:3000"
+    }
+  }
+}

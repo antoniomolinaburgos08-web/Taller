@@ -1,0 +1,147 @@
+version: "3.8"
+
+services:
+  # ------------------------------------
+  # 1. FRONTEND (La Web Pública)
+  # ------------------------------------
+  frontend:
+    image: nginx:alpine
+    container_name: taller-frontend
+    restart: always
+    ports:
+      - "8085:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+
+  # ------------------------------------
+  # 2. CRM BACKEND (Strapi)
+  # ------------------------------------
+  postgres-strapi:
+    image: postgres:15
+    container_name: taller-strapi-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: strapi
+    volumes:
+      - strapi-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  strapi-cms:
+    build: ./backend/strapi-cms
+    container_name: taller-strapi-cms
+    restart: always
+    ports:
+      - "1337:1337"
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres-strapi
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
+      DATABASE_SSL: "false"
+      HOST: 0.0.0.0
+      PORT: 1337
+      APP_KEYS: "toBeModified1,toBeModified2"
+      API_TOKEN_SALT: "tobemodified"
+      ADMIN_JWT_SECRET: "tobemodified"
+      TRANSFER_TOKEN_SALT: "tobemodified"
+      JWT_SECRET: "tobemodified"
+    depends_on:
+      postgres-strapi:
+        condition: service_healthy
+    volumes:
+      - strapi-uploads:/app/public/uploads
+
+  # ------------------------------------
+  # 3. CHATWOOT (Atención al Cliente)
+  # ------------------------------------
+  postgres-chatwoot:
+    image: pgvector/pgvector:pg15
+    container_name: taller-chatwoot-db
+    restart: always
+    environment:
+      POSTGRES_USER: chatwoot
+      POSTGRES_PASSWORD: chatwoot_password
+      POSTGRES_DB: chatwoot
+    volumes:
+      - chatwoot-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatwoot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-chatwoot:
+    image: redis:7-alpine
+    container_name: taller-chatwoot-redis
+    restart: always
+    command: ["sh", "-c", "redis-server --requirepass \"chatwoot_redis\""]
+    volumes:
+      - chatwoot-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "chatwoot_redis", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  chatwoot-web:
+    image: chatwoot/chatwoot:latest
+    container_name: taller-chatwoot-web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      SECRET_KEY_BASE: "chatwoot_super_secret_local"
+      FRONTEND_URL: "http://localhost:3000"
+      POSTGRES_DATABASE: "chatwoot"
+      POSTGRES_HOST: "postgres-chatwoot"
+      POSTGRES_USERNAME: "chatwoot"
+      POSTGRES_PASSWORD: "chatwoot_password"
+      REDIS_URL: "redis://:chatwoot_redis@redis-chatwoot:6379"
+      REDIS_PASSWORD: "chatwoot_redis"
+      RAILS_ENV: "production"
+    depends_on:
+      postgres-chatwoot:
+        condition: service_healthy
+      redis-chatwoot:
+        condition: service_healthy
+    command: ['bundle', 'exec', 'rails', 'server', '-b', '0.0.0.0', '-p', '3000']
+    volumes:
+      - chatwoot-storage:/app/storage
+
+  chatwoot-sidekiq:
+    image: chatwoot/chatwoot:latest
+    container_name: taller-chatwoot-worker
+    restart: always
+    environment:
+      SECRET_KEY_BASE: "chatwoot_super_secret_local"
+      FRONTEND_URL: "http://localhost:3000"
+      POSTGRES_DATABASE: "chatwoot"
+      POSTGRES_HOST: "postgres-chatwoot"
+      POSTGRES_USERNAME: "chatwoot"
+      POSTGRES_PASSWORD: "chatwoot_password"
+      REDIS_URL: "redis://:chatwoot_redis@redis-chatwoot:6379"
+      REDIS_PASSWORD: "chatwoot_redis"
+      RAILS_ENV: "production"
+    depends_on:
+      postgres-chatwoot:
+        condition: service_healthy
+      redis-chatwoot:
+        condition: service_healthy
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    volumes:
+      - chatwoot-storage:/app/storage
+
+volumes:
+  strapi-db-data:
+  strapi-uploads:
+  chatwoot-db-data:
+  chatwoot-redis-data:
+  chatwoot-storage:

@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Build y artefactos de Strapi
+backend/strapi-cms/dist/
+backend/strapi-cms/build/
+backend/strapi-cms/.strapi/
+backend/strapi-cms/.tmp/
+backend/strapi-cms/.cache/
+backend/strapi-cms/.strapi-updater.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Capturas y archivos temporales de pruebas
+test_shot.png

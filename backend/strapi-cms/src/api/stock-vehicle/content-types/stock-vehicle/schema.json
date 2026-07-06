@@ -1,0 +1,75 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stock_vehicles",
+  "info": {
+    "singularName": "stock-vehicle",
+    "pluralName": "stock-vehicles",
+    "displayName": "Stock Vehicle",
+    "description": "Vehicles available in stock"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false
+    },
+    "price": {
+      "type": "decimal",
+      "required": false
+    },
+    "kilometers": {
+      "type": "integer",
+      "required": false
+    },
+    "year": {
+      "type": "integer",
+      "required": false
+    },
+    "fuel_type": {
+      "type": "string",
+      "required": false
+    },
+    "transmission": {
+      "type": "string",
+      "required": false
+    },
+    "body_type": {
+      "type": "string",
+      "required": false
+    },
+    "condition": {
+      "type": "string",
+      "required": false
+    },
+    "exterior_color": {
+      "type": "string"
+    },
+    "interior_color": {
+      "type": "string"
+    },
+    "engine_size": {
+      "type": "string"
+    },
+    "drivetrain": {
+      "type": "string"
+    },
+    "doors": {
+      "type": "integer"
+    },
+    "features": {
+      "type": "richtext"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images", "videos"]
+    }
+  }
+}

@@ -1,0 +1,1 @@
+module.exports = require('@strapi/strapi').factories.createCoreService('api::vehiculo-sustitucion.vehiculo-sustitucion');

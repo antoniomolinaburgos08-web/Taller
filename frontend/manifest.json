@@ -1,0 +1,17 @@
+{
+  "name": "El Taller de Migue",
+  "short_name": "Taller Migue",
+  "description": "Taller mecánico de confianza en Beniflà: reparación, stock de ocasión y autocaravanas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#1D2D5E",
+  "icons": [
+    {
+      "src": "/logo_nuevo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

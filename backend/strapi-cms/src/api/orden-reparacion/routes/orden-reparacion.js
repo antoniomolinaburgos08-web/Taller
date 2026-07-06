@@ -1,0 +1,1 @@
+module.exports = require('@strapi/strapi').factories.createCoreRouter('api::orden-reparacion.orden-reparacion');
