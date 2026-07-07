@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "contratos",
+  "info": {
+    "singularName": "contrato",
+    "pluralName": "contratos",
+    "displayName": "Contrato de Compraventa",
+    "description": "Contratos de compraventa de vehículos con cláusulas de garantía"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "numero": { "type": "string", "unique": true },
+    "tipo": {
+      "type": "enumeration",
+      "enum": ["Particular", "Empresa", "Coche a cambio", "Con financiación"],
+      "default": "Particular",
+      "required": true
+    },
+    "fecha": { "type": "date", "required": true },
+    "cliente": { "type": "relation", "relation": "manyToOne", "target": "api::cliente.cliente" },
+    "stock_vehicle": { "type": "relation", "relation": "manyToOne", "target": "api::stock-vehicle.stock-vehicle" },
+    "comprador_nombre": { "type": "string", "required": true },
+    "comprador_dni": { "type": "string" },
+    "comprador_direccion": { "type": "string" },
+    "comprador_telefono": { "type": "string" },
+    "comprador_email": { "type": "email" },
+    "vehiculo_descripcion": { "type": "string", "required": true },
+    "vehiculo_matricula": { "type": "string" },
+    "vehiculo_bastidor": { "type": "string" },
+    "vehiculo_km": { "type": "integer" },
+    "vehiculo_year": { "type": "integer" },
+    "precio_total": { "type": "decimal", "required": true },
+    "senal_entregada": { "type": "decimal", "default": 0 },
+    "forma_pago": { "type": "string" },
+    "vehiculo_cambio_desc": { "type": "string", "description": "Descripción del coche que entrega el cliente a cambio" },
+    "vehiculo_cambio_valor": { "type": "decimal", "default": 0 },
+    "financiera": { "type": "string" },
+    "meses_financiacion": { "type": "integer" },
+    "cuota_mensual": { "type": "decimal" },
+    "garantia_meses": { "type": "integer", "default": 12 },
+    "garantia_km": { "type": "integer" },
+    "clausulas_garantia": { "type": "text", "description": "Texto editable de las cláusulas de garantía" },
+    "observaciones": { "type": "text" },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["Borrador", "Firmado", "Anulado"],
+      "default": "Borrador"
+    },
+    "pdf": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["files", "images"] }
+  }
+}

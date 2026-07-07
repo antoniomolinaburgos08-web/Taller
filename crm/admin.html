@@ -173,6 +173,7 @@
             <nav class="flex flex-col gap-1">
                 <a href="#" onclick="showSection('stock')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-car w-5"></i> Coches en Venta</a>
                 <a href="#" onclick="showSection('clientes')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-users w-5"></i> Base Clientes</a>
+                <a href="#" onclick="showSection('contratos')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-file-signature w-5"></i> Contratos</a>
                 <a href="#" onclick="showSection('leads')" class="nav-item px-4 py-2.5 rounded flex items-center gap-3 text-slate-400"><i class="fas fa-envelope-open-text w-5"></i> Mensajes Web</a>
             </nav>
         </div>
@@ -244,6 +245,7 @@
             prestamos: [],
             flota: [],
             caja_movimientos: [],
+            contratos: [],
             garaje_clientes: JSON.parse(localStorage.getItem('crm_garaje')) || [
                 {id: 1, matricula: '4567 LMN', marca: 'Audi', modelo: 'A3', cliente: 'Carlos Ruiz', telefono: '34600111222', km_actual: 145000, prox_itv: '2026-08-15', prox_aceite_km: 150000},
                 {id: 2, matricula: '9876 XYZ', marca: 'Renault', modelo: 'Clio', cliente: 'Ana García', telefono: '34600333444', km_actual: 82000, prox_itv: '2024-05-10', prox_aceite_km: 80000}
@@ -296,6 +298,7 @@
                 'mantenimientos': 'Mantenimientos Preventivos',
                 'cortesia': 'Coches de Cortesía',
                 'caja': 'Caja Interna (analítica)',
+                'contratos': 'Contratos de Compraventa',
                 'ajustes': 'Ajustes e Integraciones'
             };
             document.getElementById('section-title').innerText = titles[section] || 'Panel';
@@ -323,6 +326,8 @@
                 btnArea.innerHTML = `<button onclick="abrirModalMantenimiento()" class="bg-lime-600 hover:bg-lime-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Programar mantenimiento</button>`;
             } else if (section === 'cortesia') {
                 btnArea.innerHTML = `<button onclick="abrirModalFlota()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg mr-2"><i class="fas fa-car mr-2"></i> Añadir coche a la flota</button><button onclick="abrirModalPrestamo()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-handshake mr-2"></i> Registrar préstamo</button>`;
+            } else if (section === 'contratos') {
+                btnArea.innerHTML = `<button onclick="abrirModalContrato()" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-file-signature mr-2"></i> Nuevo contrato</button>`;
             } else if (section === 'caja') {
                 btnArea.innerHTML = `<button onclick="abrirModalCaja()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Nuevo movimiento</button>`;
             } else if (section === 'gastos') {
@@ -435,6 +440,7 @@
                     f6('vehiculo-sustitucions?populate=*&pagination[pageSize]=50'),
                     f6('movimiento-caja-internas?sort[0]=fecha:desc&pagination[pageSize]=200')
                 ]);
+                state.contratos = await f6('contratos?populate[cliente]=true&populate[stock_vehicle]=true&sort[0]=fecha:desc&pagination[pageSize]=100');
                 state.publicaciones = normalize([...localPubs, ...pData]);
 
                 // Fetch site-setting as well
@@ -2019,6 +2025,7 @@
             else if (state.currentSection === 'mantenimientos') { renderMantenimientos(c); }
             else if (state.currentSection === 'cortesia') { renderCortesia(c); }
             else if (state.currentSection === 'caja') { renderCaja(c); }
+            else if (state.currentSection === 'contratos') { renderContratos(c); }
         }
 
         // ============================================================
@@ -3178,6 +3185,250 @@
             await postEntity('movimiento-caja-internas', data, 'crm_local_caja');
             closeModal(); await fetchData();
             Swal.fire('Guardado', 'Movimiento registrado en caja interna.', 'success');
+        }
+
+        // ============================================================
+        // CONTRATOS DE COMPRAVENTA (4 plantillas · PDF)
+        // ============================================================
+        const CLAUSULAS_DEFECTO = 'El vehículo se vende con GARANTÍA de {{meses}} meses conforme al RDL 1/2007 de Consumidores y Usuarios. La garantía cubre averías de motor, caja de cambios y elementos mecánicos internos, salvo desgaste normal, consumibles y daños por mal uso. El comprador declara haber probado y revisado el vehículo, aceptándolo en el estado en que se encuentra. El vendedor se compromete a entregar el vehículo con la ITV en vigor y libre de cargas. Cualquier reclamación deberá comunicarse por escrito al vendedor dentro del plazo de garantía.';
+
+        function renderContratos(c) {
+            let html = `<div class="glass-panel rounded-2xl overflow-hidden"><table class="w-full text-left border-collapse">
+                <thead><tr class="bg-slate-800/50 border-b border-slate-800 text-slate-400"><th class="p-4">Nº</th><th class="p-4">Fecha</th><th class="p-4">Comprador</th><th class="p-4">Vehículo</th><th class="p-4">Tipo</th><th class="p-4 text-right">Precio</th><th class="p-4">Estado</th><th class="p-4 text-right">Acciones</th></tr></thead>
+                <tbody class="divide-y divide-slate-800/50">`;
+            if (state.contratos.length === 0) html += `<tr><td colspan="8" class="p-8 text-center text-slate-500">No hay contratos. Crea el primero con el botón "Nuevo contrato".</td></tr>`;
+            state.contratos.forEach(ct => { const a = A(ct);
+                html += `<tr class="hover:bg-slate-800/30">
+                    <td class="p-4 font-mono font-bold text-teal-400">${a.numero || '—'}</td>
+                    <td class="p-4 text-slate-400">${a.fecha || ''}</td>
+                    <td class="p-4 text-white">${a.comprador_nombre || ''}</td>
+                    <td class="p-4 text-slate-400">${a.vehiculo_descripcion || ''}</td>
+                    <td class="p-4"><span class="badge badge-taller">${a.tipo || ''}</span></td>
+                    <td class="p-4 text-right font-bold text-emerald-400">€ ${Number(a.precio_total||0).toLocaleString('es-ES')}</td>
+                    <td class="p-4"><span class="badge ${a.estado==='Firmado'?'badge-success':a.estado==='Anulado'?'badge-danger':'badge-draft'}">${a.estado||'Borrador'}</span></td>
+                    <td class="p-4 text-right whitespace-nowrap">
+                        <button onclick="descargarContratoPDF('${ct.id}')" class="text-xs bg-teal-600/20 text-teal-400 hover:bg-teal-600/40 px-2 py-1 rounded mr-1" title="Descargar PDF"><i class="fas fa-file-pdf"></i></button>
+                        <button onclick="editarContrato('${ct.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 py-1 rounded mr-1"><i class="fas fa-pen"></i></button>
+                        <button onclick="deleteEntity('contratos','${ct.id}','crm_local_contratos','${(a.numero||'').replace(/'/g,'')}')" class="text-xs bg-red-600/20 text-red-400 hover:bg-red-600/40 px-2 py-1 rounded"><i class="fas fa-trash"></i></button>
+                    </td></tr>`; });
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
+        }
+
+        function abrirModalContrato(pref = {}) {
+            const editId = pref.editId || '';
+            document.getElementById('modal-title').innerText = editId ? 'Editar contrato' : 'Nuevo contrato de compraventa';
+            let vehOpts = '<option value="">— Seleccionar del stock (opcional) —</option>' + state.vehiculos.map(v => `<option value="${v.id}">${A(v).title || 'Vehículo'}</option>`).join('');
+            let cliOpts = '<option value="">— Cliente registrado (opcional) —</option>' + state.clientes.map(cl => `<option value="${cl.id}">${A(cl).nombre||''} ${A(cl).apellidos||''}</option>`).join('');
+            document.getElementById('form-content').innerHTML = `
+                <input type="hidden" id="con-edit" value="${editId}">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Tipo de contrato *</label>
+                        <select id="con-tipo" onchange="toggleContratoCampos()">
+                            <option ${pref.tipo==='Particular'?'selected':''}>Particular</option>
+                            <option ${pref.tipo==='Empresa'?'selected':''}>Empresa</option>
+                            <option ${pref.tipo==='Coche a cambio'?'selected':''}>Coche a cambio</option>
+                            <option ${pref.tipo==='Con financiación'?'selected':''}>Con financiación</option>
+                        </select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Fecha *</label><input id="con-fecha" type="date" value="${pref.fecha || new Date().toISOString().split('T')[0]}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Coche del stock</label><select id="con-veh" onchange="rellenarContratoVehiculo()">${vehOpts}</select></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Cliente</label><select id="con-cli" onchange="rellenarContratoCliente()">${cliOpts}</select></div>
+                </div>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-4">Comprador</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Nombre / Razón social *</label><input id="con-cnombre" value="${pref.comprador_nombre||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">DNI / CIF</label><input id="con-cdni" value="${pref.comprador_dni||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Dirección</label><input id="con-cdir" value="${pref.comprador_direccion||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Teléfono</label><input id="con-ctel" value="${pref.comprador_telefono||''}"></div>
+                </div>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-4">Vehículo</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="md:col-span-2"><label class="block text-sm text-slate-400 mb-1">Descripción *</label><input id="con-vdesc" value="${pref.vehiculo_descripcion||''}" placeholder="Marca, modelo y versión"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Matrícula</label><input id="con-vmat" value="${pref.vehiculo_matricula||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Bastidor</label><input id="con-vbas" value="${pref.vehiculo_bastidor||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Km</label><input id="con-vkm" type="number" value="${pref.vehiculo_km||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Año</label><input id="con-vyear" type="number" value="${pref.vehiculo_year||''}"></div>
+                </div>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-4">Precio y pago</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Precio total (€) *</label><input id="con-precio" type="number" step="0.01" value="${pref.precio_total||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Señal entregada (€)</label><input id="con-senal" type="number" step="0.01" value="${pref.senal_entregada||0}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Forma de pago</label><input id="con-pago" value="${pref.forma_pago||''}" placeholder="Transferencia, efectivo..."></div>
+                </div>
+                <div id="con-cambio" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-slate-900/40 rounded-lg border border-slate-800">
+                    <div><label class="block text-sm text-slate-400 mb-1">Coche que entrega a cambio</label><input id="con-cambdesc" value="${pref.vehiculo_cambio_desc||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Valor tasado (€)</label><input id="con-cambval" type="number" step="0.01" value="${pref.vehiculo_cambio_valor||''}"></div>
+                </div>
+                <div id="con-financ" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-3 bg-slate-900/40 rounded-lg border border-slate-800">
+                    <div><label class="block text-sm text-slate-400 mb-1">Financiera</label><input id="con-fin" value="${pref.financiera||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Meses</label><input id="con-fmeses" type="number" value="${pref.meses_financiacion||''}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Cuota mensual (€)</label><input id="con-fcuota" type="number" step="0.01" value="${pref.cuota_mensual||''}"></div>
+                </div>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-4">Garantía</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label class="block text-sm text-slate-400 mb-1">Meses de garantía</label><input id="con-gmeses" type="number" value="${pref.garantia_meses ?? 12}"></div>
+                    <div><label class="block text-sm text-slate-400 mb-1">Límite km garantía</label><input id="con-gkm" type="number" value="${pref.garantia_km||''}"></div>
+                </div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Cláusulas de garantía (editables)</label>
+                    <textarea id="con-clausulas" rows="5">${pref.clausulas_garantia || CLAUSULAS_DEFECTO}</textarea></div>
+                <div class="mb-4"><label class="block text-sm text-slate-400 mb-1">Observaciones</label><textarea id="con-obs" rows="2">${pref.observaciones||''}</textarea></div>
+                <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-slate-800">
+                    <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-slate-300">Cancelar</button>
+                    <button onclick="guardarContrato(false)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-save mr-2"></i>Guardar</button>
+                    <button onclick="guardarContrato(true)" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-6 rounded-lg"><i class="fas fa-file-pdf mr-2"></i>Guardar y descargar PDF</button>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            toggleContratoCampos();
+        }
+
+        function toggleContratoCampos() {
+            const tipo = document.getElementById('con-tipo').value;
+            document.getElementById('con-cambio').classList.toggle('hidden', tipo !== 'Coche a cambio');
+            document.getElementById('con-financ').classList.toggle('hidden', tipo !== 'Con financiación');
+        }
+
+        function rellenarContratoVehiculo() {
+            const v = state.vehiculos.find(x => x.id == document.getElementById('con-veh').value);
+            if (!v) return; const a = A(v);
+            document.getElementById('con-vdesc').value = a.title || '';
+            if (a.year) document.getElementById('con-vyear').value = a.year;
+            if (a.kilometers) document.getElementById('con-vkm').value = a.kilometers;
+            if (a.price) document.getElementById('con-precio').value = a.price;
+        }
+        function rellenarContratoCliente() {
+            const cl = state.clientes.find(x => x.id == document.getElementById('con-cli').value);
+            if (!cl) return; const a = A(cl);
+            document.getElementById('con-cnombre').value = `${a.nombre||''} ${a.apellidos||''}`.trim();
+            document.getElementById('con-cdni').value = a.dni || '';
+            document.getElementById('con-cdir').value = a.direccion || '';
+            document.getElementById('con-ctel').value = a.telefono || '';
+        }
+
+        function recogerContrato() {
+            const tipo = document.getElementById('con-tipo').value;
+            const d = {
+                tipo, fecha: document.getElementById('con-fecha').value,
+                comprador_nombre: document.getElementById('con-cnombre').value.trim(),
+                comprador_dni: document.getElementById('con-cdni').value.trim(),
+                comprador_direccion: document.getElementById('con-cdir').value.trim(),
+                comprador_telefono: document.getElementById('con-ctel').value.trim(),
+                vehiculo_descripcion: document.getElementById('con-vdesc').value.trim(),
+                vehiculo_matricula: document.getElementById('con-vmat').value.trim(),
+                vehiculo_bastidor: document.getElementById('con-vbas').value.trim(),
+                vehiculo_km: Number(document.getElementById('con-vkm').value) || null,
+                vehiculo_year: Number(document.getElementById('con-vyear').value) || null,
+                precio_total: Number(document.getElementById('con-precio').value) || 0,
+                senal_entregada: Number(document.getElementById('con-senal').value) || 0,
+                forma_pago: document.getElementById('con-pago').value.trim(),
+                garantia_meses: Number(document.getElementById('con-gmeses').value) || 0,
+                garantia_km: Number(document.getElementById('con-gkm').value) || null,
+                clausulas_garantia: document.getElementById('con-clausulas').value.trim(),
+                observaciones: document.getElementById('con-obs').value.trim(),
+            };
+            if (tipo === 'Coche a cambio') {
+                d.vehiculo_cambio_desc = document.getElementById('con-cambdesc').value.trim();
+                d.vehiculo_cambio_valor = Number(document.getElementById('con-cambval').value) || 0;
+            }
+            if (tipo === 'Con financiación') {
+                d.financiera = document.getElementById('con-fin').value.trim();
+                d.meses_financiacion = Number(document.getElementById('con-fmeses').value) || null;
+                d.cuota_mensual = Number(document.getElementById('con-fcuota').value) || null;
+            }
+            const vehSel = document.getElementById('con-veh').value;
+            const cliSel = document.getElementById('con-cli').value;
+            if (vehSel && !String(vehSel).startsWith('local_')) d.stock_vehicle = vehSel;
+            if (cliSel && !String(cliSel).startsWith('local_')) d.cliente = cliSel;
+            return d;
+        }
+
+        async function guardarContrato(conPDF) {
+            const d = recogerContrato();
+            if (!d.comprador_nombre || !d.vehiculo_descripcion || !d.precio_total) {
+                Swal.fire('Faltan datos', 'Comprador, vehículo y precio son obligatorios.', 'error'); return;
+            }
+            const editId = document.getElementById('con-edit').value;
+            let saved;
+            if (editId) {
+                saved = await updateEntity('contratos', editId, d, 'crm_local_contratos');
+                saved = { id: editId, attributes: d };
+            } else {
+                d.numero = 'C-' + new Date().getFullYear() + '-' + String(state.contratos.length + 1).padStart(3, '0');
+                d.estado = 'Borrador';
+                saved = await postEntity('contratos', d, 'crm_local_contratos');
+            }
+            closeModal(); await fetchData();
+            if (conPDF) { const target = state.contratos.find(x => (A(x).numero) === (A(saved).numero || d.numero)) || saved; generarContratoPDF(A(target).numero ? A(target) : d); }
+            Swal.fire('Guardado', 'Contrato registrado correctamente.', 'success');
+        }
+
+        function editarContrato(id) {
+            const ct = state.contratos.find(x => x.id == id); if (!ct) return;
+            abrirModalContrato({ ...A(ct), editId: id });
+        }
+
+        function descargarContratoPDF(id) {
+            const ct = state.contratos.find(x => x.id == id); if (!ct) return;
+            generarContratoPDF(A(ct));
+        }
+
+        function generarContratoPDF(c) {
+            if (!window.jspdf || !window.jspdf.jsPDF) { Swal.fire('Sin conexión', 'No se pudo cargar el generador de PDF.', 'error'); return; }
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            const M = 20; let y = 20; const W = 170;
+            const s = state.ajustes_remotos || {};
+            const emisor = s.siteName || 'El Taller de Migue';
+            const dir = s.address || 'Moli Nou 8, 46722 Benifla (Valencia)';
+            const tel = s.phone || '625 78 64 38';
+
+            doc.setFontSize(18); doc.setTextColor(29,45,94); doc.text(emisor.toUpperCase(), M, y); y += 6;
+            doc.setFontSize(9); doc.setTextColor(100); doc.text(`${dir} · Tel: ${tel}`, M, y); y += 4;
+            doc.setDrawColor(249,115,22); doc.setLineWidth(0.8); doc.line(M, y, M+W, y); y += 10;
+
+            doc.setFontSize(15); doc.setTextColor(0); doc.text('CONTRATO DE COMPRAVENTA DE VEHÍCULO', M, y); y += 6;
+            doc.setFontSize(9); doc.setTextColor(120);
+            doc.text(`Nº ${c.numero || 'BORRADOR'}  ·  ${c.tipo}  ·  Fecha: ${c.fecha || ''}`, M, y); y += 10;
+
+            const p = (label, val) => { doc.setFontSize(10); doc.setTextColor(0); doc.setFont(undefined,'bold'); doc.text(label, M, y); doc.setFont(undefined,'normal'); doc.text(String(val || '—'), M+45, y); y += 6; };
+            const sec = (t) => { y += 2; doc.setFontSize(11); doc.setTextColor(29,45,94); doc.setFont(undefined,'bold'); doc.text(t, M, y); doc.setFont(undefined,'normal'); doc.setTextColor(0); y += 7; };
+
+            sec('VENDEDOR');
+            p('Titular:', emisor); p('Domicilio:', dir); p('Teléfono:', tel);
+
+            sec('COMPRADOR');
+            p('Nombre:', c.comprador_nombre); p('DNI/CIF:', c.comprador_dni);
+            p('Domicilio:', c.comprador_direccion); p('Teléfono:', c.comprador_telefono);
+
+            sec('VEHÍCULO OBJETO DEL CONTRATO');
+            p('Descripción:', c.vehiculo_descripcion); p('Matrícula:', c.vehiculo_matricula);
+            p('Nº Bastidor:', c.vehiculo_bastidor);
+            p('Kilómetros:', c.vehiculo_km ? Number(c.vehiculo_km).toLocaleString('es-ES') + ' km' : '—');
+            p('Año:', c.vehiculo_year);
+
+            sec('CONDICIONES ECONÓMICAS');
+            p('Precio total:', '€ ' + Number(c.precio_total||0).toLocaleString('es-ES',{minimumFractionDigits:2}));
+            if (c.senal_entregada) p('Señal entregada:', '€ ' + Number(c.senal_entregada).toLocaleString('es-ES',{minimumFractionDigits:2}));
+            if (c.forma_pago) p('Forma de pago:', c.forma_pago);
+            if (c.tipo === 'Coche a cambio') { p('Vehículo a cambio:', c.vehiculo_cambio_desc); p('Valor tasado:', '€ ' + Number(c.vehiculo_cambio_valor||0).toLocaleString('es-ES',{minimumFractionDigits:2})); }
+            if (c.tipo === 'Con financiación') { p('Financiera:', c.financiera); p('Plazo:', (c.meses_financiacion||'—') + ' meses'); p('Cuota mensual:', '€ ' + Number(c.cuota_mensual||0).toLocaleString('es-ES',{minimumFractionDigits:2})); }
+
+            sec('GARANTÍA Y CLÁUSULAS');
+            doc.setFontSize(9); doc.setTextColor(60);
+            const clausulas = (c.clausulas_garantia || '').replace(/\{\{meses\}\}/g, c.garantia_meses || 12);
+            const lines = doc.splitTextToSize(clausulas, W);
+            if (y + lines.length * 4 > 250) { doc.addPage(); y = 20; }
+            doc.text(lines, M, y); y += lines.length * 4 + 4;
+            if (c.garantia_km) { doc.setTextColor(0); doc.text(`Límite de garantía: ${Number(c.garantia_km).toLocaleString('es-ES')} km.`, M, y); y += 6; }
+            if (c.observaciones) { doc.setTextColor(0); doc.setFont(undefined,'bold'); doc.text('Observaciones:', M, y); doc.setFont(undefined,'normal'); y += 5; const ol = doc.splitTextToSize(c.observaciones, W); doc.text(ol, M, y); y += ol.length*4+4; }
+
+            if (y > 235) { doc.addPage(); y = 30; } else { y += 12; }
+            doc.setFontSize(10); doc.setTextColor(0);
+            doc.text('Firma del VENDEDOR', M, y); doc.text('Firma del COMPRADOR', M + 100, y);
+            doc.setDrawColor(150); doc.line(M, y-4, M+60, y-4); doc.line(M+100, y-4, M+160, y-4);
+            y += 14;
+            doc.setFontSize(8); doc.setTextColor(120);
+            doc.text(`En ${(dir.split(',').pop()||'').trim() || 'Benifla'}, a ${c.fecha || ''}. Documento generado por el CRM de ${emisor}.`, M, y);
+
+            doc.save(`${c.numero || 'contrato'}_${emisor.replace(/\s+/g,'_')}.pdf`);
         }
 
         function tituloCita(ct) {

@@ -24,6 +24,7 @@ export default {
         'api::vehiculo-sustitucion.vehiculo-sustitucion',
         'api::whatsapp-template.whatsapp-template',
         'api::movimiento-caja-interna.movimiento-caja-interna',
+        'api::contrato.contrato',
       ];
       for (const uid of crmUids) {
         for (const action of ['find', 'findOne', 'create', 'update', 'delete']) {
