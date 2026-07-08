@@ -96,8 +96,10 @@
 
         (async function cargarAnaliticaDesdeCMS() {
             try {
-                for (const base of ['https://strapicms-production.up.railway.app',
-                                    'https://taller-migue-crm-production.up.railway.app']) {
+                const bases = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                    ? ['http://localhost:1337', 'https://cms.eltallerdemigue.es', 'https://strapicms-production.up.railway.app', 'https://taller-migue-crm-production.up.railway.app']
+                    : ['https://cms.eltallerdemigue.es', 'https://strapicms-production.up.railway.app', 'https://taller-migue-crm-production.up.railway.app'];
+                for (const base of bases) {
                     try {
                         const r = await fetch(base + '/api/site-setting');
                         if (!r.ok) continue;
@@ -780,6 +782,13 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        #slider-img {
+            transition: opacity 0.4s ease-in-out;
+        }
+        .slider-dot {
+            transition: all 0.3s ease;
+        }
+
     </style>
 
     <!-- AOS Animation Library -->
@@ -826,25 +835,29 @@
                 <p><strong class="text-white">Titular:</strong> Miguel Alejandro Bonell Jorda</p>
                 <p><strong class="text-white">Nombre comercial:</strong> El Taller de Migue</p>
                 <p><strong class="text-white">NIF:</strong> 21672322C</p>
-                <p><strong class="text-white">Dirección:</strong> Moli Nou 8, 46722 Benifla (Valencia)</p>
+                <p><strong class="text-white">Domicilio social:</strong> Moli Nou 8, 46722 Benifla (Valencia)</p>
                 <p><strong class="text-white">Teléfono:</strong> 625 78 64 38</p>
                 <p><strong class="text-white">Email:</strong> info@eltallerdemigue.es</p>
+                <p><strong class="text-white">Actividad:</strong> Taller mecánico multimarca. Reparación, mantenimiento y venta de vehículos de segunda mano. Servicio de grúa, diagnosis electrónica, climatización, neumáticos y pre-ITV.</p>
+
                 <h3 class="text-white font-bold text-lg mt-6">1. Objeto</h3>
-                <p>El presente aviso legal regula el uso del sitio web eltallerdemigue.es. La navegación por el sitio
-                    web atribuye la condición de usuario e implica la aceptación de todas las condiciones.</p>
+                <p>El presente aviso legal regula el uso del sitio web <strong class="text-white">eltallerdemigue.es</strong> (en adelante, "el sitio web"), propiedad de Miguel Alejandro Bonell Jorda. La navegación por el sitio web atribuye la condición de usuario e implica la aceptación plena y sin reservas de todas y cada una de las disposiciones incluidas en este aviso legal.</p>
+
                 <h3 class="text-white font-bold text-lg mt-6">2. Condiciones de uso</h3>
-                <p>El usuario se compromete a hacer un uso adecuado de los contenidos y servicios del sitio web,
-                    absteniéndose de emplearlos para incurrir en actividades ilícitas.</p>
-                <h3 class="text-white font-bold text-lg mt-6">3. Propiedad intelectual</h3>
-                <p>Todos los contenidos del sitio web (textos, imágenes, logotipos, diseños) son propiedad de El Taller
-                    de Migue o de sus colaboradores, y están protegidos por la legislación sobre propiedad intelectual e
-                    industrial.</p>
+                <p>El usuario se compromete a hacer un uso adecuado de los contenidos y servicios del sitio web, absteniéndose de emplearlos para incurrir en actividades ilícitas, contrarias a la buena fe o al orden público. Queda prohibido cualquier intento de vulnerar la seguridad del sitio web o de los sistemas del prestador.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">3. Propiedad intelectual e industrial</h3>
+                <p>Todos los contenidos del sitio web (textos, imágenes, logotipos, diseños, iconos, estructura de navegación, software, código fuente) son titularidad de Miguel Alejandro Bonell Jorda o de sus legítimos colaboradores, y están protegidos por la legislación vigente sobre propiedad intelectual e industrial. Queda expresamente prohibida la reproducción, distribución, comunicación pública o transformación de dichos contenidos sin autorización previa y por escrito del titular.</p>
+                <p>Los logotipos y marcas de fabricantes de vehículos, recambios y productos mostrados en el sitio web (Volkswagen, Audi, BMW, Bosch, Michelin, etc.) son propiedad de sus respectivos titulares y se utilizan únicamente a efectos de identificación e información comercial.</p>
+
                 <h3 class="text-white font-bold text-lg mt-6">4. Responsabilidad</h3>
-                <p>El Taller no se responsabiliza de los daños y perjuicios de cualquier naturaleza que pudieran
-                    derivarse del uso de la web.</p>
-                <h3 class="text-white font-bold text-lg mt-6">5. Legislación aplicable</h3>
-                <p>Este aviso legal se rige por la legislación española vigente. Para cualquier controversia, las partes
-                    se someten a los Juzgados y Tribunales de Valencia.</p>
+                <p>El prestador no se responsabiliza de los daños y perjuicios de cualquier naturaleza que pudieran derivarse del uso indebido del sitio web, ni de los posibles errores u omisiones en los contenidos publicados. El acceso al sitio web no implica la obligación por parte del prestador de verificar la ausencia de virus o elementos dañinos, correspondiendo al usuario disponer de herramientas adecuadas para su protección.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">5. Enlaces a terceros</h3>
+                <p>El sitio web puede incluir enlaces a sitios de terceros (WhatsApp, redes sociales, proveedores). El prestador no asume responsabilidad alguna sobre el contenido, productos o servicios ofrecidos en dichos sitios, ni garantiza su disponibilidad técnica, calidad o licitud.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">6. Legislación aplicable y jurisdicción</h3>
+                <p>Este aviso legal se rige por la legislación española vigente, en particular por la Ley 34/2002 de Servicios de la Sociedad de la Información y de Comercio Electrónico. Para cualquier controversia que pudiera derivarse del uso del sitio web, las partes se someten a los Juzgados y Tribunales de Valencia, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.</p>
             </div>
         </div>
     </div>
@@ -861,25 +874,48 @@
                     aria-label="Cerrar"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body p-6 md:p-8 text-gray-300 space-y-4 text-sm leading-relaxed">
-                <p><strong class="text-white">Última actualización:</strong> Junio 2026</p>
+                <p><strong class="text-white">Última actualización:</strong> Julio 2026</p>
+
                 <h3 class="text-white font-bold text-lg mt-4">1. Responsable del tratamiento</h3>
-                <p><strong class="text-white">Identidad:</strong> Miguel Alejandro Bonell Jorda<br><strong
-                        class="text-white">NIF:</strong> 21672322C<br><strong class="text-white">Dirección:</strong>
-                    Moli Nou 8, 46722 Benifla (Valencia)<br><strong class="text-white">Email:</strong>
-                    info@eltallerdemigue.es<br><strong class="text-white">Teléfono:</strong> 625 78 64 38</p>
-                <p>Responsable del tratamiento conforme al RGPD (UE) 2016/679 y la LOPDGDD 3/2018.</p>
-                <h3 class="text-white font-bold text-lg mt-6">2. Datos recogidos</h3>
-                <p>Recogemos los datos que nos proporcionas voluntariamente: nombre, teléfono, email y mensaje. También
-                    datos de navegación mediante cookies.</p>
-                <h3 class="text-white font-bold text-lg mt-6">3. Finalidad</h3>
+                <p><strong class="text-white">Identidad:</strong> Miguel Alejandro Bonell Jorda<br>
+                    <strong class="text-white">NIF:</strong> 21672322C<br>
+                    <strong class="text-white">Dirección:</strong> Moli Nou 8, 46722 Benifla (Valencia)<br>
+                    <strong class="text-white">Email:</strong> info@eltallerdemigue.es<br>
+                    <strong class="text-white">Teléfono:</strong> 625 78 64 38</p>
+                <p>Responsable del tratamiento conforme al Reglamento General de Protección de Datos (RGPD - UE 2016/679) y a la Ley Orgánica 3/2018 de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">2. Datos personales recogidos y finalidad del tratamiento</h3>
+                <p>En <strong class="text-white">El Taller de Migue</strong> tratamos los datos personales que nos proporcionas voluntariamente a través de los formularios de contacto, solicitud de cita, llamada telefónica o WhatsApp, con las siguientes finalidades:</p>
                 <ul class="list-disc pl-6 space-y-1">
-                    <li>Atender solicitudes de cita y consultas</li>
-                    <li>Enviar información (solo con consentimiento)</li>
-                    <li>Cumplir con obligaciones legales</li>
+                    <li><strong class="text-white">Gestión de citas y presupuestos:</strong> Atender solicitudes de reparación, mantenimiento, presupuesto y compra/venta de vehículos.</li>
+                    <li><strong class="text-white">Comunicación comercial:</strong> Enviar información sobre promociones y novedades del taller, exclusivamente cuando nos hayas otorgado tu consentimiento expreso.</li>
+                    <li><strong class="text-white">Facturación y garantías:</strong> Emitir facturas, presupuestos, albaranes y gestionar las garantías de los trabajos realizados.</li>
+                    <li><strong class="text-white">Obligaciones legales:</strong> Cumplir con la normativa fiscal, mercantil y de protección al consumidor aplicable.</li>
                 </ul>
-                <h3 class="text-white font-bold text-lg mt-6">4. Derechos del usuario</h3>
-                <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición
-                    escribiendo a info@eltallerdemigue.es o llamando al 625 78 64 38.</p>
+                <p>Los datos se conservarán mientras se mantenga la relación comercial o durante los plazos legalmente exigidos para el cumplimiento de obligaciones fiscales y de garantía (mínimo 5 años según el Código de Comercio, y hasta 10 años para garantías de reparación).</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">3. Base de legitimación</h3>
+                <p>El tratamiento de tus datos se basa en las siguientes bases de legitimación:</p>
+                <ul class="list-disc pl-6 space-y-1">
+                    <li>Ejecución de un contrato o relación precontractual (solicitud de presupuesto o cita).</li>
+                    <li>Consentimiento del interesado para la recepción de comunicaciones comerciales.</li>
+                    <li>Cumplimiento de obligaciones legales aplicables al prestador (obligaciones fiscales y mercantiles).</li>
+                </ul>
+
+                <h3 class="text-white font-bold text-lg mt-6">4. Destinatarios de cesiones</h3>
+                <p>No se cederán datos personales a terceros salvo obligación legal expresa. Podrán tener acceso a tus datos los encargados de tratamiento que nos prestan servicios (gestoría, asesoría fiscal, proveedores de alojamiento web), con quienes hemos suscrito los correspondientes contratos de encargo de tratamiento conforme al RGPD.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">5. Derechos del usuario</h3>
+                <p>Puedes ejercer gratuitamente tus derechos de <strong class="text-white">acceso, rectificación, supresión, limitación del tratamiento, portabilidad y oposición</strong> dirigiéndote a:</p>
+                <p class="bg-dark-900 rounded-lg p-4 border border-gray-800">
+                    <strong class="text-white">Email:</strong> info@eltallerdemigue.es<br>
+                    <strong class="text-white">Teléfono:</strong> 625 78 64 38<br>
+                    <strong class="text-white">Correo postal:</strong> Moli Nou 8, 46722 Benifla (Valencia)
+                </p>
+                <p>También tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD) si consideras que no hemos tratado tus datos correctamente.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">6. Veracidad de los datos</h3>
+                <p>El usuario garantiza que los datos personales facilitados son veraces y se hace responsable de comunicar cualquier modificación de los mismos.</p>
             </div>
         </div>
     </div>
@@ -896,32 +932,43 @@
                     aria-label="Cerrar"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body p-6 md:p-8 text-gray-300 space-y-4 text-sm leading-relaxed">
+                <p><strong class="text-white">Última actualización:</strong> Julio 2026</p>
+
                 <h3 class="text-white font-bold text-lg">¿Qué son las cookies?</h3>
-                <p>Pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas una web.</p>
-                <h3 class="text-white font-bold text-lg mt-6">Cookies que utilizamos</h3>
+                <p>Las cookies son pequeños archivos de texto que se almacenan en tu navegador cuando visitas un sitio web. Permiten recordar tus preferencias, mejorar la experiencia de navegación y obtener estadísticas anónimas sobre el uso del sitio.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">Tipos de cookies que utilizamos</h3>
                 <div class="space-y-3 mt-3">
                     <div class="bg-dark-900 rounded-lg p-4 border border-gray-800">
                         <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
                             <span class="font-semibold text-white">Cookies técnicas (necesarias)</span>
                             <span class="text-xs bg-green-600 px-2 py-1 rounded">Siempre activas</span>
                         </div>
-                        <p class="text-xs text-gray-400">Funcionamiento básico de la web.</p>
+                        <p class="text-xs text-gray-400">Permiten la navegación y el funcionamiento básico del sitio web, así como la prestación de los servicios solicitados (como recordar tu aceptación de cookies). No requieren consentimiento del usuario.</p>
                     </div>
                     <div class="bg-dark-900 rounded-lg p-4 border border-gray-800">
                         <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-                            <span class="font-semibold text-white">Google Analytics 4</span>
+                            <span class="font-semibold text-white">Google Analytics 4 (GA4)</span>
                             <span class="text-xs bg-accent px-2 py-1 rounded">Con consentimiento</span>
                         </div>
-                        <p class="text-xs text-gray-400">Analíticas para mejorar la web.</p>
-                    </div>
-                    <div class="bg-dark-900 rounded-lg p-4 border border-gray-800">
-                        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-                            <span class="font-semibold text-white">Facebook Pixel</span>
-                            <span class="text-xs bg-accent px-2 py-1 rounded">Con consentimiento</span>
-                        </div>
-                        <p class="text-xs text-gray-400">Medición de campañas publicitarias.</p>
+                        <p class="text-xs text-gray-400">Cookie analítica de Google que nos ayuda a comprender cómo interactúan los visitantes con el sitio web (páginas visitadas, tiempo de navegación, origen de la visita). Los datos se recogen de forma anónima y agregada.</p>
                     </div>
                 </div>
+
+                <h3 class="text-white font-bold text-lg mt-6">Gestión de cookies</h3>
+                <p>Puedes aceptar, configurar o rechazar las cookies no esenciales mediante el panel de configuración que aparece al acceder al sitio web. También puedes configurar tu navegador para bloquear o eliminar cookies:</p>
+                <ul class="list-disc pl-6 space-y-1">
+                    <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Google Chrome</a></li>
+                    <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Mozilla Firefox</a></li>
+                    <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Safari</a></li>
+                    <li><a href="https://support.microsoft.com/es-es/windows/eliminar-y-administrar-cookies" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Microsoft Edge</a></li>
+                </ul>
+
+                <h3 class="text-white font-bold text-lg mt-6">Consentimiento</h3>
+                <p>Al aceptar la política de cookies mediante el banner correspondiente, consientes el uso de las cookies analíticas descritas. Puedes retirar tu consentimiento en cualquier momento mediante la configuración de cookies o la configuración de tu navegador.</p>
+
+                <h3 class="text-white font-bold text-lg mt-6">Más información</h3>
+                <p>Para cualquier duda sobre nuestra política de cookies, puedes contactarnos en <strong class="text-white">info@eltallerdemigue.es</strong> o llamando al <strong class="text-white">625 78 64 38</strong>.</p>
             </div>
         </div>
     </div>
@@ -1028,12 +1075,16 @@
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Inicio</a>
                     <a href="#servicios"
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Servicios</a>
+                    <a href="#nosotros"
+                        class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Sobre Nosotros</a>
                     <a href="#stock"
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Stock</a>
                     <a href="#colaboradores"
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Autocaravanas</a>
                     <a href="#marcas"
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Marcas</a>
+                    <a href="#marcas-vehiculos"
+                        class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Multimarca</a>
                     <a href="#resenas"
                         class="text-gray-300 hover:text-white transition-colors text-sm font-medium">Opiniones</a>
                     <a href="https://wa.me/34625786438" target="_blank" rel="noopener noreferrer"
@@ -1052,12 +1103,16 @@
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Inicio</a>
                 <a href="#servicios"
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Servicios</a>
+                <a href="#nosotros"
+                    class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Sobre Nosotros</a>
                 <a href="#stock"
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Stock</a>
                 <a href="#colaboradores"
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Autocaravanas</a>
                 <a href="#marcas"
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Marcas</a>
+                <a href="#marcas-vehiculos"
+                    class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Multimarca</a>
                 <a href="#resenas"
                     class="block text-gray-300 hover:text-white py-2 border-b border-gray-800 text-sm">Opiniones</a>
                 <a href="https://wa.me/34625786438" target="_blank" rel="noopener noreferrer"
@@ -1076,18 +1131,18 @@
                 <div class="mb-8 fade-up">
                     <div class="flex items-center gap-4 mb-3">
                         <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
-                        <span class="text-[11px] md:text-xs tracking-[0.2em] uppercase text-gray-400">Taller de confianza y trato cercano en Beniflá y Gandía</span>
+                        <span class="text-[11px] md:text-xs tracking-[0.2em] uppercase text-gray-400">Taller multimarca de confianza en Beniflá y Gandía</span>
                     </div>
                 </div>
                 <h1 class="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] mb-8 fade-up"
                     style="transition-delay: 0.1s;">
-                    Cuidamos tu coche<br>
-                    <span class="text-gray-500">como si fuera</span><br>
-                    <span class="text-accent text-gradient">el nuestro.</span>
+                    Taller Multimarca<br>
+                    <span class="text-gray-500">cuidamos tu coche</span><br>
+                    <span class="text-accent text-gradient">como si fuera el nuestro.</span>
                 </h1>
                 <p class="text-sm xs:text-base md:text-lg lg:text-xl text-gray-300 max-w-2xl leading-relaxed mb-10 fade-up"
                     style="transition-delay: 0.2s;">
-                    Sabemos lo importante que es tu vehículo para tu día a día. Por eso, reparamos y mimamos tu <strong class="text-white">coche, furgoneta o autocaravana</strong> con total honestidad y transparencia. Y si buscas cambiar, descubre nuestros vehículos de ocasión garantizados por nosotros mismos.
+                    En <strong class="text-white">El Taller de Migue</strong> reparamos y mantenemos cualquier marca y modelo con honestidad y transparencia. Además, disponemos de <strong class="text-white">coches de sustitución gratuitos</strong> para que no tengas que parar tu día a día. Y si buscas cambiar, descubre nuestros vehículos de ocasión revisados y garantizados.
                 </p>
                 <div class="flex flex-col xs:flex-row flex-wrap gap-3 md:gap-4 mb-8 md:mb-12 fade-up"
                     style="transition-delay: 0.3s;">
@@ -1106,12 +1161,12 @@
                     <div
                         class="flex items-center gap-3 bg-dark-800/50 backdrop-blur-sm p-3 rounded-sm border border-gray-800">
                         <div class="w-2.5 h-2.5 bg-accent rounded-sm shrink-0"></div>
-                        <span class="text-xs md:text-sm text-gray-300">+15 años en el sector</span>
+                        <span class="text-xs md:text-sm text-gray-300">Taller multimarca</span>
                     </div>
                     <div
                         class="flex items-center gap-3 bg-dark-800/50 backdrop-blur-sm p-3 rounded-sm border border-gray-800">
                         <div class="w-2.5 h-2.5 bg-accent rounded-sm shrink-0"></div>
-                        <span class="text-xs md:text-sm text-gray-300">Pre-ITV y diagnosis</span>
+                        <span class="text-xs md:text-sm text-gray-300">Coche de sustitución gratis</span>
                     </div>
                     <div
                         class="flex items-center gap-3 bg-dark-800/50 backdrop-blur-sm p-3 rounded-sm border border-gray-800">
@@ -1143,8 +1198,8 @@
                                 class="fas fa-arrow-up-right-from-square text-gray-600 group-hover:text-accent transition-colors"></i>
                         </div>
                         <div class="mb-6"><i class="fas fa-wrench text-accent text-2xl md:text-3xl"></i></div>
-                        <h3 class="text-xl md:text-2xl lg:text-3xl font-bold mb-4">Taller mecánico</h3>
-                        <p class="text-gray-400 text-sm md:text-base leading-relaxed">Desde una revisión rutinaria hasta averías complejas. Te explicamos lo que le pasa a tu coche sin palabras raras.</p>
+                        <h3 class="text-xl md:text-2xl lg:text-3xl font-bold mb-4">Taller multimarca</h3>
+                        <p class="text-gray-400 text-sm md:text-base leading-relaxed">Reparamos y mantenemos cualquier marca y modelo. Desde una revisión rutinaria hasta averías complejas. Te explicamos lo que le pasa a tu coche sin palabras raras.</p>
                     </article>
                     <article class="grid-card bg-dark-900 p-8 md:p-12 cursor-pointer group fade-up"
                         style="transition-delay: 0.1s;">
@@ -1205,8 +1260,8 @@
                                     <span class="text-accent">prioridad.</span>
                                 </h2>
                                 <p class="text-gray-300 text-xs md:text-sm leading-relaxed max-w-md">
-                                    Mecánica de turismo y autocaravanas. Diagnóstico, mantenimiento y reparación
-                                    integral con trato cercano.
+                                    Taller multimarca especializado en turismos y autocaravanas. Diagnóstico, mantenimiento y reparación
+                                    integral con trato cercano. Disponemos de coches de sustitución gratuitos.
                                 </p>
                             </div>
                         </div>
@@ -1223,7 +1278,7 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Mecánica general</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Ya sean los frenos, la correa o el motor completo, te asesoramos siempre buscando la mejor solución para tu bolsillo y seguridad.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Atendemos cualquier marca y modelo: frenos, correa de distribución, embrague, motor completo. Te asesoramos sin compromiso buscando siempre la mejor relación calidad-precio.</p>
                             </div>
                             <div class="service-detail-card bg-dark-800/90 backdrop-blur-sm p-4 md:p-6">
                                 <div class="flex items-center gap-3 mb-3">
@@ -1233,8 +1288,7 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Diagnosis electrónica</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Puesta a punto precisa con
-                                    equipos de última generación. Lectura y borrado de averías.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Equipos de última generación para detectar cualquier avería electrónica. Lectura y borrado de códigos de error en todas las marcas. Diagnosis multimarca completa.</p>
                             </div>
                             <div class="service-detail-card bg-dark-800/90 backdrop-blur-sm p-4 md:p-6">
                                 <div class="flex items-center gap-3 mb-3">
@@ -1244,8 +1298,7 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Motor y embrague</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Frenos, suspensión y
-                                    dirección. Cambio de correas, distribuciones y embragues.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Reparación de motores gasolina y diésel, cambio de embrague, distribución, suspensión y dirección. Trabajamos con cualquier marca del mercado.</p>
                             </div>
                             <div class="service-detail-card bg-dark-800/90 backdrop-blur-sm p-4 md:p-6">
                                 <div class="flex items-center gap-3 mb-3">
@@ -1255,8 +1308,7 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Pre-ITV / ITV</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Te ayudamos a pasar la ITV
-                                    sin sustos. Revisión completa y puesta a punto.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Revisión completa pre-ITV para que pases a la primera. Comprobamos luces, frenos, emisiones, suspensión y dirección. Te acompañamos en todo el proceso.</p>
                             </div>
                             <div class="service-detail-card bg-dark-800/90 backdrop-blur-sm p-4 md:p-6">
                                 <div class="flex items-center gap-3 mb-3">
@@ -1266,8 +1318,7 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Climatización</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Recarga y reparación de A/C.
-                                    Calefacción y sistemas de climatización integral.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Recarga de gas, reparación de fugas y mantenimiento del aire acondicionado. También revisamos calefacción y climatizador para que viajes siempre cómodo.</p>
                             </div>
                             <div class="service-detail-card bg-dark-800/90 backdrop-blur-sm p-4 md:p-6">
                                 <div class="flex items-center gap-3 mb-3">
@@ -1277,20 +1328,156 @@
                                     </div>
                                     <h4 class="font-bold text-sm md:text-base">Neumáticos</h4>
                                 </div>
-                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Almacenaje, equilibrado y
-                                    montaje. Las mejores marcas al mejor precio.</p>
+                                <p class="text-gray-400 text-xs md:text-sm leading-relaxed">Montaje, equilibrado y almacenaje de neumáticos temporada. Trabajamos con las mejores marcas (Michelin, Bridgestone, Continental, Pirelli) al mejor precio.</p>
                             </div>
                         </div>
                         <div
                             class="mt-4 md:mt-6 bg-dark-800/90 backdrop-blur-sm border border-gray-800 rounded-lg p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <div class="text-xs tracking-[0.2em] uppercase text-accent mb-1">Pedir cita</div>
-                                <h4 class="text-lg md:text-xl font-bold">Reserva tu revisión hoy.</h4>
+                                <h4 class="text-lg md:text-xl font-bold">¿Hablamos de tu coche? Sin compromiso.</h4>
                             </div>
                             <a href="https://wa.me/34625786438" target="_blank" rel="noopener noreferrer"
                                 class="bg-accent hover:bg-accent-dark px-5 md:px-6 py-2.5 md:py-3 rounded-sm font-semibold transition-all btn-primary whitespace-nowrap text-sm md:text-base inline-flex items-center gap-2">
                                 <i class="fab fa-whatsapp"></i> Contactar
                             </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vehicle Brands -->
+        <section id="marcas-vehiculos" class="bg-dark-900 py-16 md:py-20 lg:py-24 overflow-hidden" aria-labelledby="marcas-vehiculos-title">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 mb-10 md:mb-12">
+                <div class="text-center fade-up">
+                    <div class="flex items-center justify-center gap-4 mb-4">
+                        <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
+                        <span class="text-xs tracking-[0.2em] uppercase text-gray-400">Multimarca de confianza</span>
+                        <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
+                    </div>
+                    <h2 id="marcas-vehiculos-title" class="text-2xl xs:text-3xl md:text-5xl font-extrabold mb-4">Todas las <span class="text-accent text-gradient">marcas</span></h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Trabajamos con todas las marcas del mercado. Reparamos, mantenemos y vendemos vehículos de cualquier fabricante con la máxima garantía profesional.</p>
+                </div>
+            </div>
+
+            <div class="relative fade-up" style="transition-delay: 0.2s;">
+                <div class="absolute left-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-r from-dark-900 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-l from-dark-900 to-transparent z-10 pointer-events-none"></div>
+
+                <div class="brands-track">
+                    <div class="flex items-center gap-12 md:gap-16 px-4" style="animation: scrollBrands 40s linear infinite;">
+                        <a href="https://www.seat.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/seat.svg" alt="SEAT" class="brand-logo-img"></a>
+                        <a href="https://www.volkswagen.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/volkswagen.svg" alt="Volkswagen" class="brand-logo-img"></a>
+                        <a href="https://www.audi.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/audi.svg" alt="Audi" class="brand-logo-img"></a>
+                        <a href="https://www.mercedes-benz.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/mercedes.svg" alt="Mercedes-Benz" class="brand-logo-img"></a>
+                        <a href="https://www.bmw.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/bmw.svg" alt="BMW" class="brand-logo-img"></a>
+                        <a href="https://www.renault.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/renault.svg" alt="Renault" class="brand-logo-img"></a>
+                        <a href="https://www.peugeot.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/peugeot.svg" alt="Peugeot" class="brand-logo-img"></a>
+                        <a href="https://www.citroen.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/citroen.svg" alt="Citroën" class="brand-logo-img"></a>
+                        <a href="https://www.ford.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/ford.svg" alt="Ford" class="brand-logo-img"></a>
+                        <a href="https://www.toyota.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/toyota.svg" alt="Toyota" class="brand-logo-img"></a>
+                        <a href="https://www.nissan.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/nissan.svg" alt="Nissan" class="brand-logo-img"></a>
+                        <a href="https://www.opel.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/opel.svg" alt="Opel" class="brand-logo-img"></a>
+                        <a href="https://www.hyundai.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/hyundai.svg" alt="Hyundai" class="brand-logo-img"></a>
+                        <a href="https://www.kia.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/kia.svg" alt="Kia" class="brand-logo-img"></a>
+                        <a href="https://www.fiat.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/fiat.svg" alt="Fiat" class="brand-logo-img"></a>
+                        <a href="https://www.mini.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/mini.svg" alt="MINI" class="brand-logo-img"></a>
+                        <a href="https://www.iveco.com" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/iveco.svg" alt="Iveco" class="brand-logo-img"></a>
+
+                        <a href="https://www.seat.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/seat.svg" alt="SEAT" class="brand-logo-img"></a>
+                        <a href="https://www.volkswagen.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/volkswagen.svg" alt="Volkswagen" class="brand-logo-img"></a>
+                        <a href="https://www.audi.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/audi.svg" alt="Audi" class="brand-logo-img"></a>
+                        <a href="https://www.mercedes-benz.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/mercedes.svg" alt="Mercedes-Benz" class="brand-logo-img"></a>
+                        <a href="https://www.bmw.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/bmw.svg" alt="BMW" class="brand-logo-img"></a>
+                        <a href="https://www.renault.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/renault.svg" alt="Renault" class="brand-logo-img"></a>
+                        <a href="https://www.peugeot.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/peugeot.svg" alt="Peugeot" class="brand-logo-img"></a>
+                        <a href="https://www.citroen.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/citroen.svg" alt="Citroën" class="brand-logo-img"></a>
+                        <a href="https://www.ford.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/ford.svg" alt="Ford" class="brand-logo-img"></a>
+                        <a href="https://www.toyota.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/toyota.svg" alt="Toyota" class="brand-logo-img"></a>
+                        <a href="https://www.nissan.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/nissan.svg" alt="Nissan" class="brand-logo-img"></a>
+                        <a href="https://www.opel.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/opel.svg" alt="Opel" class="brand-logo-img"></a>
+                        <a href="https://www.hyundai.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/hyundai.svg" alt="Hyundai" class="brand-logo-img"></a>
+                        <a href="https://www.kia.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/kia.svg" alt="Kia" class="brand-logo-img"></a>
+                        <a href="https://www.fiat.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/fiat.svg" alt="Fiat" class="brand-logo-img"></a>
+                        <a href="https://www.mini.es" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/mini.svg" alt="MINI" class="brand-logo-img"></a>
+                        <a href="https://www.iveco.com" target="_blank" class="flex-shrink-0 group brand-logo-card-sm"><img src="assets/brands/iveco.svg" alt="Iveco" class="brand-logo-img"></a>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .brand-logo-card-sm {
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0.8;
+                }
+                .brand-logo-card-sm:hover {
+                    opacity: 1;
+                    transform: scale(1.12);
+                }
+                .brand-logo-img {
+                    height: 48px;
+                    width: auto;
+                    object-fit: contain;
+                }
+                @media (min-width: 768px) {
+                    .brand-logo-img { height: 64px; }
+                }
+            </style>
+        </section>
+
+        <!-- Sobre Nosotros Section -->
+        <section id="nosotros" class="bg-dark-800 py-16 md:py-20 lg:py-28" aria-labelledby="nosotros-title">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8" data-aos="fade-up">
+                <div class="text-center mb-12 md:mb-16 fade-up">
+                    <div class="flex items-center justify-center gap-4 mb-4">
+                        <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
+                        <span class="text-xs tracking-[0.2em] uppercase text-gray-400">Quiénes somos</span>
+                        <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
+                    </div>
+                    <h2 id="nosotros-title" class="text-2xl xs:text-3xl md:text-5xl font-extrabold">Sobre <span class="text-accent">Nosotros</span></h2>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="fade-up">
+                        <div class="relative rounded-lg overflow-hidden">
+                            <div id="slider-container" class="relative w-full overflow-hidden rounded-lg" style="aspect-ratio: 16/10;">
+                                <img id="slider-img" src="assets/cars/real_1.png" alt="Taller de Migue Instalaciones"
+                                    class="w-full h-full object-cover transition-opacity duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4 flex justify-center gap-2">
+                                    <button onclick="slideTo(0)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/80 hover:bg-white transition-all" data-index="0"></button>
+                                    <button onclick="slideTo(1)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/80 transition-all" data-index="1"></button>
+                                    <button onclick="slideTo(2)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/80 transition-all" data-index="2"></button>
+                                    <button onclick="slideTo(3)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/80 transition-all" data-index="3"></button>
+                                    <button onclick="slideTo(4)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/80 transition-all" data-index="4"></button>
+                                    <button onclick="slideTo(5)" class="slider-dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-white/80 transition-all" data-index="5"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fade-up" style="transition-delay: 0.15s;">
+                        <h3 class="text-2xl md:text-3xl font-bold mb-6">
+                            <span class="text-accent">Taller Multimarca</span> en Benifla
+                        </h3>
+                        <div class="space-y-4 text-gray-300 text-sm md:text-base leading-relaxed">
+                            <p>
+                                En <strong class="text-white">El Taller de Migue</strong> somos un taller multimarca con más de 15 años de experiencia. Trabajamos con todas las marcas y modelos, porque creemos que tu coche merece el mejor cuidado, sea cual sea.
+                            </p>
+                            <p>
+                                Contamos con <strong class="text-white">diagnosis electrónica avanzada</strong> y personal cualificado para ofrecerte un servicio completo: mecánica general, electrónica, climatización, pre-ITV, y mucho más.
+                            </p>
+                            <p>
+                                Además, disponemos de una flota de <strong class="text-white">coches de sustitución gratuitos</strong> para que puedas seguir con tu rutina mientras nosotros trabajamos en tu vehículo.
+                            </p>
+                            <div class="bg-accent/10 border-l-4 border-accent p-4 md:p-5 rounded-r-lg mt-6">
+                                <p class="text-white italic font-medium text-sm md:text-base">
+                                    <i class="fas fa-quote-left text-accent mr-2"></i>
+                                    En Taller de Migue hacemos todo lo posible para que disfrutes de tu vehículo con total tranquilidad.
+                                    <i class="fas fa-quote-right text-accent ml-2"></i>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1348,7 +1535,7 @@
                         <h2 id="colaboradores-title" class="text-2xl xs:text-3xl md:text-5xl font-extrabold">¿Buscas
                             una<br><span class="text-accent">autocaravana?</span></h2>
                         <p class="text-gray-400 max-w-md text-sm md:text-base">Para la <strong class="text-white">venta
-                                y alquiler de autocaravanas</strong> trabajamos con empresas especializadas.</p>
+                                y alquiler de autocaravanas</strong> colaboramos con empresas especializadas de confianza. Te asesoramos en todo el proceso.</p>
                     </div>
                 </div>
 
@@ -1412,9 +1599,9 @@
                         <span class="text-xs tracking-[0.2em] uppercase text-gray-400">Calidad garantizada</span>
                         <div class="w-8 md:w-12 h-[2px] bg-accent"></div>
                     </div>
-                    <h2 id="marcas-title" class="text-2xl xs:text-3xl md:text-5xl font-extrabold mb-4">Marcas de <span
-                            class="text-accent text-gradient">repuestos</span></h2>
-                    <p class="text-gray-400 max-w-2xl mx-auto">Trabajamos con las mejores marcas del mercado. Haz clic para visitar sus webs oficiales.</p>
+                    <h2 id="marcas-title" class="text-2xl xs:text-3xl md:text-5xl font-extrabold mb-4">Trabajamos con <span
+                            class="text-accent text-gradient">los mejores</span></h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Solo utilizamos recambios de primeras marcas para garantizar la calidad y durabilidad de cada reparación. Confiamos en los líderes del sector.</p>
                 </div>
             </div>
 
@@ -1429,56 +1616,24 @@
                 <div class="brands-track">
                     <div class="flex items-center gap-12 md:gap-20 px-4" style="animation: scrollBrands 35s linear infinite;">
                         <!-- Block 1 -->
-                        <a href="https://www.bosch.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-white uppercase tracking-[0.15em] transition-all duration-300">BOSCH</span>
-                        </a>
-                        <a href="https://www.continental.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-extrabold text-gray-600 group-hover:text-yellow-500 uppercase tracking-wider transition-all duration-300">Continental</span>
-                        </a>
-                        <a href="https://www.castrol.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-green-500 uppercase tracking-widest transition-all duration-300 italic">Castrol</span>
-                        </a>
-                        <a href="https://www.varta-automotive.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-blue-500 uppercase tracking-[0.2em] transition-all duration-300">VARTA</span>
-                        </a>
-                        <a href="https://www.brembo.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-red-600 uppercase tracking-widest transition-all duration-300">brembo</span>
-                        </a>
-                        <a href="https://www.michelin.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-blue-400 uppercase tracking-wider transition-all duration-300">MICHELIN</span>
-                        </a>
-                        <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">PIRELLI</span>
-                        </a>
-                        <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-green-400 uppercase tracking-widest transition-all duration-300">Valeo</span>
-                        </a>
+                        <a href="https://www.bosch.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/bosch.svg" alt="Bosch" class="brand-logo-parts-img"></a>
+                        <a href="https://www.continental.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/continental.svg" alt="Continental" class="brand-logo-parts-img"></a>
+                        <a href="https://www.castrol.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/castrol.svg" alt="Castrol" class="brand-logo-parts-img"></a>
+                        <a href="https://www.varta-automotive.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/varta.svg" alt="VARTA" class="brand-logo-parts-img"></a>
+                        <a href="https://www.brembo.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/brembo.svg" alt="Brembo" class="brand-logo-parts-img"></a>
+                        <a href="https://www.michelin.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/michelin.svg" alt="Michelin" class="brand-logo-parts-img"></a>
+                        <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/pirelli.svg" alt="Pirelli" class="brand-logo-parts-img"></a>
+                        <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/valeo.svg" alt="Valeo" class="brand-logo-parts-img"></a>
 
                         <!-- Block 2 (Duplicate for smooth scroll) -->
-                        <a href="https://www.bosch.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-white uppercase tracking-[0.15em] transition-all duration-300">BOSCH</span>
-                        </a>
-                        <a href="https://www.continental.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-extrabold text-gray-600 group-hover:text-yellow-500 uppercase tracking-wider transition-all duration-300">Continental</span>
-                        </a>
-                        <a href="https://www.castrol.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-green-500 uppercase tracking-widest transition-all duration-300 italic">Castrol</span>
-                        </a>
-                        <a href="https://www.varta-automotive.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-blue-500 uppercase tracking-[0.2em] transition-all duration-300">VARTA</span>
-                        </a>
-                        <a href="https://www.brembo.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-red-600 uppercase tracking-widest transition-all duration-300">brembo</span>
-                        </a>
-                        <a href="https://www.michelin.es" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-black text-gray-600 group-hover:text-blue-400 uppercase tracking-wider transition-all duration-300">MICHELIN</span>
-                        </a>
-                        <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-normal text-gray-600 group-hover:text-yellow-400 uppercase tracking-[0.3em] transition-all duration-300">PIRELLI</span>
-                        </a>
-                        <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group">
-                            <span class="text-xl md:text-3xl font-bold text-gray-600 group-hover:text-green-400 uppercase tracking-widest transition-all duration-300">Valeo</span>
-                        </a>
+                        <a href="https://www.bosch.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/bosch.svg" alt="Bosch" class="brand-logo-parts-img"></a>
+                        <a href="https://www.continental.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/continental.svg" alt="Continental" class="brand-logo-parts-img"></a>
+                        <a href="https://www.castrol.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/castrol.svg" alt="Castrol" class="brand-logo-parts-img"></a>
+                        <a href="https://www.varta-automotive.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/varta.svg" alt="VARTA" class="brand-logo-parts-img"></a>
+                        <a href="https://www.brembo.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/brembo.svg" alt="Brembo" class="brand-logo-parts-img"></a>
+                        <a href="https://www.michelin.es" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/michelin.svg" alt="Michelin" class="brand-logo-parts-img"></a>
+                        <a href="https://www.pirelli.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/pirelli.svg" alt="Pirelli" class="brand-logo-parts-img"></a>
+                        <a href="https://www.valeo.com" target="_blank" class="flex-shrink-0 group brand-logo-parts"><img src="assets/parts-brands/valeo.svg" alt="Valeo" class="brand-logo-parts-img"></a>
                     </div>
                 </div>
             </div>
@@ -1489,9 +1644,24 @@
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }
                 }
+                .brand-logo-parts {
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0.85;
+                }
+                .brand-logo-parts:hover {
+                    opacity: 1;
+                    transform: scale(1.1);
+                }
+                .brand-logo-parts-img {
+                    height: 40px;
+                    width: auto;
+                    object-fit: contain;
+                }
+                @media (min-width: 768px) {
+                    .brand-logo-parts-img { height: 50px; }
+                }
             </style>
         </section>
-
         <!-- Google Reviews -->
         <section id="resenas" class="bg-dark-900 py-16 md:py-20 lg:py-28" aria-labelledby="resenas-title">
             <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8" data-aos="fade-up">
@@ -1778,9 +1948,10 @@
                 </div>
                 <div class="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16">
                     <div class="fade-up">
-                        <h2 id="contacto-title"
+                         <h2 id="contacto-title"
                             class="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05] mb-4 md:mb-6">
-                            ¿Hablamos?<br><span class="text-accent">Llámanos.</span></h2>
+                            Pide cita<br><span class="text-accent">hoy mismo.</span></h2>
+                        <p class="text-gray-400 text-sm md:text-base mb-6 md:mb-8 max-w-lg">Estamos en Benifla, Valencia. Taller multimarca con diagnóstico avanzado y coche de sustitución gratuito. ¿Tienes una avería o quieres revisión? Escríbenos o llámanos.</p>
                         <a href="tel:+34625786438"
                             class="inline-block text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-extrabold text-accent hover:opacity-80 transition-opacity tracking-tight mb-6 md:mb-10">625 78 64 38</a>
 
@@ -1843,7 +2014,7 @@
 
                     <div class="fade-up" style="transition-delay: 0.2s;">
                         <form id="contact-form" class="bg-dark-800 rounded-lg p-5 md:p-8 border border-gray-800">
-                            <h3 class="text-xl md:text-2xl font-bold mb-4 md:mb-6">Pedir cita o consulta</h3>
+                            <h3 class="text-xl md:text-2xl font-bold mb-4 md:mb-6">Cuéntanos qué necesitas</h3>
                             <div class="space-y-4 md:space-y-5">
                                 <div class="grid sm:grid-cols-2 gap-3 md:gap-4">
                                     <div>
@@ -1932,7 +2103,7 @@
                     <div data-aos="fade-up" data-aos-delay="0">
                         <img src="logo_transparente.png" alt="El Taller de Migue" class="h-16 w-auto mb-6">
                         <p class="text-gray-400 text-sm leading-relaxed mb-6">
-                            Tu taller mecánico de confianza en Beniflà, Valencia. Especialistas en reparación de vehículos, furgonetas y autocaravanas. Calidad y transparencia nos avalan.
+                            Taller multimarca en Beniflà, Valencia. Más de 15 años reparando cualquier marca y modelo con honestidad y trato cercano. Disponemos de coches de sustitución gratuitos y diagnóstico electrónico avanzado. Calidad y transparencia nos avalan.
                         </p>
                         <div class="flex space-x-4">
                             <a href="https://facebook.com/eltallerdemigue" target="_blank" class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-gray-400 hover:bg-accent hover:text-white transition-all hover:-translate-y-1"><i class="fab fa-facebook-f"></i></a>
@@ -2000,13 +2171,13 @@
     <script>
         // DATOS DE VEHÍCULOS (Simulando Google My Business)
                 let fallbackVehiclesData = [
-            { id: 1, name: 'Volkswagen Polo 1.0 TSI DSG', specs: '1.0 TSI · Automático DSG 7 vel. · 2026', price: 'Consultar', km: 'Revisado', year: '2026', fuel: 'Gasolina', trans: 'Automático', power: 'TSI', color: 'Blanco', doors: '5 puertas', category: 'coche', badge: 'RECIÉN LLEGADO', badgeColor: 'bg-green-600', desc: 'Volkswagen Polo con motor 1.0 TSI turbo gasolina y cambio automático DSG de 7 velocidades. Equipado con faros LED, llantas bitono, pantalla táctil multimedia y asistentes de conducción. Revisado completamente por nosotros.', features: ['Cambio automático DSG', 'Faros LED', 'Llantas bitono', 'Pantalla táctil', 'Asistentes conducción'], images: ['assets/cars/real_1.png'], video: null },
-            { id: 2, name: 'Iveco Daily 35', specs: 'Caja Paquetera · Doble Hoja', price: 'Consultar', km: 'Revisado', year: '2026', fuel: 'Diésel', trans: 'Manual', power: 'Turbodiésel', color: 'Blanco', doors: 'Caja', category: 'furgoneta', badge: 'IDEAL REPARTO', badgeColor: 'bg-orange-500', desc: 'Furgón Iveco Daily 35 con caja paquetera de gran capacidad y puerta trasera de doble hoja. Perfecto para trabajos de reparto y paquetería. Motor muy fiable.', features: ['Caja paquetera', 'Doble hoja trasera', 'Gran capacidad', 'Motor fiable'], images: ['assets/cars/real_5.png'], video: null },
-            { id: 3, name: 'Mercedes-Benz Clase C AMG Line', specs: 'Diésel · 2015 · 131.809 km', price: 'Consultar', km: '131.809 km', year: '2015', fuel: 'Diésel', trans: 'Automático', power: 'Consultar', color: 'Gris Oscuro', doors: '5 puertas', category: 'coche', badge: 'PREMIUM', badgeColor: 'bg-accent', desc: 'Mercedes Clase C con paquete deportivo AMG Line. Equipamiento premium: Faros LED High Performance, sistema de navegación, asientos deportivos en cuero/alcantara y sensores de aparcamiento.', features: ['AMG Line', 'Faros LED', 'Navegador', 'Asientos deportivos', 'Cuero/Alcantara', 'Sensores de aparcamiento'], images: ['assets/cars/real_4.png'], video: null },
-            { id: 4, name: 'Audi Q5 35 TDI S tronic (ECO)', specs: 'Mild Hybrid · S tronic · 2023', price: 'Consultar', km: 'Semi-nuevo', year: '2023', fuel: 'Diésel (ECO)', trans: 'Automático S tronic', power: '35 TDI', color: 'Gris', doors: '5 puertas', category: 'suv', badge: 'ETIQUETA ECO', badgeColor: 'bg-green-600', desc: 'Espectacular Audi Q5 35 TDI (Junio 2023). Etiqueta ECO (Mild Hybrid). Faros Matrix LED, Audi Virtual Cockpit, MMI Navegación Plus, maletero eléctrico, cámara trasera y control de crucero adaptativo.', features: ['Etiqueta ECO', 'S tronic', 'Matrix LED', 'Virtual Cockpit', 'Navegación Plus', 'Maletero eléctrico', 'Cámara trasera', 'Crucero adaptativo'], images: ['assets/cars/real_3.png'], video: null },
-            { id: 5, name: 'Volkswagen Golf GTI', specs: '2.0 TSI · Azul Eléctrico', price: 'Consultar', km: 'Revisado', year: 'Consultar', fuel: 'Gasolina', trans: 'Manual', power: '2.0 TSI', color: 'Azul Eléctrico', doors: '5 puertas', category: 'coche', badge: 'DEPORTIVO', badgeColor: 'bg-red-600', desc: 'Volkswagen Golf GTI 2.0 TSI. Color Azul Eléctrico, llantas deportivas GTI, faros de xenón direccionales, tapicería mítica a cuadros Interlagos y volante multifunción en cuero.', features: ['Llantas GTI', 'Xenón direccional', 'Tapicería Interlagos', 'Volante de cuero multifunción'], images: ['assets/cars/real_2.png'], video: null },
-            { id: 6, name: 'Volkswagen Golf TSI', specs: 'TSI Gasolina · A estrenar', price: 'Consultar', km: '0 km', year: '2025', fuel: 'Gasolina', trans: 'Manual', power: 'TSI', color: 'Plata Metálico', doors: '5 puertas', category: 'coche', badge: 'A ESTRENAR', badgeColor: 'bg-accent', desc: 'Volkswagen Golf TSI prácticamente a estrenar (menos de un año). Color gris plata metálico. Vehículo totalmente garantizado y revisado en nuestras instalaciones.', features: ['Prácticamente nuevo', 'Garantía oficial', 'Revisado'], images: ['assets/cars/real_1.png'], video: null },
-            { id: 7, name: 'Mini Cooper R50', specs: '1.6 Gasolina · Bajo consumo', price: 'Consultar', km: 'Revisado', year: 'Consultar', fuel: 'Gasolina', trans: 'Manual', power: '1.6', color: 'Consultar', doors: '3 puertas', category: 'coche', badge: 'OCASIÓN', badgeColor: 'bg-orange-500', desc: 'Mini Cooper R50 con motor 1.6 gasolina. Bajo consumo, ideal para la ciudad. Totalmente revisado y con garantía directa desde nuestro taller.', features: ['Bajo consumo', 'Ideal ciudad', 'Garantía del taller'], images: ['assets/cars/real_2.png'], video: null }
+            { id: 1, name: 'Volkswagen Polo 1.0 TSI DSG', specs: '1.0 TSI · Automático DSG 7 vel. · 2026', price: 'Consultar', km: 'Revisado', year: '2026', fuel: 'Gasolina', trans: 'Automático', power: 'TSI', color: 'Blanco', doors: '5 puertas', category: 'coche', badge: 'RECIÉN LLEGADO', badgeColor: 'bg-green-600', desc: 'Impresionante Volkswagen Polo 1.0 TSI con cambio automático DSG de 7 velocidades. Este vehículo ofrece una conducción suave y eficiente, ideal tanto para ciudad como para carretera. Equipado con faros LED, llantas bitono, pantalla táctil multimedia con conectividad y avanzados asistentes de conducción. Revisado a fondo en nuestro taller multimarca, con cambio de aceite y filtros recién realizado. Entregado con garantía y listo para disfrutar.', features: ['Cambio automático DSG 7vel', 'Faros LED', 'Llantas bitono', 'Pantalla táctil multimedia', 'Asistentes conducción', 'Revisado en taller', 'Garantía incluida'], images: ['assets/cars/real_1.png'], video: null },
+            { id: 2, name: 'Iveco Daily 35', specs: 'Caja Paquetera · Doble Hoja', price: 'Consultar', km: 'Revisado', year: '2026', fuel: 'Diésel', trans: 'Manual', power: 'Turbodiésel', color: 'Blanco', doors: 'Caja', category: 'furgoneta', badge: 'IDEAL REPARTO', badgeColor: 'bg-orange-500', desc: 'Furgón Iveco Daily 35 con caja paquetera de gran capacidad y puerta trasera de doble hoja, perfecto para profesionales del reparto y la paquetería. Motor turbodiésel de reconocida fiabilidad con bajo coste de mantenimiento. Revisado mecánicamente al 100% en nuestro taller multimarca. Aprovecha su gran volumen de carga y su robustez, pensada para el trabajo diario más exigente.', features: ['Caja paquetera gran capacidad', 'Doble hoja trasera', 'Motor turbodiésel fiable', 'Revisado en taller', 'Listo para trabajar', 'Bajo mantenimiento'], images: ['assets/cars/real_5.png'], video: null },
+            { id: 3, name: 'Mercedes-Benz Clase C AMG Line', specs: 'Diésel · 2015 · 131.809 km', price: 'Consultar', km: '131.809 km', year: '2015', fuel: 'Diésel', trans: 'Automático', power: 'Consultar', color: 'Gris Oscuro', doors: '5 puertas', category: 'coche', badge: 'PREMIUM', badgeColor: 'bg-accent', desc: 'Elegante Mercedes Clase C con el codiciado paquete deportivo AMG Line. Este vehículo premium destaca por su acabado en Gris Oscuro, faros LED High Performance, sistema de navegación integrado y asientos deportivos tapizados en cuero y alcantara. Equipa sensores de aparcamiento delanteros y traseros para maniobrar con total seguridad. Revisado por nuestro equipo de mecánicos especializados en vehículos premium. Una oportunidad única para disfrutar de la estrella.', features: ['Paquete AMG Line', 'Faros LED High Performance', 'Navegador integrado', 'Asientos cuero/alcantara', 'Sensores aparcamiento', 'Revisado taller multimarca'], images: ['assets/cars/real_4.png'], video: null },
+            { id: 4, name: 'Audi Q5 35 TDI S tronic (ECO)', specs: 'Mild Hybrid · S tronic · 2023', price: 'Consultar', km: 'Semi-nuevo', year: '2023', fuel: 'Diésel (ECO)', trans: 'Automático S tronic', power: '35 TDI', color: 'Gris', doors: '5 puertas', category: 'suv', badge: 'ETIQUETA ECO', badgeColor: 'bg-green-600', desc: 'Espectacular Audi Q5 35 TDI con tecnología Mild Hybrid que le otorga la codiciada etiqueta ECO de la DGT. Este SUV premium de junio de 2023 está en estado seminuevo y completamente revisado. Equipa faros Matrix LED, Audi Virtual Cockpit, MMI Navegación Plus con pantalla táctil, maletero eléctrico, cámara trasera y control de crucero adaptativo. Disfruta del lujo y la tecnología alemana con todas las ventajas de la etiqueta ECO.', features: ['Etiqueta ECO', 'Cambio S tronic 7vel', 'Faros Matrix LED', 'Virtual Cockpit', 'Navegación Plus', 'Maletero eléctrico', 'Cámara trasera', 'Crucero adaptativo'], images: ['assets/cars/real_3.png'], video: null },
+            { id: 5, name: 'Volkswagen Golf GTI', specs: '2.0 TSI · Azul Eléctrico', price: 'Consultar', km: 'Revisado', year: 'Consultar', fuel: 'Gasolina', trans: 'Manual', power: '2.0 TSI', color: 'Azul Eléctrico', doors: '5 puertas', category: 'coche', badge: 'DEPORTIVO', badgeColor: 'bg-red-600', desc: 'Icono entre los deportivos compactos: Volkswagen Golf GTI 2.0 TSI en exclusivo color Azul Eléctrico. Equipa las míticas llantas deportivas GTI, faros de xenón direccionales y la emblemática tapicería a cuadros Interlagos que es toda una seña de identidad. Volante multifunción forrado en cuero y detalles GTI por todo el habitáculo. Revisado mecánicamente por nuestros especialistas en vehículos deportivos. Un GTI para disfrutar cada curva con la seguridad de haber pasado por nuestro taller.', features: ['2.0 TSI 230CV', 'Llantas deportivas GTI', 'Xenón direccional', 'Tapicería Interlagos', 'Volante cuero multifunción', 'Revisado taller especializado'], images: ['assets/cars/real_2.png'], video: null },
+            { id: 6, name: 'Volkswagen Golf TSI', specs: 'TSI Gasolina · A estrenar', price: 'Consultar', km: '0 km', year: '2025', fuel: 'Gasolina', trans: 'Manual', power: 'TSI', color: 'Plata Metálico', doors: '5 puertas', category: 'coche', badge: 'A ESTRENAR', badgeColor: 'bg-accent', desc: 'Volkswagen Golf TSI en color Plata Metálico, prácticamente a estrenar con menos de un año de antigüedad. Este vehículo ha pasado una revisión completa en nuestro taller multimarca y se entrega con garantía oficial. Equipamiento completo con pantalla multimedia, conectividad Bluetooth y asistentes de seguridad. Una oportunidad única para hacerte con un Golf seminuevo con todos los papeles en regla y la tranquilidad de comprar en un taller de confianza.', features: ['Seminuevo garantizado', 'A estrenar menos 1 año', 'Pantalla multimedia', 'Bluetooth', 'Garantía oficial', 'Revisado taller multimarca'], images: ['assets/cars/real_1.png'], video: null },
+            { id: 7, name: 'Mini Cooper R50', specs: '1.6 Gasolina · Bajo consumo', price: 'Consultar', km: 'Revisado', year: 'Consultar', fuel: 'Gasolina', trans: 'Manual', power: '1.6', color: 'Consultar', doors: '3 puertas', category: 'coche', badge: 'OCASIÓN', badgeColor: 'bg-orange-500', desc: 'Divertido Mini Cooper R50 con motor 1.6 gasolina de bajo consumo, perfecto para moverte por ciudad con estilo. Su tamaño compacto y su agilidad lo convierten en el compañero ideal para el día a día, con un consumo muy reducido. Totalmente revisado en nuestro taller multimarca: cambio de aceite, filtros, frenos revisados y neumáticos en buen estado. Entregado con garantía directa de nuestro taller. Un clásico moderno que no pasa de moda.', features: ['1.6 gasolina bajo consumo', 'Ideal para ciudad', 'Compacto y ágil', 'Revisado completo', 'Garantía del taller', 'Estilo clásico moderno'], images: ['assets/cars/real_2.png'], video: null }
         ];
 
         let vehiclesData = [];
@@ -2074,6 +2245,7 @@
         const IS_LOCAL_HOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const CRM_BASES = [
             ...(IS_LOCAL_HOST ? ['http://localhost:1337'] : []),
+            'https://cms.eltallerdemigue.es',
             'https://strapicms-production.up.railway.app',
             'https://taller-migue-crm-production.up.railway.app'
         ];
@@ -2304,6 +2476,52 @@
                 fetchChatwoot()
             ]);
         }
+
+        // ── Slider Sobre Nosotros ──
+        const sliderImages = [
+            'assets/cars/real_1.png',
+            'assets/cars/real_2.png',
+            'assets/cars/real_3.png',
+            'assets/cars/real_4.png',
+            'assets/cars/real_5.png',
+            'assets/cars/tsi.png'
+        ];
+        let currentSlide = 0;
+        let slideInterval;
+
+        function slideTo(index) {
+            currentSlide = index;
+            const img = document.getElementById('slider-img');
+            if (img) {
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.src = sliderImages[currentSlide];
+                    img.style.opacity = '1';
+                }, 300);
+            }
+            document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+                dot.classList.toggle('bg-white/80', i === currentSlide);
+                dot.classList.toggle('bg-white/30', i !== currentSlide);
+            });
+            resetSlideInterval();
+        }
+
+        function nextSlide() {
+            slideTo((currentSlide + 1) % sliderImages.length);
+        }
+
+        function resetSlideInterval() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('slider-container');
+            if (slider) {
+                slideTo(0);
+                slideInterval = setInterval(nextSlide, 4000);
+            }
+        });
 
         // Cargar vehículos, servicios e indicaciones al iniciar
         window.addEventListener('DOMContentLoaded', init);
