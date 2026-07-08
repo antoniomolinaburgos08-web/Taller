@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "movimientos_caja_interna",
+  "info": {
+    "singularName": "movimiento-caja-interna",
+    "pluralName": "movimiento-caja-internas",
+    "displayName": "Movimiento de Caja Interna",
+    "description": "Analítica interna del negocio (adelantos de socio, préstamos, gastos personales del negocio, propinas). NO forma parte de la contabilidad fiscal oficial."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "fecha": { "type": "date", "required": true },
+    "concepto": { "type": "string", "required": true, "maxLength": 200 },
+    "tipo": {
+      "type": "enumeration",
+      "enum": ["Ingreso", "Gasto", "Traspaso"],
+      "required": true
+    },
+    "importe": { "type": "decimal", "required": true, "min": 0 },
+    "categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Adelanto de socio",
+        "Préstamo entre socios",
+        "Retirada personal",
+        "Propina / regalo",
+        "Reintegro de socio",
+        "Gasto personal cargado al negocio",
+        "Movimiento interno",
+        "Otro"
+      ],
+      "default": "Movimiento interno"
+    },
+    "metodo": {
+      "type": "enumeration",
+      "enum": ["Efectivo", "Transferencia", "Bizum", "Compensación", "Otro"],
+      "default": "Efectivo"
+    },
+    "contraparte": { "type": "string", "maxLength": 150, "description": "Socio, empleado o tercero involucrado" },
+    "notas": { "type": "text" },
+    "adjunto": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images", "files"] }
+  }
+}

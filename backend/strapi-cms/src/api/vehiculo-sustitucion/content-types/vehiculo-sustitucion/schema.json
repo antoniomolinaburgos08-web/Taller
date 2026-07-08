@@ -4,45 +4,29 @@
     "info": {
         "singularName": "vehiculo-sustitucion",
         "pluralName": "vehiculo-sustitucions",
-        "displayName": "Flota de Sustituci\u00f3n",
-        "description": ""
+        "displayName": "Flota de Sustitución",
+        "description": "Coches de cortesía del taller"
     },
-    "options": {
-        "draftAndPublish": true
-    },
+    "options": { "draftAndPublish": true },
     "pluginOptions": {},
     "attributes": {
-        "matricula": {
-            "type": "string",
-            "required": true,
-            "unique": true
-        },
-        "marca_modelo": {
-            "type": "string",
-            "required": true
-        },
+        "matricula": { "type": "string", "required": true, "unique": true },
+        "marca_modelo": { "type": "string", "required": true },
+        "foto": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
         "estado": {
             "type": "enumeration",
-            "enum": [
-                "Disponible",
-                "Prestado",
-                "En Mantenimiento"
-            ],
+            "enum": ["Disponible", "Prestado", "En Mantenimiento", "Vencido"],
             "default": "Disponible"
         },
-        "cliente_actual": {
-            "type": "relation",
-            "relation": "oneToOne",
-            "target": "api::cliente.cliente"
-        },
-        "fecha_prestamo": {
-            "type": "datetime"
-        },
-        "fecha_devolucion_esperada": {
-            "type": "datetime"
-        },
-        "notas_danos": {
-            "type": "text"
-        }
+        "cliente_actual": { "type": "relation", "relation": "oneToOne", "target": "api::cliente.cliente" },
+        "prestamo_actual": { "type": "relation", "relation": "oneToOne", "target": "api::prestamo-cortesia.prestamo-cortesia" },
+        "fecha_prestamo": { "type": "datetime" },
+        "fecha_devolucion_esperada": { "type": "datetime" },
+        "km_actual": { "type": "integer" },
+        "combustible_actual": { "type": "integer", "min": 0, "max": 100 },
+        "estado_carroceria": { "type": "text" },
+        "fotos_estado": { "type": "media", "multiple": true, "required": false, "allowedTypes": ["images"] },
+        "historial_prestamos": { "type": "relation", "relation": "oneToMany", "target": "api::prestamo-cortesia.prestamo-cortesia", "mappedBy": "vehiculo" },
+        "notas_danos": { "type": "text" }
     }
 }

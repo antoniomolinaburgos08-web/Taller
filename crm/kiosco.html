@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichaje · El Taller de Migue</title>
+<style>
+    * { box-sizing: border-box; margin: 0; font-family: system-ui, sans-serif; }
+    body { background: #0f172a; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .kiosco { text-align: center; padding: 24px; width: 100%; max-width: 420px; }
+    h1 { font-size: 1.3rem; margin-bottom: 4px; } .sub { color: #64748b; font-size: .85rem; margin-bottom: 24px; }
+    #pin { font-size: 2.2rem; letter-spacing: 12px; background: #1e293b; border: 2px solid #334155; border-radius: 14px; padding: 14px; margin-bottom: 20px; min-height: 76px; }
+    .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .pad button { font-size: 1.8rem; padding: 20px 0; border: none; border-radius: 14px; background: #1e293b; color: #fff; cursor: pointer; }
+    .pad button:active { background: #334155; }
+    .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .acciones button { font-size: 1.15rem; font-weight: 700; padding: 22px 0; border: none; border-radius: 14px; color: #fff; cursor: pointer; }
+    #btn-in { background: #059669; } #btn-out { background: #dc2626; }
+    #msg { margin-top: 18px; font-size: 1.05rem; min-height: 28px; }
+    .ok { color: #34d399; } .err { color: #f87171; }
+</style>
+</head>
+<body>
+<div class="kiosco">
+    <h1>⏱ Fichaje del taller</h1>
+    <p class="sub">Introduce tu PIN y pulsa Entrada o Salida</p>
+    <div id="pin">····</div>
+    <div class="pad">
+        <button onclick="d(1)">1</button><button onclick="d(2)">2</button><button onclick="d(3)">3</button>
+        <button onclick="d(4)">4</button><button onclick="d(5)">5</button><button onclick="d(6)">6</button>
+        <button onclick="d(7)">7</button><button onclick="d(8)">8</button><button onclick="d(9)">9</button>
+        <button onclick="borrar()">⌫</button><button onclick="d(0)">0</button><button onclick="limpiar()">C</button>
+    </div>
+    <div class="acciones">
+        <button id="btn-in" onclick="fichar('entrada')">ENTRADA</button>
+        <button id="btn-out" onclick="fichar('salida')">SALIDA</button>
+    </div>
+    <p id="msg"></p>
+</div>
+<script>
+    const AUTOMATION_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:4000' : 'https://automation.eltallerdemigue.es';
+    let pin = '';
+    const paint = () => document.getElementById('pin').textContent = pin ? '•'.repeat(pin.length) : '····';
+    const d = n => { if (pin.length < 6) { pin += n; paint(); } };
+    const borrar = () => { pin = pin.slice(0, -1); paint(); };
+    const limpiar = () => { pin = ''; paint(); };
+    async function fichar(accion) {
+        const msg = document.getElementById('msg');
+        if (pin.length < 4) { msg.className = 'err'; msg.textContent = 'PIN demasiado corto'; return; }
+        msg.className = ''; msg.textContent = 'Enviando…';
+        try {
+            const r = await fetch(`${AUTOMATION_BASE}/fichajes/${accion}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin })
+            });
+            const j = await r.json();
+            if (r.ok) { msg.className = 'ok'; msg.textContent = `✔ ${j.nombre}: ${accion} registrada${j.minutos ? ' · ' + (j.minutos/60).toFixed(1) + ' h' : ''}`; }
+            else { msg.className = 'err'; msg.textContent = j.error || 'Error'; }
+        } catch { msg.className = 'err'; msg.textContent = 'Sin conexión con el servidor'; }
+        limpiar();
+        setTimeout(() => { msg.textContent = ''; }, 4000);
+    }
+</script>
+</body>
+</html>

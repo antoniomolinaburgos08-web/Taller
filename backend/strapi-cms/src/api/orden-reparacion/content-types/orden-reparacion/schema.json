@@ -4,8 +4,8 @@
     "info": {
         "singularName": "orden-reparacion",
         "pluralName": "orden-reparacions",
-        "displayName": "Orden de Reparaci\u00f3n",
-        "description": ""
+        "displayName": "Orden de Reparación",
+        "description": "Flujo completo del vehículo en el taller"
     },
     "options": {
         "draftAndPublish": true
@@ -29,9 +29,12 @@
             "type": "enumeration",
             "enum": [
                 "Pendiente",
+                "Diagnostico",
                 "En Taller",
                 "Esperando Piezas",
+                "Control Calidad",
                 "Terminado",
+                "Entregado",
                 "Facturado"
             ],
             "default": "Pendiente"
@@ -39,6 +42,9 @@
         "sintomas": {
             "type": "text",
             "required": true
+        },
+        "diagnostico": {
+            "type": "richtext"
         },
         "trabajos_realizados": {
             "type": "richtext"
@@ -52,8 +58,62 @@
         "fecha_salida": {
             "type": "datetime"
         },
+        "fecha_entrega": {
+            "type": "datetime"
+        },
         "presupuesto_estimado": {
             "type": "decimal"
+        },
+        "coste_piezas": {
+            "type": "decimal"
+        },
+        "coste_mano_obra": {
+            "type": "decimal"
+        },
+        "anomalias": {
+            "type": "json",
+            "description": "Array de {tipo, ubicacion, gravedad} para rayaduras, faros rotos, etc."
+        },
+        "tramites_pendientes": {
+            "type": "json",
+            "description": "Array de {tipo: ITV|Informe pericial|Seguro|Transferencia, estado, notas, fecha_limite}"
+        },
+        "fotos_entrada": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": ["images"]
+        },
+        "fotos_salida": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": ["images"]
+        },
+        "requiere_paso_taller_antes_venta": {
+            "type": "boolean",
+            "default": false
+        },
+        "stock_vehicle_asociado": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::stock-vehicle.stock-vehicle"
+        },
+        "trabajadores": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::trabajador.trabajador",
+            "inversedBy": "ordenes_asignadas"
+        },
+        "piezas_usadas": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::pieza-usada.pieza-usada",
+            "mappedBy": "orden_reparacion"
+        },
+        "review_whatsapp_enviado": {
+            "type": "boolean",
+            "default": false
         }
     }
 }

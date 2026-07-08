@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mantenimientos",
+  "info": {
+    "singularName": "mantenimiento",
+    "pluralName": "mantenimientos",
+    "displayName": "Mantenimiento Preventivo"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "cliente": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::cliente.cliente"
+    },
+    "matricula": { "type": "string", "required": true, "maxLength": 15 },
+    "marca_modelo": { "type": "string", "maxLength": 200 },
+    "tipo": {
+      "type": "enumeration",
+      "enum": ["Aceite y filtros", "Correa distribución", "ITV", "Frenos", "Neumáticos", "Batería", "Aire acondicionado", "Otro"],
+      "required": true
+    },
+    "km_ejecucion": { "type": "integer", "min": 0 },
+    "fecha_ejecucion": { "type": "date" },
+    "proximo_en_km": { "type": "integer", "min": 0 },
+    "proximo_en_fecha": { "type": "date" },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["Programado", "Aviso enviado", "Reservado", "Ejecutado", "Postpuesto"],
+      "default": "Programado"
+    },
+    "ultimo_aviso_at": {
+      "type": "datetime",
+      "description": "Marca del último WhatsApp enviado, para evitar spam del cron"
+    },
+    "orden_reparacion_origen": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::orden-reparacion.orden-reparacion"
+    },
+    "notas": { "type": "text" }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trabajadores",
+  "info": {
+    "singularName": "trabajador",
+    "pluralName": "trabajadores",
+    "displayName": "Trabajador del Taller",
+    "description": "Mecánicos y personal del taller (independiente de los usuarios admin)"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": { "type": "string", "required": true, "maxLength": 100 },
+    "apellidos": { "type": "string", "maxLength": 150 },
+    "rol": {
+      "type": "enumeration",
+      "enum": ["Mecánico", "Jefe de taller", "Chapa y pintura", "Administrativo", "Comercial", "Aprendiz"],
+      "default": "Mecánico"
+    },
+    "foto": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
+    "telefono": { "type": "string", "maxLength": 20 },
+    "email": { "type": "email" },
+    "dni": { "type": "string", "maxLength": 15 },
+    "salario_hora": { "type": "decimal", "min": 0 },
+    "activo": { "type": "boolean", "default": true },
+    "pin_fichaje": {
+      "type": "string",
+      "private": true,
+      "maxLength": 8,
+      "description": "PIN 4-6 dígitos para fichaje sin login (kiosco)"
+    },
+    "color": {
+      "type": "string",
+      "regex": "^#[0-9A-Fa-f]{6}$",
+      "default": "#3b82f6",
+      "description": "Color hex para las tarjetas Kanban"
+    },
+    "notas": { "type": "text" },
+    "fichajes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::fichaje.fichaje",
+      "mappedBy": "trabajador"
+    },
+    "ordenes_asignadas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::orden-reparacion.orden-reparacion",
+      "mappedBy": "trabajadores"
+    }
+  }
+}
