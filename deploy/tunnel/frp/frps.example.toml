@@ -1,0 +1,16 @@
+# frp SERVIDOR (frps) - va en una máquina con IP pública (VPS barato).
+# Docs: https://github.com/fatedier/frp
+bindPort = 7000
+
+auth.method = "token"
+auth.token = "CAMBIA_ESTE_TOKEN_LARGO"
+
+# Enrutado HTTP por subdominios:
+vhostHTTPPort = 80
+vhostHTTPSPort = 443
+
+# Panel de control opcional:
+webServer.addr = "0.0.0.0"
+webServer.port = 7500
+webServer.user = "admin"
+webServer.password = "CAMBIA_ESTA_PASSWORD"

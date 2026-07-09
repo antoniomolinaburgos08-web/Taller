@@ -25,6 +25,7 @@ export default {
         'api::whatsapp-template.whatsapp-template',
         'api::movimiento-caja-interna.movimiento-caja-interna',
         'api::contrato.contrato',
+        'api::credencial-portal.credencial-portal',
       ];
       for (const uid of crmUids) {
         for (const action of ['find', 'findOne', 'create', 'update', 'delete']) {

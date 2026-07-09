@@ -1,0 +1,37 @@
+# ============================================================
+# Publica la web pública (web-publica/) en Cloudflare Pages.
+# Alternativa/complemento a GitHub Pages (deploy-pages.yml).
+#
+# Requisitos (Settings -> Secrets and variables -> Actions):
+#   CLOUDFLARE_API_TOKEN   Token con permiso "Cloudflare Pages: Edit"
+#   CLOUDFLARE_ACCOUNT_ID  ID de cuenta (Dashboard -> Workers & Pages)
+#
+# La primera vez crea el proyecto Pages llamado "el-taller-de-migue"
+# (o cambia --project-name abajo). Nada de secretos va en el repo.
+# ============================================================
+name: Deploy web en Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web-publica/**"
+      - ".github/workflows/deploy-cloudflare.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publicar en Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy web-publica --project-name=el-taller-de-migue --branch=main

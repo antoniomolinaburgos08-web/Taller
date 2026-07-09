@@ -1,0 +1,10 @@
+# ============================================================
+# Redirecciones para Cloudflare Pages.
+# Descomenta y ajusta a tu dominio real cuando lo conectes.
+# ============================================================
+
+# Forzar dominio sin www (elige uno como canónico para SEO):
+# https://www.eltallerdemigue.es/*   https://eltallerdemigue.es/:splat   301!
+
+# El backend (Strapi/automation/chat) NO se sirve desde Pages:
+# se expone con Cloudflare Tunnel (ver deploy/tunnel/).

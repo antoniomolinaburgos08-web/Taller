@@ -1,0 +1,46 @@
+# ============================================================
+# Nextcloud = tu "Google Drive" open-source y self-hosted.
+# Aqui se almacena TODO: fotos de coches, documentacion, facturas escaneadas.
+#   docker compose -f docker-compose.yml \
+#     -f storage/docker-compose.nextcloud.yml up -d
+# Expone el panel en https://${DOMAIN_DRIVE} (via Caddy o Cloudflare Tunnel).
+# ============================================================
+services:
+  nextcloud-db:
+    image: mariadb:11
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NEXTCLOUD_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+    networks: [taller]
+
+  nextcloud:
+    image: nextcloud:apache
+    restart: unless-stopped
+    environment:
+      MYSQL_HOST: nextcloud-db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${DOMAIN_DRIVE}
+      OVERWRITEPROTOCOL: https
+    volumes:
+      - nextcloud_data:/var/www/html
+    depends_on: [nextcloud-db]
+    networks: [taller]
+
+volumes:
+  nextcloud_db:
+  nextcloud_data:
+
+networks:
+  taller:
+    external: true
+    name: taller_taller

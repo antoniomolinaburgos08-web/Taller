@@ -1,0 +1,13 @@
+# Cliente frp junto al backend. Copia frpc.example.toml -> frpc.toml y edítalo.
+services:
+  frpc:
+    image: snowdreamtech/frpc:latest
+    restart: unless-stopped
+    volumes:
+      - ./tunnel/frp/frpc.toml:/etc/frp/frpc.toml:ro
+    networks:
+      - taller
+networks:
+  taller:
+    external: true
+    name: taller_taller

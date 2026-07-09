@@ -1,0 +1,25 @@
+# ============================================================
+# Cabeceras para Cloudflare Pages (y compatibles con Netlify).
+# Se aplican al servir la web pública estática.
+# ============================================================
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # CSP: la web carga Tailwind/GA/Chatwoot por CDN. Si activas una CSP
+  # estricta, añade aquí los dominios permitidos. La dejamos comentada
+  # para no romper los scripts externos actuales.
+  # Content-Security-Policy: default-src 'self'; ...
+
+# HTML siempre fresco (para ver cambios al instante)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Imágenes y estáticos: cache largo
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

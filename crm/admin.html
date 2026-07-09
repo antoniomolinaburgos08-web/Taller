@@ -2541,7 +2541,68 @@
                         <li><b>WhatsApp Estados</b> solo se pueden subir manualmente desde el móvil (Meta no lo automatiza). El botón "Enviar al móvil" te lo prepara.</li>
                         <li><b>WhatsApp Catálogo</b> sí es automatizable con la WhatsApp Business API (Meta): sincronización real con la API Graph si tienes el token.</li>
                     </ul>
+                </div>
+
+                <!-- Credenciales de portales (acceso por usuario y contraseña) -->
+                <div class="glass-panel p-6 rounded-2xl mt-6">
+                    <h3 class="text-lg font-bold mb-1 text-slate-200"><i class="fas fa-key mr-2 text-amber-400"></i>Accesos a portales (usuario y contraseña)</h3>
+                    <p class="text-sm text-slate-400 mb-4">Guarda aquí el acceso a cada portal. La contraseña se <b>cifra</b> (AES-256) en el servidor y nunca se muestra. coches.net / AutoScout24 publican por <b>feed</b>; Wallapop / Marketplace por navegador o Telegram.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                        <select id="cred-portal" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200">
+                            ${['coches.net','coches.com','autoscout24','wallapop','milanuncios','fb-marketplace'].map(p=>`<option value="${p}">${p}</option>`).join('')}
+                        </select>
+                        <input id="cred-user" type="text" placeholder="Usuario / email" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200">
+                        <input id="cred-pass" type="password" placeholder="Contraseña" autocomplete="new-password" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200">
+                        <button onclick="guardarCredencialPortal()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-2 rounded text-sm"><i class="fas fa-lock mr-1"></i>Guardar cifrado</button>
+                    </div>
+                    <div id="cred-list" class="flex flex-col gap-2"><p class="text-xs text-slate-500">Cargando…</p></div>
                 </div>`;
+            cargarCredencialesPortal();
+        }
+
+        async function guardarCredencialPortal() {
+            const portal = document.getElementById('cred-portal').value;
+            const usuario = (document.getElementById('cred-user').value || '').trim();
+            const password = document.getElementById('cred-pass').value;
+            if (!usuario || !password) { Swal.fire('Faltan datos', 'Introduce usuario y contraseña.', 'warning'); return; }
+            try {
+                const res = await fetchAPI(`${AUTOMATION_BASE}/portales/credenciales`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ portal, usuario, password }),
+                });
+                if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Error al guardar');
+                document.getElementById('cred-user').value = '';
+                document.getElementById('cred-pass').value = '';
+                Swal.fire('Guardado', 'Credencial cifrada y guardada de forma segura.', 'success');
+                cargarCredencialesPortal();
+            } catch (e) {
+                Swal.fire('Servicio no disponible', (e.message || 'Error') + '. Revisa que el automation-worker está activo y PORTAL_CRYPTO_KEY configurada.', 'error');
+            }
+        }
+
+        async function cargarCredencialesPortal() {
+            const box = document.getElementById('cred-list');
+            if (!box) return;
+            try {
+                const res = await fetchAPI(`${API_BASE}/credencial-portals?pagination[pageSize]=50`);
+                const j = await res.json();
+                const list = (j.data || []).map(normalizeEntity);
+                box.innerHTML = list.length ? list.map(x => {
+                    const a = A(x);
+                    return `<div class="flex items-center justify-between bg-slate-900/60 rounded px-3 py-2 text-sm">
+                        <span><b>${a.portal}</b> · ${a.usuario} <span class="badge ${a.activo ? 'badge-success' : 'badge-draft'}">${a.activo ? 'activo' : 'inactivo'}</span></span>
+                        <button onclick="borrarCredencialPortal('${x.id}')" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                }).join('') : '<p class="text-xs text-slate-500">Sin credenciales guardadas todavía.</p>';
+            } catch {
+                box.innerHTML = '<p class="text-xs text-slate-500">No se pudieron cargar (¿Strapi activo?).</p>';
+            }
+        }
+
+        async function borrarCredencialPortal(id) {
+            // deleteEntity ya pide confirmación y recarga datos; solo refrescamos la lista.
+            const ok = await deleteEntity('credencial-portals', id, null, 'acceso a portal');
+            if (ok) cargarCredencialesPortal();
         }
 
         function copiarFeedUrl(url) {

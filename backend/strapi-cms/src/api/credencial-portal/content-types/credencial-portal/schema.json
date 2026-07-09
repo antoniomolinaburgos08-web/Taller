@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "credenciales_portal",
+  "info": {
+    "singularName": "credencial-portal",
+    "pluralName": "credencial-portals",
+    "displayName": "Credencial de Portal",
+    "description": "Acceso a portales de venta (coches.net, Wallapop, AutoScout24, FB Marketplace...). La contrasena se guarda CIFRADA (AES-256-GCM) por el automation-worker; nunca en claro. Uso exclusivo del dueno."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "portal": {
+      "type": "enumeration",
+      "enum": ["coches.net", "coches.com", "autoscout24", "wallapop", "milanuncios", "fb-marketplace"],
+      "required": true
+    },
+    "usuario": { "type": "string", "required": true, "maxLength": 200 },
+    "secreto_cifrado": { "type": "text", "private": true, "description": "Password cifrada (iv:tag:cipher en base64). Nunca en claro." },
+    "modo": {
+      "type": "enumeration",
+      "enum": ["feed", "navegador", "api"],
+      "default": "feed",
+      "description": "feed = XML que el portal importa; navegador = automatizacion Playwright; api = API oficial de profesional"
+    },
+    "activo": { "type": "boolean", "default": true },
+    "ultimo_sync": { "type": "datetime" },
+    "notas": { "type": "text" }
+  }
+}
