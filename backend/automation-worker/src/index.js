@@ -8,10 +8,12 @@ import multer from 'multer';
 import { extractInvoice } from './ocr.js';
 import { bot, sendPublicationToOwner } from './telegram.js';
 import { syncCatalog } from './whatsapp-catalog.js';
-import { createGasto, getOR, updateOR, getSiteSettingSafe, findTrabajadorByPin, findFichajeAbierto, crearFichaje, cerrarFichaje, updateCita } from './strapi.js';
+import { createGasto, getOR, updateOR, getSiteSettingSafe, findTrabajadorByPin, findFichajeAbierto, crearFichaje, cerrarFichaje, updateCita, crearCredencialPortal, listCredencialesPortal, listPublicVehicles } from './strapi.js';
 import { sendText, whatsappReady } from './whatsapp.js';
 import { renderTemplate } from './templates.js';
 import { startCrons } from './cron.js';
+import { PORTALES, portalInfo, feedFor, publicar, encrypt, cryptoReady } from './portales/index.js';
+import { storageBackend, storageReady } from './storage/index.js';
 import crypto from 'node:crypto';
 
 const app = express();
@@ -39,6 +41,8 @@ app.get('/health', (req, res) => {
             telegram_owner: !!process.env.TELEGRAM_OWNER_CHAT_ID,
             whatsapp_catalog: !!(process.env.META_ACCESS_TOKEN && process.env.META_CATALOG_ID),
             strapi: !!process.env.STRAPI_URL,
+            portales_crypto: cryptoReady(),
+            storage: storageReady() ? storageBackend() : false,
         },
     });
 });
@@ -75,17 +79,52 @@ app.post('/telegram/send-publication', upload.single('imagen'), async (req, res)
     }
 });
 
-// -------- Publicar en portales (stub: Wallapop no tiene API pública) --------
-app.post('/publish/:portal', async (req, res) => {
-    const { portal } = req.params;
-    // Para Wallapop, Milanuncios y demás: genera el pack y lo envía al Telegram del dueño
-    if (portal === 'wallapop' || portal === 'milanuncios') {
-        return res.json({
-            ok: true,
-            note: `${portal} no permite publicación automática. El pack se enviará por Telegram al móvil del dueño para publicar en 1 tap.`,
+// -------- Portales de venta: capacidades --------
+app.get('/portales', (req, res) => {
+    res.json({ portales: PORTALES, crypto: cryptoReady() });
+});
+
+// -------- Portales: guardar credenciales (cifra la contraseña en el worker) --------
+app.post('/portales/credenciales', async (req, res) => {
+    try {
+        const { portal, usuario, password, modo, notas } = req.body || {};
+        if (!portal || !usuario || !password) {
+            return res.status(400).json({ error: 'Faltan portal, usuario o password' });
+        }
+        if (!portalInfo(portal)) return res.status(400).json({ error: `Portal ${portal} no soportado` });
+        if (!cryptoReady()) return res.status(503).json({ error: 'Falta PORTAL_CRYPTO_KEY en el worker' });
+        const saved = await crearCredencialPortal({
+            portal,
+            usuario,
+            secreto_cifrado: encrypt(password),
+            modo: modo || portalInfo(portal).modo,
+            activo: true,
+            notas: notas || '',
         });
-    }
-    res.status(400).json({ error: `Portal ${portal} no soportado` });
+        // Nunca devolvemos la contraseña ni el secreto.
+        res.json({ ok: true, id: saved?.documentId || saved?.id, portal, usuario });
+    } catch (err) { console.error('credenciales:', err); res.status(500).json({ error: err.message }); }
+});
+
+// -------- Portales: feed XML de stock (coches.net / AutoScout24 / coches.com) --------
+app.get('/portales/feed/:portal.xml', async (req, res) => {
+    try {
+        const portal = req.params.portal;
+        if (!portalInfo(portal)) return res.status(404).send(`Portal ${portal} no soportado`);
+        const vehiculos = await listPublicVehicles();
+        res.set('Content-Type', 'application/xml; charset=utf-8');
+        res.send(feedFor(portal, vehiculos));
+    } catch (err) { console.error('feed:', err); res.status(500).json({ error: err.message }); }
+});
+
+// -------- Portales: publicar un vehículo (feed / navegador / Telegram) --------
+app.post('/publish/:portal', async (req, res) => {
+    try {
+        const { portal } = req.params;
+        if (!portalInfo(portal)) return res.status(400).json({ error: `Portal ${portal} no soportado` });
+        const result = await publicar(portal, req.body?.vehiculo || req.body || {}, req.body?.creds);
+        res.json(result);
+    } catch (err) { console.error('publish:', err); res.status(500).json({ error: err.message }); }
 });
 
 // -------- WhatsApp: OR entregada (agradecimiento + reseña) --------

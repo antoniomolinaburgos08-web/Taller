@@ -88,3 +88,10 @@ export async function findFichajeAbierto(trabajadorDocId) {
     return list[0] || null;
 }
 export const getSiteSettingSafe = () => getSiteSetting().catch(() => ({}));
+
+// ---------- Credenciales de portales de venta ----------
+export const crearCredencialPortal = data => screate('credencial-portals', data, true);
+export const updateCredencialPortal = (id, data) => supd('credencial-portals', id, data);
+// Incluye el secreto cifrado (campo privado) para poder descifrarlo en el worker.
+export const listCredencialesPortal = () =>
+    sget('/api/credencial-portals?pagination[pageSize]=50&filters[activo][$eq]=true');

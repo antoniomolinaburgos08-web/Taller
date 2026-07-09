@@ -1,0 +1,28 @@
+# ============================================================
+# Añade el túnel de Cloudflare al stack.
+#   docker compose -f docker-compose.yml \
+#     -f tunnel/cloudflared/docker-compose.cloudflared.yml up -d
+#
+# Modo TOKEN (recomendado): crea el túnel en el panel de Cloudflare
+# (Zero Trust -> Networks -> Tunnels), copia el token y ponlo en .env
+# como CLOUDFLARE_TUNNEL_TOKEN. Las rutas se configuran en el panel.
+# ============================================================
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - taller
+    # --- Alternativa modo FICHERO (comenta el bloque environment de arriba) ---
+    # command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    # volumes:
+    #   - ./tunnel/cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+    #   - ./tunnel/cloudflared/creds:/etc/cloudflared:ro
+
+networks:
+  taller:
+    external: true
+    name: taller_taller

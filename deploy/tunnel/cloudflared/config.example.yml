@@ -1,0 +1,22 @@
+# ============================================================
+# Cloudflare Tunnel (cloudflared) - configuración por fichero.
+# Expone el backend SIN abrir puertos ni tener IP pública.
+#
+# Alternativa más simple: usar TUNNEL_TOKEN (ver docker-compose).
+# ============================================================
+tunnel: PON_AQUI_EL_TUNNEL_ID
+credentials-file: /etc/cloudflared/PON_AQUI_EL_TUNNEL_ID.json
+
+# Reglas de entrada: cada subdominio -> servicio interno del compose.
+# Los nombres (strapi, automation, chatwoot-web) son los del docker-compose.yml.
+ingress:
+  - hostname: cms.eltallerdemigue.es
+    service: http://strapi:1337
+  - hostname: automation.eltallerdemigue.es
+    service: http://automation:4000
+  - hostname: chat.eltallerdemigue.es
+    service: http://chatwoot-web:3000
+  - hostname: crm.eltallerdemigue.es
+    service: http://caddy:80
+  # Regla final obligatoria:
+  - service: http_status:404

@@ -1,0 +1,27 @@
+# frp CLIENTE (frpc) - va junto al backend (detrás de NAT, sin IP pública).
+serverAddr = "TU_SERVIDOR_PUBLICO"
+serverPort = 7000
+
+auth.method = "token"
+auth.token = "CAMBIA_ESTE_TOKEN_LARGO"
+
+[[proxies]]
+name = "strapi"
+type = "http"
+localIP = "strapi"
+localPort = 1337
+customDomains = ["cms.eltallerdemigue.es"]
+
+[[proxies]]
+name = "automation"
+type = "http"
+localIP = "automation"
+localPort = 4000
+customDomains = ["automation.eltallerdemigue.es"]
+
+[[proxies]]
+name = "chatwoot"
+type = "http"
+localIP = "chatwoot-web"
+localPort = 3000
+customDomains = ["chat.eltallerdemigue.es"]

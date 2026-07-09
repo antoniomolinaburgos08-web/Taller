@@ -1,0 +1,11 @@
+# rathole SERVIDOR - máquina con IP pública. https://github.com/rapiz1/rathole
+[server]
+bind_addr = "0.0.0.0:2333"
+
+[server.services.strapi]
+token = "CAMBIA_TOKEN_STRAPI"
+bind_addr = "0.0.0.0:1337"
+
+[server.services.automation]
+token = "CAMBIA_TOKEN_AUTO"
+bind_addr = "0.0.0.0:4000"

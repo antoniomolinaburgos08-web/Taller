@@ -1,0 +1,11 @@
+# rathole CLIENTE - junto al backend (detrás de NAT).
+[client]
+remote_addr = "TU_SERVIDOR_PUBLICO:2333"
+
+[client.services.strapi]
+token = "CAMBIA_TOKEN_STRAPI"
+local_addr = "strapi:1337"
+
+[client.services.automation]
+token = "CAMBIA_TOKEN_AUTO"
+local_addr = "automation:4000"

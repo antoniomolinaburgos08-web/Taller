@@ -1,0 +1,27 @@
+# ============================================================
+# MinIO = almacen de objetos compatible con S3, open-source.
+# Ideal como "provider" de subida de Strapi (fotos del stock) para que NO
+# se pierdan al reconstruir el contenedor y sirvan rapido.
+#   docker compose -f docker-compose.yml \
+#     -f storage/docker-compose.minio.yml up -d
+# Consola web en :9001 (protegela tras Caddy/Tunnel si la expones).
+# ============================================================
+services:
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks: [taller]
+
+volumes:
+  minio_data:
+
+networks:
+  taller:
+    external: true
+    name: taller_taller
